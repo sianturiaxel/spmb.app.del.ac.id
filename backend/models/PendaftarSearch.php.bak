@@ -1,0 +1,147 @@
+<?php
+
+namespace backend\models;
+
+use yii\base\Model;
+use yii\data\ActiveDataProvider;
+use backend\models\Pendaftar;
+
+/**
+ * PendaftarSearch represents the model behind the search form of `backend\models\Pendaftar`.
+ */
+class PendaftarSearch extends Pendaftar
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function rules()
+    {
+        return [
+            [['pendaftar_id', 'jalur_pendaftaran_id', 'user_id', 'penerima_kps', 'jenis_kelamin_id', 'agama_id', 'kecamatan_id', 'kabupaten_id', 'provinsi_id', 'kewarganegaraan_id', 'pendidikan_ayah_id', 'pendidikan_ibu_id', 'alamat_kec_orangtua', 'alamat_kab_orangtua', 'alamat_prov_orangtua', 'pekerjaan_ayah_id', 'pekerjaan_ibu_id', 'penghasilan_ayah', 'penghasilan_ibu', 'penghasilan_total', 'sekolah_id', 'npwp', 'kemampuan_bahasa_inggris', 'kemampuan_bahasa_asing_lainnya', 'informasi_del_id', 'n', 'metode_pembayaran_id', 'no_pendaftaran', 'status_pendaftaran_id', 'status_adminstrasi_id', 'status_test_akademik_id', 'status_test_psikologi_id', 'status_kelulusan', 'gelombang_pendaftaran_id', 'lokasi_ujian_id', 'kode_ujian_id', 'jurusan_sekolah_id', 'sekolah_dapodik_id'], 'integer'],
+            [['nik', 'nisn', 'no_kps', 'nama', 'tanggal_lahir', 'tempat_lahir', 'alamat', 'kode_pos', 'kelurahan', 'no_telepon_rumah', 'no_telepon_mobile', 'email', 'nama_ayah_kandung', 'nama_ibu_kandung', 'nik_ayah', 'nik_ibu', 'tanggal_lahir_ayah', 'tanggal_lahir_ibu', 'alamat_orang_tua', 'kode_pos_orang_tua', 'jurusan_sekolah', 'akreditasi_sekolah', 'kebutuhan_khusus_mahasiswa', 'bahasa_asing_lainnya', 'informasi_del_lainnya', 'tanggal_pendaftaran', 'file_verifikasi_pembayaran', 'pas_foto', 'file_nilai_rapor', 'file_sertifikat', 'file_formulir', 'file_rekomendasi', 'prefix_kode_pendaftaran', 'no_hp_orangtua', 'motivasi', 'hobby', 'kab_domisili', 'virtual_account', 'voucher_daftar', 'created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function scenarios()
+    {
+        // bypass scenarios() implementation in the parent class
+        return Model::scenarios();
+    }
+
+    /**
+     * Creates data provider instance with search query applied
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
+    public function search($params)
+    {
+        $query = Pendaftar::find();
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'pendaftar_id' => $this->pendaftar_id,
+            'jalur_pendaftaran_id' => $this->jalur_pendaftaran_id,
+            'user_id' => $this->user_id,
+            'penerima_kps' => $this->penerima_kps,
+            'jenis_kelamin_id' => $this->jenis_kelamin_id,
+            'tanggal_lahir' => $this->tanggal_lahir,
+            'agama_id' => $this->agama_id,
+            'kecamatan_id' => $this->kecamatan_id,
+            'kabupaten_id' => $this->kabupaten_id,
+            'provinsi_id' => $this->provinsi_id,
+            'kewarganegaraan_id' => $this->kewarganegaraan_id,
+            'tanggal_lahir_ayah' => $this->tanggal_lahir_ayah,
+            'tanggal_lahir_ibu' => $this->tanggal_lahir_ibu,
+            'pendidikan_ayah_id' => $this->pendidikan_ayah_id,
+            'pendidikan_ibu_id' => $this->pendidikan_ibu_id,
+            'alamat_kec_orangtua' => $this->alamat_kec_orangtua,
+            'alamat_kab_orangtua' => $this->alamat_kab_orangtua,
+            'alamat_prov_orangtua' => $this->alamat_prov_orangtua,
+            'pekerjaan_ayah_id' => $this->pekerjaan_ayah_id,
+            'pekerjaan_ibu_id' => $this->pekerjaan_ibu_id,
+            'penghasilan_ayah' => $this->penghasilan_ayah,
+            'penghasilan_ibu' => $this->penghasilan_ibu,
+            'penghasilan_total' => $this->penghasilan_total,
+            'sekolah_id' => $this->sekolah_id,
+            'npwp' => $this->npwp,
+            'kemampuan_bahasa_inggris' => $this->kemampuan_bahasa_inggris,
+            'kemampuan_bahasa_asing_lainnya' => $this->kemampuan_bahasa_asing_lainnya,
+            'informasi_del_id' => $this->informasi_del_id,
+            'n' => $this->n,
+            'tanggal_pendaftaran' => $this->tanggal_pendaftaran,
+            'metode_pembayaran_id' => $this->metode_pembayaran_id,
+            'no_pendaftaran' => $this->no_pendaftaran,
+            'status_pendaftaran_id' => $this->status_pendaftaran_id,
+            'status_adminstrasi_id' => $this->status_adminstrasi_id,
+            'status_test_akademik_id' => $this->status_test_akademik_id,
+            'status_test_psikologi_id' => $this->status_test_psikologi_id,
+            'status_kelulusan' => $this->status_kelulusan,
+            'gelombang_pendaftaran_id' => $this->gelombang_pendaftaran_id,
+            'lokasi_ujian_id' => $this->lokasi_ujian_id,
+            'kode_ujian_id' => $this->kode_ujian_id,
+            'jurusan_sekolah_id' => $this->jurusan_sekolah_id,
+            'sekolah_dapodik_id' => $this->sekolah_dapodik_id,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ]);
+
+        $query->andFilterWhere(['like', 'nik', $this->nik])
+            ->andFilterWhere(['like', 'nisn', $this->nisn])
+            ->andFilterWhere(['like', 'no_kps', $this->no_kps])
+            ->andFilterWhere(['like', 'nama', $this->nama])
+            ->andFilterWhere(['like', 'tempat_lahir', $this->tempat_lahir])
+            ->andFilterWhere(['like', 'alamat', $this->alamat])
+            ->andFilterWhere(['like', 'kode_pos', $this->kode_pos])
+            ->andFilterWhere(['like', 'kelurahan', $this->kelurahan])
+            ->andFilterWhere(['like', 'no_telepon_rumah', $this->no_telepon_rumah])
+            ->andFilterWhere(['like', 'no_telepon_mobile', $this->no_telepon_mobile])
+            ->andFilterWhere(['like', 'email', $this->email])
+            ->andFilterWhere(['like', 'nama_ayah_kandung', $this->nama_ayah_kandung])
+            ->andFilterWhere(['like', 'nama_ibu_kandung', $this->nama_ibu_kandung])
+            ->andFilterWhere(['like', 'nik_ayah', $this->nik_ayah])
+            ->andFilterWhere(['like', 'nik_ibu', $this->nik_ibu])
+            ->andFilterWhere(['like', 'alamat_orang_tua', $this->alamat_orang_tua])
+            ->andFilterWhere(['like', 'kode_pos_orang_tua', $this->kode_pos_orang_tua])
+            ->andFilterWhere(['like', 'jurusan_sekolah', $this->jurusan_sekolah])
+            ->andFilterWhere(['like', 'akreditasi_sekolah', $this->akreditasi_sekolah])
+            ->andFilterWhere(['like', 'kebutuhan_khusus_mahasiswa', $this->kebutuhan_khusus_mahasiswa])
+            ->andFilterWhere(['like', 'bahasa_asing_lainnya', $this->bahasa_asing_lainnya])
+            ->andFilterWhere(['like', 'informasi_del_lainnya', $this->informasi_del_lainnya])
+            ->andFilterWhere(['like', 'file_verifikasi_pembayaran', $this->file_verifikasi_pembayaran])
+            ->andFilterWhere(['like', 'pas_foto', $this->pas_foto])
+            ->andFilterWhere(['like', 'file_nilai_rapor', $this->file_nilai_rapor])
+            ->andFilterWhere(['like', 'file_sertifikat', $this->file_sertifikat])
+            ->andFilterWhere(['like', 'file_formulir', $this->file_formulir])
+            ->andFilterWhere(['like', 'file_rekomendasi', $this->file_rekomendasi])
+            ->andFilterWhere(['like', 'prefix_kode_pendaftaran', $this->prefix_kode_pendaftaran])
+            ->andFilterWhere(['like', 'no_hp_orangtua', $this->no_hp_orangtua])
+            ->andFilterWhere(['like', 'motivasi', $this->motivasi])
+            ->andFilterWhere(['like', 'hobby', $this->hobby])
+            ->andFilterWhere(['like', 'kab_domisili', $this->kab_domisili])
+            ->andFilterWhere(['like', 'virtual_account', $this->virtual_account])
+            ->andFilterWhere(['like', 'voucher_daftar', $this->voucher_daftar])
+            ->andFilterWhere(['like', 'created_by', $this->created_by])
+            ->andFilterWhere(['like', 'updated_by', $this->updated_by]);
+
+        return $dataProvider;
+    }
+}
