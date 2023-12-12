@@ -40,4 +40,8 @@ class SekolahPmdk extends \yii\db\ActiveRecord
             'sekolah_id' => 'Sekolah ID',
         ];
     }
+    public function getSekolah()
+    {
+        return $this->hasOne(Sekolah::className(), ['sekolah_id' => 'sekolah_id']);
+    }
 }

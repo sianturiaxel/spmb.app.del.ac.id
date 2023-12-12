@@ -2,11 +2,13 @@
 
 namespace backend\controllers;
 
+use backend\models\Sekolah;
 use backend\models\SekolahPmdk;
 use backend\models\SekolahPmdkSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii;
 
 /**
  * SekolahPmdkController implements the CRUD actions for SekolahPmdk model.
@@ -36,14 +38,17 @@ class SekolahPmdkController extends Controller
      *
      * @return string
      */
+
     public function actionIndex()
     {
         $searchModel = new SekolahPmdkSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $sekolah = SekolahPmdk::find()->with('sekolah')->all();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'sekolah' => $sekolah,
         ]);
     }
 
@@ -55,8 +60,10 @@ class SekolahPmdkController extends Controller
      */
     public function actionView($sekolah_pmdk_id)
     {
+        $sekolah = Sekolah::find()->asArray()->all();
         return $this->render('view', [
             'model' => $this->findModel($sekolah_pmdk_id),
+            'sekolah' => $sekolah,
         ]);
     }
 
@@ -68,7 +75,7 @@ class SekolahPmdkController extends Controller
     public function actionCreate()
     {
         $model = new SekolahPmdk();
-
+        $sekolah = Sekolah::find()->asArray()->all();
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'sekolah_pmdk_id' => $model->sekolah_pmdk_id]);
@@ -79,8 +86,10 @@ class SekolahPmdkController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'sekolah' => $sekolah,
         ]);
     }
+
 
     /**
      * Updates an existing SekolahPmdk model.
@@ -92,13 +101,15 @@ class SekolahPmdkController extends Controller
     public function actionUpdate($sekolah_pmdk_id)
     {
         $model = $this->findModel($sekolah_pmdk_id);
-
+        $sekolah = Sekolah::find()->asArray()->all();
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'sekolah_pmdk_id' => $model->sekolah_pmdk_id]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'sekolah' => $sekolah,
+
         ]);
     }
 

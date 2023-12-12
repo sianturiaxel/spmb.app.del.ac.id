@@ -2,8 +2,10 @@
 
 namespace backend\controllers;
 
+use backend\models\Jurusan;
 use backend\models\JurusanMapel;
 use backend\models\JurusanMapelSearch;
+use backend\models\MataPelajaran;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -40,10 +42,14 @@ class JurusanMapelController extends Controller
     {
         $searchModel = new JurusanMapelSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $jurusan = JurusanMapel::find()->with('jurusan')->all();
+        $mataPelajaran = JurusanMapel::find()->with('mataPelajaran')->all();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'jurusan' => $jurusan,
+            'mataPelajaran' => $mataPelajaran,
         ]);
     }
 

@@ -6,6 +6,7 @@ use backend\models\JalurPendaftaran;
 use backend\models\Pendaftar;
 use backend\models\PilihanJurusan;
 use backend\models\CalonMahasiswa;
+use backend\models\GelombangPendaftaran;
 use backend\models\Jurusan;
 use backend\models\KodeUjian;
 use yii\data\ActiveDataProvider;
@@ -18,6 +19,8 @@ use yii\helpers\Html;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use yii\helpers\Json;
+use yii\web\Response;
+
 use yii;
 
 defined('YII_DEBUG') or define('YII_DEBUG', true);
@@ -75,6 +78,9 @@ class PendaftarController extends Controller
         }
         if (!empty($_GET['jalur_pendaftaran_id'])) {
             $query->andWhere(['jalur_pendaftaran_id' => $_GET['jalur_pendaftaran_id']]);
+        }
+        if (!empty($_GET['gelombang_pendaftaran_id'])) {
+            $query->andWhere(['gelombang_pendaftaran_id' => $_GET['gelombang_pendaftaran_id']]);
         }
         if ($search && !empty($search['value'])) {
             $query->andFilterWhere(['like', 'nama', $search['value']]);
@@ -162,9 +168,69 @@ class PendaftarController extends Controller
         return $this->redirect(['index']);
     }
 
+    public function actionKodeUjian()
+    {
+        Yii::info('Data POST: ' . print_r(Yii::$app->request->post(), true));
+        if (!Yii::$app->request->isPost) {
+            throw new BadRequestHttpException('Invalid request');
+        }
+
+        $selectedIds = Yii::$app->request->post('ids', []);
+        Yii::info("IDs yang diterima untuk update: " . print_r($selectedIds, true));
+
+        if (empty($selectedIds)) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return ['success' => false, 'message' => 'Tidak ada pendaftar yang dipilih.'];
+        }
+
+        $affectedRows = 0;
+
+        foreach ($selectedIds as $idPendaftar) {
+            Yii::info("Memproses pendaftar dengan ID: $idPendaftar");
+
+            $kodeUjian = KodeUjian::find()
+                ->where(['NOT IN', 'kode_ujian_id', Pendaftar::find()->select('kode_ujian_id')->andWhere(['is not', 'kode_ujian_id', null])->column()])
+                ->one();
+
+            if ($kodeUjian) {
+                Yii::info("Kode Ujian ditemukan: " . print_r($kodeUjian->attributes, true));
+
+                $pendaftar = Pendaftar::findOne($idPendaftar);
+                if ($pendaftar) {
+                    Yii::info("Pendaftar ditemukan: " . print_r($pendaftar->attributes, true));
+                    $pendaftar->kode_ujian_id = $kodeUjian->kode_ujian_id;
+
+                    if ($pendaftar->save()) {
+                        $affectedRows++;
+                        Yii::info("Kode Ujian berhasil di-assign ke pendaftar: $idPendaftar");
+                    } else {
+                        Yii::error("Gagal menyimpan pendaftar: $idPendaftar. Errors: " . print_r($pendaftar->getErrors(), true));
+                    }
+                } else {
+                    Yii::error("Pendaftar tidak ditemukan dengan ID: $idPendaftar");
+                }
+            } else {
+                Yii::info("Tidak ada kode ujian yang tersedia untuk diassign.");
+                break; // Keluar dari loop jika tidak ada kode ujian yang tersedia
+            }
+        }
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        if ($affectedRows > 0) {
+            return ['success' => true, 'message' => "Kode Ujian berhasil diassign. Terpengaruh: {$affectedRows} baris."];
+        } else {
+            return ['success' => false, 'message' => 'Tidak ada kode ujian yang tersedia untuk diassign.'];
+        }
+    }
+
+
+
+
 
     public function actionLulusAdminstrasi()
+
     {
+        Yii::info('Data POST: ' . print_r(Yii::$app->request->post(), true));
         if (!Yii::$app->request->isPost) {
             throw new BadRequestHttpException('Invalid request');
         }
@@ -361,9 +427,6 @@ class PendaftarController extends Controller
         }
     }
 
-
-
-
     /**
      * Lists all Pendaftar models.
      *
@@ -373,6 +436,7 @@ class PendaftarController extends Controller
     public function actionIndex()
     {
         $jalurPendaftaran = JalurPendaftaran::find()->all();
+        $gelombangPendaftaran = GelombangPendaftaran::find()->all();
         $dataProvider = new ActiveDataProvider([
             'query' => Pendaftar::find(),
 
@@ -380,6 +444,7 @@ class PendaftarController extends Controller
         return $this->render('index', [
             'dataProvider' => $dataProvider,
             'jalurPendaftaran' => $jalurPendaftaran,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
         ]);
     }
 
@@ -395,25 +460,6 @@ class PendaftarController extends Controller
             'model' => $this->findModel($pendaftar_id),
         ]);
     }
-
-    // public function actionView($pendaftar_id)
-    // {
-    //     $pendaftar = Pendaftar::findOne($pendaftar_id);
-    //     if ($pendaftar === null) {
-    //         throw new NotFoundHttpException("Pendaftar tidak ditemukan.");
-    //     }
-
-    //     // Jika Anda juga ingin mengambil data pilihan jurusan di sini
-    //     $pilihanJurusan = PilihanJurusan::find()
-    //         ->where(['pendaftar_id' => $pendaftar_id])
-    //         ->all();
-
-    //     return $this->render('view', [
-    //         'pendaftar' => $pendaftar,
-    //         'pilihanJurusan' => $pilihanJurusan, // Hanya jika Anda membutuhkannya di view
-    //     ]);
-    // }
-
     /**
      * Creates a new Pendaftar model.
      * If creation is successful, the browser will be redirected to the 'view' page.
@@ -511,6 +557,8 @@ class PendaftarController extends Controller
         }
         return ['success' => false, 'error' => 'Pilihan Jurusan tidak ditemukan'];
     }
+
+
     public function actionLulusJurusan($pendaftar_id)
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -537,6 +585,39 @@ class PendaftarController extends Controller
         return ['pilihanJurusan' => $responseData];
     }
 
+
+    public function actionDownloadKartu($pendaftar_id, $print = null)
+    {
+        $pendaftar = Pendaftar::findOne($pendaftar_id);
+        if (!$pendaftar) {
+            throw new NotFoundHttpException("Pendaftar tidak ditemukan.");
+        }
+
+        $pilihanJurusan = PilihanJurusan::find()
+            ->with(['jurusan', 'pendaftar'])
+            ->where(['pendaftar_id' => $pendaftar_id])
+            ->orderBy('prioritas')
+            ->all();
+
+        $pilihan1 = $pilihan2 = $pilihan3 = null;
+        foreach ($pilihanJurusan as $pilihan) {
+            if ($pilihan->prioritas == 1) {
+                $pilihan1 = $pilihan;
+            } elseif ($pilihan->prioritas == 2) {
+                $pilihan2 = $pilihan;
+            } elseif ($pilihan->prioritas == 3) {
+                $pilihan3 = $pilihan;
+            }
+        }
+
+        return $this->render('kartu_ujian', [
+            'model' => $pendaftar,
+            'autoPrint' => true,
+            'pilihan1' => $pilihan1,
+            'pilihan2' => $pilihan2,
+            'pilihan3' => $pilihan3,
+        ]);
+    }
 
 
     /**

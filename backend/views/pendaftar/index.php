@@ -10,22 +10,24 @@ use yii\grid\GridView;
 /** @var backend\models\PendaftarSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$dataUrl            = Url::to(['pendaftar/data-for-datatables']);
-$lulusAadminstrasi  = Url::to(['pendaftar/lulus-adminstrasi']);
-$lulusAkademik      = Url::to(['pendaftar/lulus-akademik']);
-$lulusWawancara     = Url::to(['pendaftar/lulus-wawancara']);
-$lulusPsikotes      = Url::to(['pendaftar/lulus-psikotes']);
-$kelulusan          = Url::to(['pendaftar/kelulusan']);
-$pilihanJurusan     = Url::to(['pendaftar/get-pilihan-jurusan']);
-$updatePilihanJurusan     = Url::to(['pendaftar/update-lulus']);
-$LulusJurusan     = Url::to(['pendaftar/lulus-jurusan']);
+$dataUrl                    = Url::to(['pendaftar/data-for-datatables']);
+$lulusAadminstrasi          = Url::to(['pendaftar/lulus-adminstrasi']);
+$lulusAkademik              = Url::to(['pendaftar/lulus-akademik']);
+$lulusWawancara             = Url::to(['pendaftar/lulus-wawancara']);
+$lulusPsikotes              = Url::to(['pendaftar/lulus-psikotes']);
+$kelulusan                  = Url::to(['pendaftar/kelulusan']);
+$pilihanJurusan             = Url::to(['pendaftar/get-pilihan-jurusan']);
+$updatePilihanJurusan       = Url::to(['pendaftar/update-lulus']);
+$LulusJurusan               = Url::to(['pendaftar/lulus-jurusan']);
+$kodeUjian                  = Url::to(['pendaftar/kode-ujian']);
 $this->title = 'Pendaftar  SPMB IT Del';
 $dataProvider->pagination = false;
 
 $js = <<<JS
-
+ 
 $(document).ready(function() {
     let tombolKelulusanDiklik = false;
+    
     var table = $('#datatables').DataTable({
         'processing': true,
         'serverSide': true,
@@ -35,6 +37,10 @@ $(document).ready(function() {
                 var jalurPendaftaranFilter = $('#jalur-pendaftaran-select').val();
                 if (jalurPendaftaranFilter) { 
                     d.jalur_pendaftaran_id = jalurPendaftaranFilter;
+                }
+                var gelombangPendaftaranFilter = $('#gelombang-pendaftaran-select').val();
+                if (gelombangPendaftaranFilter) { 
+                    d.gelombang_pendaftaran_id = gelombangPendaftaranFilter;
                 }
             },
         },
@@ -73,7 +79,15 @@ $(document).ready(function() {
                "<'row'<'col-sm-12'tr>>" +
                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
     });
-    
+    var showCheckbox = false;
+    function toggleCheckboxDisplay(show) {
+        if (show) {
+            $('.pendaftar-checkbox').show();
+        } else {
+            $('.pendaftar-checkbox').hide();
+        }
+    }
+    toggleCheckboxDisplay(false);
 
     
     $('#apply-filter').on('click', function() {
@@ -82,20 +96,57 @@ $(document).ready(function() {
    
     $('#status-filter').hide();
     
+    $('#assignmentButton').on('click', function() {
+        // Menampilkan checkbox
+        toggleCheckboxDisplay(true);
+
+        var selectedIds = $('.pendaftar-checkbox:checked').map(function() {
+            return $(this).val();
+        }).get();
+
+        console.log(selectedIds);
+
+        if (selectedIds.length === 0) {
+            alert('Silakan pilih minimal satu pendaftar.');
+            return;
+        }
+
+        $.ajax({
+            url: '$kodeUjian',
+            type: 'POST',
+            data: {
+                ids: selectedIds,
+                _csrf: yii.getCsrfToken()
+            },
+            success: function(response) {
+                alert(response.message);
+                table.ajax.reload();
+            },
+            error: function() {
+                alert('Terjadi kesalahan saat pengiriman data.');
+            }
+        });
+    });
+
+    $('#tombol-lulus-adminstrasi, #tombol-lulus-akademik, #tombol-lulus-wawancara, #tombol-lulus-psikotes, #tombol-status-kelulusan').each(function() {
+        $(this).data('original-text', $(this).text());
+    });
     $('#tombol-lulus-adminstrasi').on('click', function() {
-    
+        showCheckbox = true;
+        resetButtons('#tombol-lulus-adminstrasi');
         if ($(this).text() === "Pilih Lulus Adminstrasi") {
-            
+            showCheckbox = true;
             table.on('preXhr.dt', function(e, settings, data) {
                 data.status_adminstrasi_id = '0'; 
             });
             table.ajax.reload(null, false); 
-
+            
             $(this).text("Luluskan");
         } else if ($(this).text() === "Luluskan") {
             var selectedIds = $('.pendaftar-checkbox:checked').map(function() {
                 return $(this).val();
             }).get();
+            console.log('Data yang dikirim:', selectedIds, yii.getCsrfToken());
 
             if (selectedIds.length > 0) {
                 $.ajax({
@@ -104,6 +155,7 @@ $(document).ready(function() {
                     data: {
                         ids: selectedIds,
                         _csrf: yii.getCsrfToken()
+                        
                     },
                     success: function(response) {
                         if (response.success) {
@@ -124,9 +176,9 @@ $(document).ready(function() {
         }
     });
     $('#tombol-lulus-akademik').on('click', function() {
-    
+        showCheckbox = true;
+        resetButtons('#tombol-lulus-akademik');
         if ($(this).text() === "Pilih Lulus Akademik") {
-                
                 table.on('preXhr.dt', function(e, settings, data) {
                     data.status_test_akademik_id = '0'; 
                 });
@@ -137,6 +189,7 @@ $(document).ready(function() {
                 var selectedIds = $('.pendaftar-checkbox:checked').map(function() {
                     return $(this).val();
                 }).get();
+                
 
                 if (selectedIds.length > 0) {
                     $.ajax({
@@ -146,6 +199,7 @@ $(document).ready(function() {
                             ids: selectedIds,
                             _csrf: yii.getCsrfToken()
                         },
+                        
                         success: function(response) {
                             if (response.success) {
                                 alert(response.message);
@@ -166,6 +220,8 @@ $(document).ready(function() {
             }
     });
     $('#tombol-lulus-wawancara').on('click', function() {
+        showCheckbox = true;
+        resetButtons('#tombol-lulus-wawancara');
         if ($(this).text() === "Pilih Lulus Wawancara") {
             table.on('preXhr.dt', function(e, settings, data) {
             data.status_wawancara_id = '0';
@@ -206,17 +262,21 @@ $(document).ready(function() {
         }
     });
     $('#tombol-lulus-psikotes').on('click', function() {
+        showCheckbox = true;
+        resetButtons('#tombol-lulus-psikotes');
         if ($(this).text() === "Pilih Lulus Psikotes") {
-            var jalurTerpilih = $('#jalur-pendaftaran-select').val();
+            var selectedText = $("#gelombang-pendaftaran-select option:selected").text().trim();
+            var words = selectedText.split(' ');
+            var desc = words[0];
 
             table.on('preXhr.dt', function(e, settings, data) {
                 data.status_test_psikologi_id = '0';
-                if (jalurTerpilih == '1' || jalurTerpilih == '2') { 
+                if (desc == 'PMDK') { 
                     data.status_adminstrasi_id = '1'; 
                     data.status_wawancara_id = '1'; 
-                } else if (jalurTerpilih == '3') { 
+                } else if (desc == 'USM') { 
                     data.status_test_akademik_id = '1';
-                } else if (jalurTerpilih == '4') { 
+                } else if (desc == 'UTBK') { 
                     data.status_adminstrasi_id = '1'; 
                 }
             });
@@ -254,20 +314,26 @@ $(document).ready(function() {
             }
         }
     });  
-
     $('#tombol-status-kelulusan').on('click', function() {
+        
+        console.log('Tombol kelulusan diklik');
+        resetButtons('#tombol-status-kelulusan');
+        showCheckbox = true;
         if ($(this).text() === "Pilih Status Kelulusan") {
+            
             tombolKelulusanDiklik = !tombolKelulusanDiklik; 
-            var jalurTerpilih = $('#jalur-pendaftaran-select').val();
+            var selectedText = $("#gelombang-pendaftaran-select option:selected").text().trim();
+            var words = selectedText.split(' ');
+            var desc = words[0];
             table.on('preXhr.dt', function(e, settings, data) {
-                if (jalurTerpilih == '1' || jalurTerpilih == '2') { 
+                if (desc == 'PMDK') { 
                     data.status_adminstrasi_id = '1'; 
                     data.status_wawancara_id = '1'; 
                     data.status_test_psikologi_id = '1'; 
-                } else if (jalurTerpilih == '3') { 
+                } else if (desc == 'USM') { 
                     data.status_test_akademik_id = '1'; 
                     data.status_test_psikologi_id = '1'; 
-                } else if (jalurTerpilih == '4') { 
+                } else if (desc == 'UTBK') { 
                     data.status_adminstrasi_id = '1'; 
                     data.status_test_psikologi_id = '1'; 
                 }
@@ -292,7 +358,6 @@ $(document).ready(function() {
                     success: function(response) {
                         if (response.success) {
                             alert(response.message);
-                            // Reload data di tabel
                             table.ajax.reload();
                         } else {
                             alert('Gagal meluluskan pendaftar.');
@@ -307,29 +372,31 @@ $(document).ready(function() {
                 alert('Silakan pilih setidaknya satu pendaftar.');
             }
         }
-    });
-    
-    $('#jalur-pendaftaran-select').on('change', function() {
-        
-        var jalurTerpilih = $(this).val();
+    });    
+    $('#gelombang-pendaftaran-select').on('change', function() {
+        var selectedText = $("#gelombang-pendaftaran-select option:selected").text().trim();
+        console.log("Selected option text:", selectedText);
 
+        var words = selectedText.split(' ');
+        console.log("Words array:", words); 
+
+        var desc = words[0];
+        console.log("First word:", desc);
+        
         $('#tombol-lulus-adminstrasi, #tombol-lulus-akademik, #tombol-lulus-wawancara, #tombol-lulus-psikotes, #tombol-status-kelulusan').hide();
 
-        if (jalurTerpilih == '1') {
-            $('#tombol-lulus-adminstrasi, #tombol-lulus-wawancara, #tombol-lulus-psikotes, #tombol-status-kelulusan').show();
-        } else if (jalurTerpilih == '2') {
+        if (desc === 'PMDK') {
             $('#tombol-lulus-adminstrasi, #tombol-lulus-wawancara, #tombol-lulus-psikotes, #tombol-status-kelulusan').show();
         }
-        else if (jalurTerpilih == '3') {
+        else if (desc === 'USM') {
             $('#tombol-lulus-akademik, #tombol-lulus-psikotes, #tombol-status-kelulusan').show();
         }
-        else if (jalurTerpilih == '4') {
+        else if (desc === 'UTBK') {
             $('#tombol-lulus-adminstrasi, #tombol-lulus-psikotes, #tombol-status-kelulusan').show();
         }
         table.ajax.reload();
         
     });
-
     $(document).on('click', '.luluskan-button', function(e) {
         e.preventDefault();
         var pendaftarId = $(this).data('pendaftar-id');
@@ -381,7 +448,6 @@ $(document).ready(function() {
             }
         });
     });
-
     $('#btnSimpanLulus').on('click', function() {
         var pendaftarId = $('#detailJurusan').data('pendaftar-id');
         console.log("Pendaftar ID: ", pendaftarId);
@@ -391,6 +457,7 @@ $(document).ready(function() {
             url: '$updatePilihanJurusan', 
             type: 'POST',
             data: {
+                _csrf: yii.getCsrfToken(),
                 pendaftar_id: pendaftarId,  
                 jurusan_id: idJurusan
             },
@@ -409,7 +476,6 @@ $(document).ready(function() {
             }
         });
     });
-
     $(document).on('click', '.lulus-pada-jurusan', function(e) {
         e.preventDefault();
         var pendaftarId = $(this).data('pendaftar-id');
@@ -446,9 +512,7 @@ $(document).ready(function() {
                 alert('Terjadi kesalahan saat memuat data.');
             },
         });
-    });
-
-
+    }); 
     $(".select2").select2();
         //Initialize Select2 Elements
         $(".select2bs4").select2({
@@ -461,61 +525,107 @@ $(document).ready(function() {
           theme: "bootstrap4",
           
     });
+
+    $('#tombol-reset').on('click', function() {
+        $('.pendaftar-checkbox').hide();
+    });
+
+    table.on('draw', function() {
+        toggleCheckboxDisplay(showCheckbox);
+        //updateCheckboxVisibility();
+
+    });
     
 });
+function updateCheckboxVisibility() {
+    table.rows().every(function() {
+        var data = this.data();
+        var rowNode = this.node();
 
-
-
+        // Logika untuk menentukan apakah checkbox harus ditampilkan
+        if (data.status_kelulusan === '0') {
+            $(rowNode).find('.pendaftar-checkbox').show();
+        } else {
+            $(rowNode).find('.pendaftar-checkbox').hide();
+        }
+    });
+}
+function resetButtons(exceptId) {
+    $('#tombol-lulus-adminstrasi, #tombol-lulus-akademik, #tombol-lulus-wawancara, #tombol-lulus-psikotes, #tombol-status-kelulusan').each(function() {
+        if (this.id !== exceptId.slice(1)) {
+            $(this).text($(this).data('original-text'));
+        }
+    });
+}
+function toggleCheckboxDisplay(show) {
+    if (show) {
+        $('.pendaftar-checkbox').show();
+    } else {
+        $('.pendaftar-checkbox').hide();
+    }
+}
 JS;
 $this->registerJs($js, \yii\web\View::POS_READY);
 ?>
+
 <div class="card">
     <div class="card-body">
-        <div class="flex-container">
+        <div class="row">
+            <div class="col-md-2">
+                <select class="form-control select2" id="gelombang-pendaftaran-select">
+                    <option value="">Semua Gelombang Pendaftaran</option>
+                    <?php foreach ($gelombangPendaftaran as $gelombang) : ?>
+                        <option value="<?= htmlspecialchars($gelombang['gelombang_pendaftaran_id']); ?>">
+                            <?= htmlspecialchars($gelombang['desc']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="col-md-2 custom-button-spacing">
+                <button id="assignmentButton" class="btn btn-primary">Assign Kode Ujian</button>
+            </div>
+            <div class="col-md-3">
+                <?= Html::a('Download Lulus Adminstrasi', ['export-excel'], [
+                    'class' => 'btn btn-success',
+                    'data' => [
+                        'confirm' => 'Apakah Anda Ingin Mendownload Pendaftar Yang Lulus Adminstrasi?',
+                        'method' => 'post',
+                    ],
+                ]) ?>
+            </div>
 
-            <select class="form-control select2" id="jalur-pendaftaran-select">
-                <option value="">Semua Jalur Pendaftaran</option>
-                <?php foreach ($jalurPendaftaran as $jalur) : ?>
-                    <option value="<?= htmlspecialchars($jalur['jalur_pendaftaran_id']); ?>">
-                        <?= htmlspecialchars($jalur['desc']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+            <div class="col-md-3">
+            </div>
         </div>
-        <div>
+
+        <div class="flex-item">
             <?= Html::button('Pilih Lulus Adminstrasi', ['id' => 'tombol-lulus-adminstrasi', 'class' => 'btn btn-primary tombol-jalur']) ?>
             <?= Html::button('Pilih Lulus Akademik', ['id' => 'tombol-lulus-akademik', 'class' => 'btn btn-primary tombol-jalur']) ?>
             <?= Html::button('Pilih Lulus Wawancara', ['id' => 'tombol-lulus-wawancara', 'class' => 'btn btn-primary tombol-jalur']) ?>
             <?= Html::button('Pilih Lulus Psikotes', ['id' => 'tombol-lulus-psikotes', 'class' => 'btn btn-primary tombol-jalur']) ?>
             <?= Html::button('Pilih Status Kelulusan', ['id' => 'tombol-status-kelulusan', 'class' => 'btn btn-primary tombol-jalur']) ?>
-            <?= Html::a('Download Lulus Adminstrasi', ['export-excel'], [
-                'class' => 'btn btn-success',
-                'data' => [
-                    'confirm' => 'Apakah Anda Ingin Mendownload Pendaftar Yang Lulus Adminstrasi?',
-                    'method' => 'post',
-                ],
-            ]) ?>
+
         </div>
     </div>
+    <div class="card-body">
+        <table id="datatables" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>No Pendaftaran</th>
+                    <th>Nama</th>
+                    <th>Nama Sekolah</th>
+                    <th>Lokasi Ujian</th>
+                    <th>Kode Ujian</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
 </div>
-<div class="card-body">
-    <table id="datatables" class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>No Pendaftaran</th>
-                <th>Nama</th>
-                <th>Nama Sekolah</th>
-                <th>Lokasi Ujian</th>
-                <th>Kode Ujian</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-</div>
-</div>
+
 
 <!-- Modal -->
 <div class="modal fade" id="detailJurusan" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
@@ -619,11 +729,35 @@ $this->registerJs($js, \yii\web\View::POS_READY);
 </div>
 
 
+
+
 <style>
+    .flex-item {
+        margin-top: 20px;
+        /* Atau berapa pun jarak yang Anda inginkan */
+    }
+
     .flex-container {
         display: flex;
-        align-items: stretch;
+        flex-wrap: wrap;
+        align-items: center;
         gap: 10px;
+        /* Jarak antar elemen */
+    }
+
+    .flex-item {
+        flex: 1;
+        /* Elemen mengambil ruang yang tersedia */
+        min-width: 100%;
+        /* Minimum lebar untuk setiap item */
+    }
+
+    /* Jika Anda ingin menyesuaikan tampilan untuk layar yang lebih kecil */
+    @media (max-width: 768px) {
+        .flex-item {
+            flex-basis: 100%;
+            /* Setiap item mengambil satu baris penuh pada layar kecil */
+        }
     }
 
     .select2-container--default .select2-selection--single {
@@ -638,7 +772,7 @@ $this->registerJs($js, \yii\web\View::POS_READY);
 
     /* Menambahkan style khusus untuk mengatur lebar tetap select2 */
     .select2-selection--single {
-        width: 200px;
+        width: 100%;
         /* Atur ini sesuai dengan lebar yang diinginkan */
     }
 
@@ -646,4 +780,13 @@ $this->registerJs($js, \yii\web\View::POS_READY);
         display: none;
         /* Sembunyikan semua tombol di awal */
     }
+
+    .custom-button-spacing {
+        margin-right: -30px;
+        /* Sesuaikan jarak */
+    }
+
+    /* .pendaftar-checkbox {
+        display: none;
+    } */
 </style>

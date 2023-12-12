@@ -112,22 +112,21 @@ class BiayaPendaftaranController extends Controller
     // }
     public function actionCreate()
     {
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON; // Set the response format to JSON
-
         $model = new BiayaPendaftaran();
+        // Ambil semua data gelombang pendaftaran untuk ditampilkan di dropdown
+        $GelombangPendaftaran = GelombangPendaftaran::find()->asArray()->all();
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return [
-                'success' => true,
-                'redirectUrl' => Url::to(['index'])
-            ];
-        } else {
-            // Return error message if validation fails
-            return [
-                'success' => false,
-                'message' => 'Error message'
-            ];
+            // Logika untuk menyimpan data dan set flash message
         }
+
+        // Pastikan untuk mengirim variabel ke view
+        return $this->render('create', [
+            'model' => $model,
+            'GelombangPendaftaran' => $GelombangPendaftaran,
+        ]);
     }
+
 
     /**
      * Updates an existing BiayaPendaftaran model.

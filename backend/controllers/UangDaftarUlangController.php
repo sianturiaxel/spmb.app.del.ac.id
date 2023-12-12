@@ -40,10 +40,12 @@ class UangDaftarUlangController extends Controller
     {
         $searchModel = new UangDaftarUlangSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $gelombangPendaftaran = UangDaftarUlang::find()->with('gelombangPendaftaran')->all();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
         ]);
     }
 
