@@ -49,4 +49,12 @@ class UangPembangunan extends \yii\db\ActiveRecord
             'multi_n' => 'Multi N',
         ];
     }
+    public function getGelombangPendaftaran()
+    {
+        return $this->hasOne(GelombangPendaftaran::class, ['gelombang_pendaftaran_id' => 'gelombang_pendaftaran_id']);
+    }
+    public function getJurusan()
+    {
+        return $this->hasOne(Jurusan::class, ['jurusan_id' => 'jurusan_id']);
+    }
 }

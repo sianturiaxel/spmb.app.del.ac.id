@@ -42,6 +42,19 @@ $(document).ready(function() {
                "<'row'<'col-sm-12'tr>>" +
                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
     });
+
+    $(".select2").select2();
+        //Initialize Select2 Elements
+        $(".select2bs4").select2({
+          theme: "bootstrap4",
+          
+    });
+    $(".selectjurusan").select2();
+        //Initialize Select2 Elements
+        $(".select2bs4").select2({
+          theme: "bootstrap4",
+          
+    });
 });
 JS;
 

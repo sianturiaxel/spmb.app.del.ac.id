@@ -2,11 +2,14 @@
 
 namespace backend\controllers;
 
+use backend\models\GelombangPendaftaran;
+use backend\models\JenisTest;
 use backend\models\KodeUjian;
 use backend\models\KodeUjianSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * KodeUjianController implements the CRUD actions for KodeUjian model.
@@ -40,10 +43,14 @@ class KodeUjianController extends Controller
     {
         $searchModel = new KodeUjianSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $gelombangPendaftaran = KodeUjian::find()->with('gelombangPendaftaran')->all();
+        $jenisTest = KodeUjian::find()->with('jenisTest')->all();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'jenisTest' => $jenisTest,
         ]);
     }
 
@@ -55,8 +62,12 @@ class KodeUjianController extends Controller
      */
     public function actionView($kode_ujian_id)
     {
+        $gelombangPendaftaran = GelombangPendaftaran::find()->asArray()->all();
+        $jenisTest = JenisTest::find()->asArray()->all();
         return $this->render('view', [
             'model' => $this->findModel($kode_ujian_id),
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'jenisTest' => $jenisTest,
         ]);
     }
 
@@ -68,6 +79,9 @@ class KodeUjianController extends Controller
     public function actionCreate()
     {
         $model = new KodeUjian();
+        $gelombangPendaftaran = GelombangPendaftaran::find()->asArray()->all();
+        $jenisTest = JenisTest::find()->asArray()->all();
+
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
@@ -79,6 +93,8 @@ class KodeUjianController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'jenisTest' => $jenisTest,
         ]);
     }
 
@@ -92,6 +108,8 @@ class KodeUjianController extends Controller
     public function actionUpdate($kode_ujian_id)
     {
         $model = $this->findModel($kode_ujian_id);
+        $gelombangPendaftaran = GelombangPendaftaran::find()->asArray()->all();
+        $jenisTest = JenisTest::find()->asArray()->all();
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'kode_ujian_id' => $model->kode_ujian_id]);
@@ -99,6 +117,8 @@ class KodeUjianController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'jenisTest' => $jenisTest,
         ]);
     }
 

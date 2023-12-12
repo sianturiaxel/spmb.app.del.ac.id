@@ -2,7 +2,8 @@
 
 namespace backend\models;
 
-use app\models\JalurPendaftaran;
+use backend\models\JalurPendaftaran;
+use backend\models\JalurPendaftaran as ModelsJalurPendaftaran;
 use yii\data\ActiveDataProvider;
 use Yii;
 
@@ -109,7 +110,7 @@ class Pendaftar extends \yii\db\ActiveRecord
     {
         return [
             [['jalur_pendaftaran_id', 'user_id', 'jenis_kelamin_id', 'agama_id', 'kewarganegaraan_id', 'sekolah_id', 'npwp', 'kebutuhan_khusus_mahasiswa', 'informasi_del_id', 'n', 'gelombang_pendaftaran_id', 'lokasi_ujian_id', 'kode_ujian_id'], 'required'],
-            [['jalur_pendaftaran_id', 'user_id', 'penerima_kps', 'jenis_kelamin_id', 'agama_id', 'kecamatan_id', 'kabupaten_id', 'provinsi_id', 'kewarganegaraan_id', 'pendidikan_ayah_id', 'pendidikan_ibu_id', 'alamat_kec_orangtua', 'alamat_kab_orangtua', 'alamat_prov_orangtua', 'pekerjaan_ayah_id', 'pekerjaan_ibu_id', 'penghasilan_ayah', 'penghasilan_ibu', 'penghasilan_total', 'sekolah_id', 'npwp', 'kemampuan_bahasa_inggris', 'kemampuan_bahasa_asing_lainnya', 'informasi_del_id', 'n', 'metode_pembayaran_id', 'no_pendaftaran', 'status_pendaftaran_id', 'status_adminstrasi_id', 'status_test_akademik_id', 'status_test_psikologi_id', 'status_kelulusan', 'gelombang_pendaftaran_id', 'lokasi_ujian_id', 'kode_ujian_id', 'jurusan_sekolah_id', 'sekolah_dapodik_id'], 'integer'],
+            [['jalur_pendaftaran_id', 'user_id', 'penerima_kps', 'jenis_kelamin_id', 'agama_id', 'alamat_kec', 'alamat_kab', 'alamat_prov', 'kewarganegaraan_id', 'pendidikan_ayah_id', 'pendidikan_ibu_id', 'alamat_kec_orangtua', 'alamat_kab_orangtua', 'alamat_prov_orangtua', 'pekerjaan_ayah_id', 'pekerjaan_ibu_id', 'penghasilan_ayah', 'penghasilan_ibu', 'penghasilan_total', 'sekolah_id', 'npwp', 'kemampuan_bahasa_inggris', 'kemampuan_bahasa_asing_lainnya', 'informasi_del_id', 'n', 'metode_pembayaran_id', 'no_pendaftaran', 'status_pendaftaran_id', 'status_adminstrasi_id', 'status_test_akademik_id', 'status_test_psikologi_id', 'status_kelulusan', 'gelombang_pendaftaran_id', 'lokasi_ujian_id', 'kode_ujian_id', 'jurusan_sekolah_id', 'sekolah_dapodik_id'], 'integer'],
             [['tanggal_lahir', 'tanggal_lahir_ayah', 'tanggal_lahir_ibu', 'tanggal_pendaftaran', 'created_at', 'updated_at'], 'safe'],
             [['alamat', 'alamat_orang_tua', 'informasi_del_lainnya', 'motivasi'], 'string'],
             [['nik', 'nik_ayah', 'nik_ibu'], 'string', 'max' => 16],
@@ -232,8 +233,12 @@ class Pendaftar extends \yii\db\ActiveRecord
     {
         return $this->hasOne(JalurPendaftaran::class, ['jalur_pendaftaran_id' => 'jalur_pendaftaran_id']);
     }
+    public function getGelombangPendaftaran()
+    {
+        return $this->hasOne(GelombangPendaftaran::class, ['gelombang_pendaftaran_id' => 'gelombang_pendaftaran_id']);
+    }
 
-    public function getjenisKelamin()
+    public function getJenisKelamin()
     {
         return $this->hasOne(JenisKelamin::class, ['jenis_kelamin_id' => 'jenis_kelamin_id']);
     }
@@ -242,13 +247,15 @@ class Pendaftar extends \yii\db\ActiveRecord
         return $this->hasOne(Agama::class, ['agama_id' => 'agama_id']);
     }
 
+    public function getstatusPendaftaran()
+    {
+        return $this->hasOne(StatusPendaftaran::class, ['status_pendaftaran_id' => 'status_pendaftaran_id']);
+    }
 
     public function getKode()
     {
         return $this->hasOne(KodeUjian::class, ['kode_ujian_id' => 'kode_ujian_id']);
     }
-
-
 
     public function getLokasi()
     {
@@ -258,6 +265,15 @@ class Pendaftar extends \yii\db\ActiveRecord
     public function getPilihanJurusan()
     {
         return $this->hasOne(PilihanJurusan::class, ['pendaftar_id' => 'pendaftar_id']);
+    }
+
+    public function getPekerjaanAyah()
+    {
+        return $this->hasOne(Pekerjaan::class, ['pekerjaan_id' => 'pekerjaan_ayah_id']);
+    }
+    public function getPekerjaanIbu()
+    {
+        return $this->hasOne(Pekerjaan::class, ['pekerjaan_id' => 'pekerjaan_ibu_id']);
     }
     /**
      * Metode untuk meluluskan pendaftar.

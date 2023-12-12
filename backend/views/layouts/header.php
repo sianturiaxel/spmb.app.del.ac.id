@@ -64,24 +64,22 @@ use yii\helpers\Html;
 
 
 <style>
-    .user-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background-size: cover;
-        background-position: center left;
+    .navbar {
+        background-color: #B0C4DE;
+        /* Warna latar belakang navbar */
+        color: #ecf0f1;
+        /* Warna teks */
     }
 
-    .user-info {
-        display: flex;
-        flex-direction: column;
+    .navbar a {
+        color: #ecf0f1;
+        /* Warna tautan */
     }
 
-    .username {
-        font-weight: bold;
-    }
-
-    .user-role {
-        font-size: 0.8em;
+    .dropdown-menu-lg {
+        border-radius: 5px;
+        /* Tambahkan border radius */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        /* Tambahkan sedikit bayangan */
     }
 </style>

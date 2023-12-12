@@ -40,11 +40,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'kelurahan')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'kecamatan_id')->textInput() ?>
+    <?= $form->field($model, 'alamat_kec')->textInput() ?>
 
-    <?= $form->field($model, 'kabupaten_id')->textInput() ?>
+    <?= $form->field($model, 'alamat_kab')->textInput() ?>
 
-    <?= $form->field($model, 'provinsi_id')->textInput() ?>
+    <?= $form->field($model, 'alamat_prov')->textInput() ?>
 
     <?= $form->field($model, 'kewarganegaraan_id')->textInput() ?>
 

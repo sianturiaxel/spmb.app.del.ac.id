@@ -63,4 +63,12 @@ class WaktuPengumuman extends \yii\db\ActiveRecord
             'deleted_date' => 'Deleted Date',
         ];
     }
+    public function getGelombangPendaftaran()
+    {
+        return $this->hasOne(GelombangPendaftaran::class, ['gelombang_pendaftaran_id' => 'gelombang_pendaftaran_id']);
+    }
+    public function getJenisTest()
+    {
+        return $this->hasOne(JenisTest::class, ['jenis_test_id' => 'jenis_test_id']);
+    }
 }

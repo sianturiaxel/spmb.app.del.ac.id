@@ -1,4 +1,6 @@
 <?php
+// var_dump($gelombangPendaftaran);
+// die();
 
 use backend\models\KodeUjian;
 use yii\helpers\Html;
@@ -42,9 +44,9 @@ $this->registerJs($js);
             <thead>
                 <tr>
                     <th>No</th>
-                    <th>Kode Ujian</th>
-                    <th>Jenis Ujian</th>
                     <th>Gelombang Pendaftaran</th>
+                    <th>Jenis Ujian</th>
+                    <th>Kode Ujian</th>
                     <th>Username</th>
                     <th>Action</th>
                 </tr>
@@ -53,8 +55,8 @@ $this->registerJs($js);
                 <?php foreach ($dataProvider->getModels() as $index => $model) : ?>
                     <tr>
                         <td><?= $index + 1 ?></td>
-                        <td><?= Html::encode($model->gelombang_pendaftaran_id) ?></td>
-                        <td><?= Html::encode($model->jenis_test_id) ?></td>
+                        <td> <?= $model->gelombangPendaftaran ? Html::encode($model->gelombangPendaftaran->desc) : 'Data tidak tersedia' ?></td>
+                        <td><?= Html::encode($model->jenisTest->nama) ?></td>
                         <td><?= Html::encode($model->kode_ujian) ?></td>
                         <td><?= Html::encode($model->username) ?></td>
                         <td>
