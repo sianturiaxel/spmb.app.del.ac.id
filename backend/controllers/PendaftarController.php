@@ -2,13 +2,24 @@
 
 namespace backend\controllers;
 
+use backend\models\Agama;
 use backend\models\JalurPendaftaran;
 use backend\models\Pendaftar;
 use backend\models\PilihanJurusan;
 use backend\models\CalonMahasiswa;
 use backend\models\GelombangPendaftaran;
+use backend\models\JenisKelamin;
+use backend\models\SekolahDapodik;
 use backend\models\Jurusan;
+use backend\models\Kabupaten;
+use backend\models\Kecamatan;
 use backend\models\KodeUjian;
+use backend\models\Provinsi;
+use backend\models\JenjangPendidikan;
+use backend\models\KemampuanBahasa;
+use backend\models\MetodePembayaran;
+use backend\models\Pekerjaan;
+use backend\models\StatusPendaftaran;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -18,8 +29,13 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use yii\web\UploadedFile;
+use yii\base\Security;
+use yii\base\InvalidParamException;
+use yii\db\Exception;
 use yii\helpers\Json;
 use yii\web\Response;
+
 
 use yii;
 
@@ -48,51 +64,105 @@ class PendaftarController extends Controller
             ]
         );
     }
+    private function encryptId($id)
+    {
+        $security = new Security();
+        $secretKey = 'YourComplexSecretKey123!';
+        return base64_encode($security->encryptByPassword($id, $secretKey));
+    }
+
+    public function getEncryptedIdCached($pendaftar_id)
+    {
+        $cacheKey = 'encrypted_id_' . $pendaftar_id;
+        $encrypted_id = Yii::$app->cache->get($cacheKey);
+
+        if ($encrypted_id === false) {
+            $encrypted_id = $this->encryptId($pendaftar_id);
+            Yii::$app->cache->set($cacheKey, $encrypted_id, 3600);
+        }
+
+        return $encrypted_id;
+    }
+
+    private function decryptId($encrypted_id)
+    {
+        $security = new Security();
+        $secretKey = 'YourComplexSecretKey123!';
+        try {
+            $id = $security->decryptByPassword(base64_decode($encrypted_id), $secretKey);
+            return $id;
+        } catch (\yii\base\InvalidParamException $e) {
+            Yii::error("Dekripsi ID gagal: " . $e->getMessage());
+            return null;
+        }
+    }
+
     public function actionDataForDatatables()
     {
         $draw = Yii::$app->request->get('draw');
         $start = Yii::$app->request->get('start');
         $length = Yii::$app->request->get('length');
         $search = Yii::$app->request->get('search', null);
+        $cacheKeyTotalRecords = 'total_records_key';
+        $cacheKeyTotalDisplayRecords = 'total_display_records_key_' . serialize($_GET);
         $filterAdminstrasi = Yii::$app->request->get('status_adminstrasi_id');
         $filterAkademik = Yii::$app->request->get('status_test_akademik_id');
         $filterPsikotes = Yii::$app->request->get('status_test_psikologi_id');
         $filterKelulusan = Yii::$app->request->get('status_kelulusan');
-        $query = Pendaftar::find()->with(['sekolah', 'lokasi', 'kode']);
+        $query = Pendaftar::find()->with(['sekolahId', 'lokasi', 'kode']);
+        $query->orderBy(['pendaftar_id' => SORT_DESC]);
 
-        $totalRecords = $query->count();
-        if ($filterAdminstrasi !== null && $filterAdminstrasi !== '') {
-            $query->andWhere(['status_adminstrasi_id' => $filterAdminstrasi]);
+        $totalRecords = Yii::$app->cache->get($cacheKeyTotalRecords);
+        $totalDisplayRecords = Yii::$app->cache->get($cacheKeyTotalDisplayRecords);
+
+        if ($totalRecords === false || $totalDisplayRecords === false) {
+            $query = Pendaftar::find()->with(['sekolahId', 'lokasi', 'kode']);
+            $query->orderBy(['pendaftar_id' => SORT_DESC]);
+            if ($filterAdminstrasi !== null && $filterAdminstrasi !== '') {
+                $query->andWhere(['status_adminstrasi_id' => $filterAdminstrasi]);
+            }
+            if ($filterAkademik !== null && $filterAkademik !== '') {
+                $query->andWhere(['status_test_akademik_id' => $filterAkademik]);
+            }
+            if ($filterPsikotes !== null && $filterPsikotes !== '') {
+                $query->andWhere(['status_test_psikologi_id' => $filterPsikotes]);
+            }
+            if (in_array($filterKelulusan, ['0', '1'])) {
+                $query->andWhere(['status_kelulusan' => $filterKelulusan]);
+            }
+            if (isset($_GET['status_wawancara_id']) && $_GET['status_wawancara_id'] != '') {
+                $query->andWhere(['status_wawancara_id' => $_GET['status_wawancara_id']]);
+            }
+            if (!empty($_GET['jalur_pendaftaran_id'])) {
+                $query->andWhere(['jalur_pendaftaran_id' => $_GET['jalur_pendaftaran_id']]);
+            }
+            if (!empty($_GET['gelombang_pendaftaran_id'])) {
+                $query->andWhere(['gelombang_pendaftaran_id' => $_GET['gelombang_pendaftaran_id']]);
+            }
+            if ($search && !empty($search['value'])) {
+                $query->andFilterWhere(['like', 'nama', $search['value']]);
+            }
+            if ($totalRecords === false) {
+                $totalRecords = $query->count();
+                Yii::$app->cache->set($cacheKeyTotalRecords, $totalRecords, 3600); // Cache selama 1 jam
+            }
+            if ($totalDisplayRecords === false) {
+                $totalDisplayRecords = $query->count();
+                Yii::$app->cache->set($cacheKeyTotalDisplayRecords, $totalDisplayRecords, 3600); // Cache selama 1 jam
+            }
         }
-        if ($filterAkademik !== null && $filterAkademik !== '') {
-            $query->andWhere(['status_test_akademik_id' => $filterAkademik]);
-        }
-        if ($filterPsikotes !== null && $filterPsikotes !== '') {
-            $query->andWhere(['status_test_psikologi_id' => $filterPsikotes]);
-        }
-        if (in_array($filterKelulusan, ['0', '1'])) {
-            $query->andWhere(['status_kelulusan' => $filterKelulusan]);
-        }
-        if (isset($_GET['status_wawancara_id']) && $_GET['status_wawancara_id'] != '') {
-            $query->andWhere(['status_wawancara_id' => $_GET['status_wawancara_id']]);
-        }
-        if (!empty($_GET['jalur_pendaftaran_id'])) {
-            $query->andWhere(['jalur_pendaftaran_id' => $_GET['jalur_pendaftaran_id']]);
-        }
-        if (!empty($_GET['gelombang_pendaftaran_id'])) {
-            $query->andWhere(['gelombang_pendaftaran_id' => $_GET['gelombang_pendaftaran_id']]);
-        }
-        if ($search && !empty($search['value'])) {
-            $query->andFilterWhere(['like', 'nama', $search['value']]);
-        }
-        $totalDisplayRecords = $query->count();
+
+
+
         $data = $query->offset($start)->limit($length)->all();
         $dataArray = [];
         $buttonKelulusanDiklik = Yii::$app->request->post('buttonKelulusanDiklik', true);
+        $no = $start + 1;
         foreach ($data as $pendaftar) {
-            $actionButtons = Html::a('<i class="fa fa-eye"></i>', ['view', 'pendaftar_id' => $pendaftar->pendaftar_id], ['class' => 'btn btn-primary btn-xs', 'title' => 'View'])
+            $encrypted_id = $this->getEncryptedIdCached($pendaftar->pendaftar_id);
+            $actionButtons = Html::a('<i class="fa fa-eye"></i>', ['view', 'pendaftar_id' => $encrypted_id], ['class' => 'btn btn-primary btn-xs', 'title' => 'View'])
                 . ' ' .
-                Html::a('<i class="fas fa-edit"></i>', ['update', 'pendaftar_id' => $pendaftar->pendaftar_id], ['class' => 'btn btn-info btn-xs', 'title' => 'Update']);
+                Html::a('<i class="fas fa-edit"></i>', ['update', 'pendaftar_id' => $encrypted_id], ['class' => 'btn btn-info btn-xs', 'title' => 'Update']);
 
             $lulusDiPilihanJurusan = PilihanJurusan::find()
                 ->where(['pendaftar_id' => $pendaftar->pendaftar_id, 'lulus' => 1])
@@ -121,15 +191,21 @@ class PendaftarController extends Controller
                     'data-pendaftar-id' => $pendaftar->pendaftar_id
                 ]);
             }
+
+
+
             $dataArray[] = [
-                'no' => $pendaftar->pendaftar_id,
+                'no' => $no++,
+                'pendaftar_id' => $this->getEncryptedIdCached($pendaftar->pendaftar_id),
                 'no_pendaftaran' => $pendaftar->prefix_kode_pendaftaran . $pendaftar->no_pendaftaran,
                 'nama_pendaftar' => $pendaftar->nama,
-                'nama_sekolah' => $pendaftar->sekolah ? $pendaftar->sekolah->nama : 'Tidak ditemukan',
+                'nama_sekolah' => $pendaftar->sekolahId ? $pendaftar->sekolahId->sekolah : 'Tidak ditemukan',
                 'lokasi_ujian' => $pendaftar->lokasi ? $pendaftar->lokasi->alamat : 'Tidak ditemukan',
                 'kode_ujian' => $pendaftar->kode ? $pendaftar->kode->kode_ujian : 'Tidak ditemukan',
                 'action' => $actionButtons,
-                'checkbox' => '<input type="checkbox" name="selected[]" value="' . $pendaftar->pendaftar_id . '">',
+                'checkbox' => $pendaftar->status_kelulusan === '0'
+                    ? '<input type="checkbox" name="selected[]" value="' . $pendaftar->pendaftar_id . '">'
+                    : '',
             ];
         }
 
@@ -168,85 +244,193 @@ class PendaftarController extends Controller
         return $this->redirect(['index']);
     }
 
-    public function actionKodeUjian()
+    public function actionKodeUjianWawancara()
     {
-        Yii::info('Data POST: ' . print_r(Yii::$app->request->post(), true));
         if (!Yii::$app->request->isPost) {
             throw new BadRequestHttpException('Invalid request');
         }
 
-        $selectedIds = Yii::$app->request->post('ids', []);
-        Yii::info("IDs yang diterima untuk update: " . print_r($selectedIds, true));
-
-        if (empty($selectedIds)) {
+        $encryptedIds = Yii::$app->request->post('ids', []);
+        if (empty($encryptedIds)) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             return ['success' => false, 'message' => 'Tidak ada pendaftar yang dipilih.'];
         }
 
-        $affectedRows = 0;
+        $decryptedIds = array_map(function ($encrypted_id) {
+            return $this->decryptId($encrypted_id);
+        }, $encryptedIds);
 
-        foreach ($selectedIds as $idPendaftar) {
-            Yii::info("Memproses pendaftar dengan ID: $idPendaftar");
+        $decryptedIds = array_filter($decryptedIds, function ($id) {
+            return $id !== null;
+        });
 
-            $kodeUjian = KodeUjian::find()
-                ->where(['NOT IN', 'kode_ujian_id', Pendaftar::find()->select('kode_ujian_id')->andWhere(['is not', 'kode_ujian_id', null])->column()])
-                ->one();
+        if (empty($decryptedIds)) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return ['success' => false, 'message' => 'Dekripsi ID gagal.'];
+        }
 
-            if ($kodeUjian) {
-                Yii::info("Kode Ujian ditemukan: " . print_r($kodeUjian->attributes, true));
+        $transaction = Yii::$app->db->beginTransaction();
 
-                $pendaftar = Pendaftar::findOne($idPendaftar);
-                if ($pendaftar) {
-                    Yii::info("Pendaftar ditemukan: " . print_r($pendaftar->attributes, true));
-                    $pendaftar->kode_ujian_id = $kodeUjian->kode_ujian_id;
+        try {
+            $affectedRows = 0;
+            $tidakTersediaCount = 0;
 
-                    if ($pendaftar->save()) {
-                        $affectedRows++;
-                        Yii::info("Kode Ujian berhasil di-assign ke pendaftar: $idPendaftar");
+            foreach ($decryptedIds as $id) {
+                $pendaftar = Pendaftar::findOne(['pendaftar_id' => $id]);
+                if ($pendaftar !== null) {
+                    $kodeUjianId = $this->pilihKodeUjianWawancara($pendaftar->gelombang_pendaftaran_id);
+                    if ($kodeUjianId !== null) {
+                        $pendaftar->kode_ujian_id = $kodeUjianId;
+                        if ($pendaftar->save()) {
+                            $affectedRows++;
+                        }
                     } else {
-                        Yii::error("Gagal menyimpan pendaftar: $idPendaftar. Errors: " . print_r($pendaftar->getErrors(), true));
+                        $tidakTersediaCount++;
                     }
-                } else {
-                    Yii::error("Pendaftar tidak ditemukan dengan ID: $idPendaftar");
                 }
-            } else {
-                Yii::info("Tidak ada kode ujian yang tersedia untuk diassign.");
-                break; // Keluar dari loop jika tidak ada kode ujian yang tersedia
             }
+
+            $transaction->commit();
+
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+            if ($affectedRows === 0 && $tidakTersediaCount > 0) {
+                return ['success' => false, 'message' => "Tidak ada kode ujian yang tersedia untuk {$tidakTersediaCount} pendaftar."];
+            }
+
+            $message = "Kode Ujian berhasil diassign. Terpengaruh: {$affectedRows} baris.";
+            if ($tidakTersediaCount > 0) {
+                $message .= " Tidak ada kode ujian yang tersedia untuk {$tidakTersediaCount} pendaftar.";
+            }
+
+            return ['success' => true, 'message' => $message];
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            return ['success' => false, 'message' => 'Terjadi kesalahan: ' . $e->getMessage()];
+        }
+    }
+
+    public function actionKodeUjianPsikotes()
+    {
+        if (!Yii::$app->request->isPost) {
+            throw new BadRequestHttpException('Invalid request');
         }
 
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        if ($affectedRows > 0) {
-            return ['success' => true, 'message' => "Kode Ujian berhasil diassign. Terpengaruh: {$affectedRows} baris."];
-        } else {
-            return ['success' => false, 'message' => 'Tidak ada kode ujian yang tersedia untuk diassign.'];
+        $encryptedIds = Yii::$app->request->post('ids', []);
+        if (empty($encryptedIds)) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return ['success' => false, 'message' => 'Tidak ada pendaftar yang dipilih.'];
         }
+
+        $decryptedIds = array_map(function ($encrypted_id) {
+            return $this->decryptId($encrypted_id);
+        }, $encryptedIds);
+
+        $decryptedIds = array_filter($decryptedIds, function ($id) {
+            return $id !== null;
+        });
+
+        if (empty($decryptedIds)) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return ['success' => false, 'message' => 'Dekripsi ID gagal.'];
+        }
+
+        $transaction = Yii::$app->db->beginTransaction();
+
+        try {
+            $affectedRows = 0;
+            $tidakTersediaCount = 0;
+
+            foreach ($decryptedIds as $id) {
+                $pendaftar = Pendaftar::findOne(['pendaftar_id' => $id]);
+                if ($pendaftar !== null) {
+                    $kodeUjianId = $this->pilihKodeUjianPsikotes($pendaftar->gelombang_pendaftaran_id);
+                    if ($kodeUjianId !== null) {
+                        $pendaftar->kode_ujian_id = $kodeUjianId;
+                        if ($pendaftar->save()) {
+                            $affectedRows++;
+                        }
+                    } else {
+                        $tidakTersediaCount++;
+                    }
+                }
+            }
+
+            $transaction->commit();
+
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+            if ($affectedRows === 0 && $tidakTersediaCount > 0) {
+                return ['success' => false, 'message' => "Tidak ada kode ujian yang tersedia untuk {$tidakTersediaCount} pendaftar."];
+            }
+
+            $message = "Kode Ujian berhasil diassign. Terpengaruh: {$affectedRows} baris.";
+            if ($tidakTersediaCount > 0) {
+                $message .= " Tidak ada kode ujian yang tersedia untuk {$tidakTersediaCount} pendaftar.";
+            }
+
+            return ['success' => true, 'message' => $message];
+        } catch (\Exception $e) {
+            $transaction->rollBack();
+            return ['success' => false, 'message' => 'Terjadi kesalahan: ' . $e->getMessage()];
+        }
+    }
+
+    private function pilihKodeUjianWawancara($gelombangPendaftaranId)
+    {
+        $kodeUjianTersedia = KodeUjian::find()
+            ->select(['kode_ujian_id'])
+            ->where(['jenis_test_id' => 1, 'gelombang_pendaftaran_id' => $gelombangPendaftaranId, 'status' => 1])
+            ->andWhere(['NOT IN', 'kode_ujian_id', Pendaftar::find()->select('kode_ujian_id')->column()])
+            ->orderBy(['kode_ujian_id' => SORT_ASC])
+            ->one();
+
+        return $kodeUjianTersedia ? $kodeUjianTersedia->kode_ujian_id : null;
+    }
+    private function pilihKodeUjianPsikotes($gelombangPendaftaranId)
+    {
+        $kodeUjianTersedia = KodeUjian::find()
+            ->select(['kode_ujian_id'])
+            ->where(['jenis_test_id' => 2, 'gelombang_pendaftaran_id' => $gelombangPendaftaranId, 'status' => 1])
+            ->andWhere(['NOT IN', 'kode_ujian_id', Pendaftar::find()->select('kode_ujian_id')->column()])
+            ->orderBy(['kode_ujian_id' => SORT_ASC])
+            ->one();
+
+        return $kodeUjianTersedia ? $kodeUjianTersedia->kode_ujian_id : null;
     }
 
 
 
-
-
     public function actionLulusAdminstrasi()
-
     {
         Yii::info('Data POST: ' . print_r(Yii::$app->request->post(), true));
         if (!Yii::$app->request->isPost) {
             throw new BadRequestHttpException('Invalid request');
         }
 
-        $selectedIds = Yii::$app->request->post('ids', []);
-        Yii::info("IDs yang diterima untuk update: " . print_r($selectedIds, true));
+        $encryptedIds = Yii::$app->request->post('ids', []);
+        Yii::info("IDs yang terenkripsi diterima untuk update: " . print_r($encryptedIds, true));
 
-        if (!empty($selectedIds)) {
-            $affectedRows = Pendaftar::updateAll(['status_adminstrasi_id' => 1], ['pendaftar_id' => $selectedIds]);
+        $decryptedIds = array_map(function ($encrypted_id) {
+            return $this->decryptId($encrypted_id);
+        }, $encryptedIds);
 
+        $decryptedIds = array_filter($decryptedIds, function ($id) {
+            return $id !== null;
+        });
+
+        if (empty($decryptedIds)) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return ['success' => true, 'message' => "Status berhasil diupdate. Terpengaruh: {$affectedRows} baris. Kode Ujian diperbarui."];
-        } else {
-            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return ['success' => false, 'message' => 'Tidak ada pendaftar yang dipilih.'];
+            return ['success' => false, 'message' => 'Tidak ada ID yang valid untuk pemrosesan.'];
         }
+
+        $affectedRows = Pendaftar::updateAll(['status_adminstrasi_id' => 1], ['pendaftar_id' => $decryptedIds]);
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return [
+            'success' => true,
+            'message' => "Status berhasil diupdate. Terpengaruh: {$affectedRows} baris."
+        ];
     }
 
     public function actionLulusAkademik()
@@ -255,83 +439,126 @@ class PendaftarController extends Controller
             throw new BadRequestHttpException('Invalid request');
         }
 
-        $selectedIds = Yii::$app->request->post('ids', []);
-        Yii::info("IDs yang diterima untuk update: " . print_r($selectedIds, true));
+        $encryptedIds = Yii::$app->request->post('ids', []);
+        Yii::info("IDs yang terenkripsi diterima untuk update: " . print_r($encryptedIds, true));
 
-        if (!empty($selectedIds)) {
-            $affectedRows = Pendaftar::updateAll(['status_test_akademik_id' => 1], ['pendaftar_id' => $selectedIds]);
+        $decryptedIds = array_map(function ($encrypted_id) {
+            return $this->decryptId($encrypted_id);
+        }, $encryptedIds);
 
+        $decryptedIds = array_filter($decryptedIds, function ($id) {
+            return $id !== null;
+        });
+
+        if (empty($decryptedIds)) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return ['success' => true, 'message' => "Status berhasil diupdate. Terpengaruh: {$affectedRows} baris. Kode Ujian diperbarui."];
-        } else {
-            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return ['success' => false, 'message' => 'Tidak ada pendaftar yang dipilih.'];
+            return ['success' => false, 'message' => 'Tidak ada ID yang valid untuk pemrosesan.'];
         }
-    }
 
+        $affectedRows = Pendaftar::updateAll(['status_test_akademik_id' => 1], ['pendaftar_id' => $decryptedIds]);
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return [
+            'success' => true,
+            'message' => "Status berhasil diupdate. Terpengaruh: {$affectedRows} baris."
+        ];
+    }
 
     public function actionLulusPsikotes()
     {
+        Yii::info('Data POST: ' . print_r(Yii::$app->request->post(), true));
         if (!Yii::$app->request->isPost) {
             throw new BadRequestHttpException('Invalid request');
         }
 
-        $selectedIds = Yii::$app->request->post('ids', []);
-        Yii::info("IDs yang diterima untuk update: " . print_r($selectedIds, true));
+        $encryptedIds = Yii::$app->request->post('ids', []);
+        Yii::info("IDs yang terenkripsi diterima untuk update: " . print_r($encryptedIds, true));
 
-        if (!empty($selectedIds)) {
-            $affectedRows = Pendaftar::updateAll(['status_test_psikologi_id' => 1], ['pendaftar_id' => $selectedIds]);
+        $decryptedIds = array_map(function ($encrypted_id) {
+            return $this->decryptId($encrypted_id);
+        }, $encryptedIds);
 
+        $decryptedIds = array_filter($decryptedIds, function ($id) {
+            return $id !== null;
+        });
+
+        if (empty($decryptedIds)) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return ['success' => true, 'message' => "Status berhasil diupdate. Terpengaruh: {$affectedRows} baris. Kode Ujian diperbarui."];
-        } else {
-            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return ['success' => false, 'message' => 'Tidak ada pendaftar yang dipilih.'];
+            return ['success' => false, 'message' => 'Tidak ada ID yang valid untuk pemrosesan.'];
         }
+
+        $affectedRows = Pendaftar::updateAll(['status_test_psikologi_id' => 1], ['pendaftar_id' => $decryptedIds]);
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return [
+            'success' => true,
+            'message' => "Status berhasil diupdate. Terpengaruh: {$affectedRows} baris."
+        ];
     }
 
     public function actionLulusWawancara()
     {
-
+        Yii::info('Data POST: ' . print_r(Yii::$app->request->post(), true));
         if (!Yii::$app->request->isPost) {
             throw new BadRequestHttpException('Invalid request');
         }
 
-        $selectedIds = Yii::$app->request->post('ids', []);
-        Yii::info("IDs yang diterima untuk update: " . print_r($selectedIds, true));
+        $encryptedIds = Yii::$app->request->post('ids', []);
+        Yii::info("IDs yang terenkripsi diterima untuk update: " . print_r($encryptedIds, true));
 
-        if (!empty($selectedIds)) {
-            $affectedRows = Pendaftar::updateAll(['status_wawancara_id' => 1], ['pendaftar_id' => $selectedIds]);
+        $decryptedIds = array_map(function ($encrypted_id) {
+            return $this->decryptId($encrypted_id);
+        }, $encryptedIds);
+
+        $decryptedIds = array_filter($decryptedIds, function ($id) {
+            return $id !== null;
+        });
+
+        if (empty($decryptedIds)) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return ['success' => true, 'message' => "Status berhasil diupdate. Terpengaruh: {$affectedRows} baris. Kode Ujian diperbarui."];
-        } else {
-            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return ['success' => false, 'message' => 'Tidak ada pendaftar yang dipilih.'];
+            return ['success' => false, 'message' => 'Tidak ada ID yang valid untuk pemrosesan.'];
         }
+
+        $affectedRows = Pendaftar::updateAll(['status_wawancara_id' => 1], ['pendaftar_id' => $decryptedIds]);
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return [
+            'success' => true,
+            'message' => "Status berhasil diupdate. Terpengaruh: {$affectedRows} baris."
+        ];
     }
 
     public function actionKelulusan()
     {
-
+        Yii::info('Data POST: ' . print_r(Yii::$app->request->post(), true));
         if (!Yii::$app->request->isPost) {
             throw new BadRequestHttpException('Invalid request');
         }
 
-        $selectedIds = Yii::$app->request->post('ids', []);
-        Yii::info("IDs yang diterima untuk update: " . print_r($selectedIds, true));
+        $encryptedIds = Yii::$app->request->post('ids', []);
+        Yii::info("IDs yang terenkripsi diterima untuk update: " . print_r($encryptedIds, true));
 
+        $decryptedIds = array_map(function ($encrypted_id) {
+            return $this->decryptId($encrypted_id);
+        }, $encryptedIds);
 
-        if (!empty($selectedIds)) {
-            $affectedRows = Pendaftar::updateAll(['status_kelulusan' => 1], ['pendaftar_id' => $selectedIds]);
+        $decryptedIds = array_filter($decryptedIds, function ($id) {
+            return $id !== null;
+        });
+
+        if (empty($decryptedIds)) {
             Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return ['success' => true, 'message' => "Status berhasil diupdate. Terpengaruh: {$affectedRows} baris. Kode Ujian diperbarui."];
-        } else {
-            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-            return ['success' => false, 'message' => 'Tidak ada pendaftar yang dipilih.'];
+            return ['success' => false, 'message' => 'Tidak ada ID yang valid untuk pemrosesan.'];
         }
+
+        $affectedRows = Pendaftar::updateAll(['status_kelulusan' => 1], ['pendaftar_id' => $decryptedIds]);
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return [
+            'success' => true,
+            'message' => "Status berhasil diupdate. Terpengaruh: {$affectedRows} baris."
+        ];
     }
-
-
 
     public function actionExportExcel()
     {
@@ -436,7 +663,9 @@ class PendaftarController extends Controller
     public function actionIndex()
     {
         $jalurPendaftaran = JalurPendaftaran::find()->all();
-        $gelombangPendaftaran = GelombangPendaftaran::find()->all();
+        $gelombangPendaftaran = GelombangPendaftaran::find()
+            ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
         $dataProvider = new ActiveDataProvider([
             'query' => Pendaftar::find(),
 
@@ -448,17 +677,30 @@ class PendaftarController extends Controller
         ]);
     }
 
-    /**
-     * Displays a single Pendaftar model.
-     * @param int $pendaftar_id Pendaftar ID
-     * @return string
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionView($pendaftar_id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($pendaftar_id),
-        ]);
+
+        $security = new Security();
+        $secretKey = 'YourComplexSecretKey123!';
+
+        try {
+            $pendaftar_id = $security->decryptByPassword(base64_decode($pendaftar_id), $secretKey);
+
+
+            if ($pendaftar_id) {
+                $model = Pendaftar::findOne($pendaftar_id);
+                if ($model !== null) {
+                    return $this->render('view', ['model' => $model]);
+                } else {
+                    throw new NotFoundHttpException('Pendaftar tidak ditemukan.');
+                }
+            } else {
+                throw new InvalidParamException('Parameter tidak valid.');
+            }
+        } catch (\Exception $e) {
+            // Tangani kasus umum jika terjadi kesalahan dalam dekripsi
+            throw new InvalidParamException('Terjadi kesalahan dalam proses dekripsi.');
+        }
     }
     /**
      * Creates a new Pendaftar model.
@@ -482,24 +724,117 @@ class PendaftarController extends Controller
         ]);
     }
 
-    /**
-     * Updates an existing Pendaftar model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param int $pendaftar_id Pendaftar ID
-     * @return string|\yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
+
     public function actionUpdate($pendaftar_id)
     {
-        $model = $this->findModel($pendaftar_id);
+        $security = new Security();
+        $secretKey = 'YourComplexSecretKey123!';
+        $gelombangPendaftaran = GelombangPendaftaran::find()
+            ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
+        $jenisKelamin = JenisKelamin::find()->asArray()->all();
+        $agama = Agama::find()->asArray()->all();
+        $kecamatan = Kecamatan::find()->asArray()->all();
+        $kabupaten = Kabupaten::find()->asArray()->all();
+        $provinsi = Provinsi::find()->asArray()->all();
+        $kecamatanOrangtua = Kecamatan::find()->asArray()->all();
+        $kabupatenOrangtua = Kabupaten::find()->asArray()->all();
+        $provinsiOrangtua = Provinsi::find()->asArray()->all();
+        $pendidikanAyah = JenjangPendidikan::find()->asArray()->all();
+        $pendidikanIbu = JenjangPendidikan::find()->asArray()->all();
+        $pekerjaanAyah = Pekerjaan::find()->asArray()->all();
+        $pekerjaanIbu = Pekerjaan::find()->asArray()->all();
+        $sekolahId = SekolahDapodik::find()->asArray()->all();
+        $kemampuanBahasaInggris = KemampuanBahasa::find()->asArray()->all();
+        $kemampuanBahasaAsing = KemampuanBahasa::find()->asArray()->all();
+        $metodePembayaran = MetodePembayaran::find()->asArray()->all();
+        $statusPendaftaran = StatusPendaftaran::find()->asArray()->all();
+        // var_dump($kecamatan);
+        // die();
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'pendaftar_id' => $model->pendaftar_id]);
+        try {
+            $pendaftar_id = $security->decryptByPassword(base64_decode($pendaftar_id), $secretKey);
+            $model = $this->findModel($pendaftar_id);
+
+            if ($this->request->isPost) {
+                Yii::info("Data POST: " . print_r(Yii::$app->request->post(), true), __METHOD__);
+
+                if ($model->load(Yii::$app->request->post())) {
+                    $model->fileFoto = UploadedFile::getInstance($model, 'fileFoto');
+                    $model->fileNilaiRapor = UploadedFile::getInstance($model, 'fileNilaiRapor');
+                    $model->fileSertifikat = UploadedFile::getInstance($model, 'fileSertifikat');
+                    $model->fileFormulir = UploadedFile::getInstance($model, 'fileFormulir');
+                    $model->fileRekomendasi = UploadedFile::getInstance($model, 'fileRekomendasi');
+                    $isUploadSuccessful = true;
+
+                    if ($model->fileFoto && !$model->fileFoto->getHasError()) {
+                        $filePath = Yii::getAlias('@webroot') . '/uploads/' . $model->fileFoto->baseName . '.' . $model->fileFoto->extension;
+                        $isUploadSuccessful &= $model->fileFoto->saveAs($filePath);
+                        $model->pas_foto = $model->fileFoto->baseName . '.' . $model->fileFoto->extension;
+                    }
+
+                    if ($model->fileNilaiRapor && !$model->fileNilaiRapor->getHasError()) {
+                        $filePath = Yii::getAlias('@webroot') . '/uploads/' . $model->fileNilaiRapor->baseName . '.' . $model->fileNilaiRapor->extension;
+                        $isUploadSuccessful &= $model->fileNilaiRapor->saveAs($filePath);
+                        $model->file_nilai_rapor = $model->fileNilaiRapor->baseName . '.' . $model->fileNilaiRapor->extension;
+                    }
+                    if ($model->fileSertifikat && !$model->fileSertifikat->getHasError()) {
+                        $filePath = Yii::getAlias('@webroot') . '/uploads/' . $model->fileSertifikat->baseName . '.' . $model->fileSertifikat->extension;
+                        $isUploadSuccessful &= $model->fileSertifikat->saveAs($filePath);
+                        $model->file_sertifikat = $model->fileSertifikat->baseName . '.' . $model->fileSertifikat->extension;
+                    }
+                    if ($model->fileFormulir && !$model->fileFormulir->getHasError()) {
+                        $filePath = Yii::getAlias('@webroot') . '/uploads/' . $model->fileFormulir->baseName . '.' . $model->fileFormulir->extension;
+                        $isUploadSuccessful &= $model->fileFormulir->saveAs($filePath);
+                        $model->file_formulir = $model->fileFormulir->baseName . '.' . $model->fileFormulir->extension;
+                    }
+                    if ($model->fileRekomendasi && !$model->fileRekomendasi->getHasError()) {
+                        $filePath = Yii::getAlias('@webroot') . '/uploads/' . $model->fileRekomendasi->baseName . '.' . $model->fileRekomendasi->extension;
+                        $isUploadSuccessful &= $model->fileRekomendasi->saveAs($filePath);
+                        $model->file_rekomendasi = $model->fileRekomendasi->baseName . '.' . $model->fileRekomendasi->extension;
+                    }
+                }
+
+                if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                    $encrypted_id = base64_encode($security->encryptByPassword($model->pendaftar_id, $secretKey));
+                    return $this->redirect(['index', 'pendaftar_id' => $encrypted_id]);
+                } else {
+                    Yii::error("Error saat menyimpan: " . print_r($model->getErrors(), true), __METHOD__);
+                }
+            }
+
+
+            return $this->render('update', [
+                'model' => $model,
+                'gelombangPendaftaran' => $gelombangPendaftaran,
+                'jenisKelamin' => $jenisKelamin,
+                'agama' => $agama,
+                'kecamatan' => $kecamatan,
+                'kabupaten' => $kabupaten,
+                'provinsi' => $provinsi,
+                'kecamatanOrangtua' => $kecamatanOrangtua,
+                'kabupatenOrangtua' => $kabupatenOrangtua,
+                'provinsiOrangtua' => $provinsiOrangtua,
+                'pendidikanAyah' => $pendidikanAyah,
+                'pendidikanIbu' => $pendidikanIbu,
+                'pekerjaanAyah' => $pekerjaanAyah,
+                'pekerjaanIbu' => $pekerjaanIbu,
+                'sekolahId' => $sekolahId,
+                'kemampuanBahasaInggris' => $kemampuanBahasaInggris,
+                'kemampuanBahasaAsing' => $kemampuanBahasaAsing,
+                'metodePembayaran' => $metodePembayaran,
+                'statusPendaftaran' => $statusPendaftaran,
+
+
+            ]);
+        } catch (\Exception $e) {
+            Yii::error("Exception: " . $e->getMessage(), __METHOD__);
+            throw new InvalidParamException('Parameter tidak valid: ' . $e->getMessage());
         }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
+    }
+    private function convertRupiahToInt($rupiah)
+    {
+        return (int) str_replace(['Rp', '.', ','], '', $rupiah);
     }
 
     public function actionGetPilihanJurusan($pendaftar_id)
@@ -526,6 +861,7 @@ class PendaftarController extends Controller
 
         return ['pilihanJurusan' => $responseData];
     }
+
     public function actionUpdateLulus()
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -558,7 +894,6 @@ class PendaftarController extends Controller
         return ['success' => false, 'error' => 'Pilihan Jurusan tidak ditemukan'];
     }
 
-
     public function actionLulusJurusan($pendaftar_id)
     {
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -584,7 +919,6 @@ class PendaftarController extends Controller
 
         return ['pilihanJurusan' => $responseData];
     }
-
 
     public function actionDownloadKartu($pendaftar_id, $print = null)
     {
@@ -619,14 +953,6 @@ class PendaftarController extends Controller
         ]);
     }
 
-
-    /**
-     * Deletes an existing Pendaftar model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param int $pendaftar_id Pendaftar ID
-     * @return \yii\web\Response
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     public function actionDelete($pendaftar_id)
     {
         $this->findModel($pendaftar_id)->delete();
@@ -634,19 +960,25 @@ class PendaftarController extends Controller
         return $this->redirect(['index']);
     }
 
-    /**
-     * Finds the Pendaftar model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param int $pendaftar_id Pendaftar ID
-     * @return Pendaftar the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
     protected function findModel($pendaftar_id)
     {
-        if (($model = Pendaftar::findOne(['pendaftar_id' => $pendaftar_id])) !== null) {
+        if (($model = Pendaftar::findOne($pendaftar_id)) !== null) {
             return $model;
+        } else {
+            Yii::error("Model tidak ditemukan dengan ID: $pendaftar_id", __METHOD__);
+            throw new NotFoundHttpException('Model tidak ditemukan.');
         }
+    }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+        if ($insert) {
+            $gelombangPendaftaran = GelombangPendaftaran::findOne($this->gelombang_pendaftaran_id);
+            if ($gelombangPendaftaran !== null) {
+                $gelombangPendaftaran->updateCounters(['counter' => 1]);
+            }
+        }
     }
 }

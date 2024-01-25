@@ -7,6 +7,8 @@ use backend\models\PaymentDetailSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Html;
+use yii;
 
 /**
  * PaymentDetailController implements the CRUD actions for PaymentDetail model.
@@ -30,6 +32,50 @@ class PaymentDetailController extends Controller
             ]
         );
     }
+
+
+    public function actionDataForDatatables()
+    {
+        $draw = Yii::$app->request->get('draw');
+        $start = Yii::$app->request->get('start');
+        $length = Yii::$app->request->get('length');
+        $query = PaymentDetail::find();
+        $totalRecords = $query->count();
+        if (!empty($search)) {
+            $query->andFilterWhere(['like', 'nama', $search]);
+        }
+        $totalDisplayRecords = $query->count();
+        $data = $query->offset($start)->limit($length)->all();
+        $dataArray = [];
+
+        foreach ($data as $payment) {
+            $dataArray[] = [
+                'no' => $payment->payment_detail_id,
+                'calon_mahasiswa' => $payment->calonMahasiswa ? $payment->calonMahasiswa->nama : 'Tidak ditemukan',
+                'total_ammount' => $payment->total_amount,
+                'fee_name' => $payment->fee_name,
+                'action' =>
+                Html::a('<i class="fa fa-eye"></i>', ['view', 'payment_detail_id' => $payment->payment_detail_id], ['class' => 'btn btn-primary btn-xs', 'title' => 'View'])
+                    . ' ' .
+                    Html::a('<i class="fas fa-edit"></i>', ['update', 'payment_detail_id' => $payment->payment_detail_id], ['class' => 'btn btn-info btn-xs', 'title' => 'Update'])
+                    . ' ' .
+                    Html::a('<i class="fa fa-trash"></i>', ['delete', 'payment_detail_id' => $payment->payment_detail_id], ['class' => 'btn btn-danger btn-xs', 'title' => 'Delete', 'data' => [
+                        'confirm' => 'Are you sure you want to delete this item?',
+                        'method' => 'post',
+                    ]]),
+            ];
+        }
+        $response = [
+            "draw" => intval($draw),
+            "recordsTotal" => $totalRecords,
+            "recordsFiltered" => $totalDisplayRecords,
+            "data" => $dataArray
+        ];
+
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        return $response;
+    }
+
 
     /**
      * Lists all PaymentDetail models.

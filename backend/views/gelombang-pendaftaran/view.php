@@ -29,8 +29,20 @@ $this->params['breadcrumbs'][] = $this->title;
                         'berakhir:date',
                         'prefix_kode_pendaftaran',
                         'counter',
-                        'is_online',
-                        'is_bayar',
+                        [
+                            'attribute' => 'is_online',
+                            'value' => function ($model) {
+                                return $model->is_online == 1 ? 'Online' : 'Onsite';
+                            },
+                            'format' => 'text',
+                        ],
+                        [
+                            'attribute' => 'is_bayar',
+                            'value' => function ($model) {
+                                return $model->is_bayar == 1 ? 'Bayar' : 'Tidak';
+                            },
+                            'format' => 'text',
+                        ],
                         [
                             'attribute' => 'jenis_ujian_id',
                             'value' => function ($model) {
@@ -43,6 +55,20 @@ $this->params['breadcrumbs'][] = $this->title;
                         'tanggal_ujian:date',
                         'jam_mulai',
                         'jam_selesai',
+                        'created_at:datetime',
+                        [
+                            'attribute' => 'created_by',
+                            'value' => function ($model) {
+                                return $model->creator ? $model->creator->username : '-';
+                            },
+                        ],
+                        'updated_at:datetime',
+                        [
+                            'attribute' => 'updated_by',
+                            'value' => function ($model) {
+                                return $model->updater ? $model->updater->username : '-';
+                            },
+                        ],
                     ],
                 ]) ?>
             </div>

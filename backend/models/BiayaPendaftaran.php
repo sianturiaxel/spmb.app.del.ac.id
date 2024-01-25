@@ -29,6 +29,7 @@ class BiayaPendaftaran extends \yii\db\ActiveRecord
         return [
             [['gelombang_pendaftaran_id'], 'required'],
             [['gelombang_pendaftaran_id'], 'integer'],
+            [['fee_id'], 'integer'],
             [['biaya_daftar'], 'number'],
         ];
     }
@@ -41,6 +42,7 @@ class BiayaPendaftaran extends \yii\db\ActiveRecord
         return [
             'biaya_pendaftaran_id' => 'Biaya Pendaftaran ID',
             'gelombang_pendaftaran_id' => 'Gelombang Pendaftaran ID',
+            'fee_id' => 'Fee ID',
             'biaya_daftar' => 'Biaya Daftar',
         ];
     }
@@ -48,5 +50,10 @@ class BiayaPendaftaran extends \yii\db\ActiveRecord
     public function getGelombang()
     {
         return $this->hasOne(GelombangPendaftaran::class, ['gelombang_pendaftaran_id' => 'gelombang_pendaftaran_id']);
+    }
+
+    public function getFincTFee()
+    {
+        return $this->hasOne(FincTFee::className(), ['fee_id' => 'fee_id']);
     }
 }

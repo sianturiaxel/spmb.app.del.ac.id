@@ -20,6 +20,8 @@ $pilihanJurusan             = Url::to(['pendaftar/get-pilihan-jurusan']);
 $updatePilihanJurusan       = Url::to(['pendaftar/update-lulus']);
 $LulusJurusan               = Url::to(['pendaftar/lulus-jurusan']);
 $kodeUjian                  = Url::to(['pendaftar/kode-ujian']);
+$kodeUjianWawancara         = Url::to(['pendaftar/kode-ujian-wawancara']);
+$kodeUjianPsikotes        = Url::to(['pendaftar/kode-ujian-psikotes']);
 $this->title = 'Pendaftar  SPMB IT Del';
 $dataProvider->pagination = false;
 
@@ -29,6 +31,7 @@ $(document).ready(function() {
     let tombolKelulusanDiklik = false;
     
     var table = $('#datatables').DataTable({
+        'scrollX'   : true,
         'processing': true,
         'serverSide': true,
         'ajax': {
@@ -44,6 +47,7 @@ $(document).ready(function() {
                 }
             },
         },
+        
         'columns': [
             { 'data': 'no' }, 
             { 'data': 'no_pendaftaran' },
@@ -53,12 +57,13 @@ $(document).ready(function() {
             { 'data': 'kode_ujian' },
             { 'data': 'action'},
             { 'data': null, 'defaultContent': '' }
+            
         ],
         'columnDefs': [
             {
                 'targets': 7, 
                 'render': function (data, type, row) {
-                    return '<input type="checkbox" class="pendaftar-checkbox" value="' + row.no + '">';
+                    return '<input type="checkbox" class="pendaftar-checkbox" value="' + row.pendaftar_id + '">';
                 },
 
                 'orderable': false,
@@ -78,7 +83,7 @@ $(document).ready(function() {
         'dom': "<'row'<'col-sm-12 col-md-4 toolbar'><'col-sm-12 col-md-8'f>>" +
                "<'row'<'col-sm-12'tr>>" +
                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
-    });
+    });    
     var showCheckbox = false;
     function toggleCheckboxDisplay(show) {
         if (show) {
@@ -96,26 +101,65 @@ $(document).ready(function() {
    
     $('#status-filter').hide();
     
-    $('#assignmentButton').on('click', function() {
-        // Menampilkan checkbox
+    $('#kodeWawancara').on('click', function() {
         toggleCheckboxDisplay(true);
 
         var selectedIds = $('.pendaftar-checkbox:checked').map(function() {
             return $(this).val();
         }).get();
 
-        console.log(selectedIds);
+        var gelombangPendaftaranId = $('#gelombang-pendaftaran-select').val(); 
+        $(this).html('<i class="fa fa-microphone"></i> Assign Kode Ujian'); 
+        
 
         if (selectedIds.length === 0) {
             alert('Silakan pilih minimal satu pendaftar.');
             return;
         }
 
+        console.log('checkbox:',selectedIds);
+        console.log('gelombang',gelombangPendaftaranId);
         $.ajax({
-            url: '$kodeUjian',
+            url: '$kodeUjianWawancara ',
             type: 'POST',
             data: {
                 ids: selectedIds,
+                gelombangPendaftaranId: gelombangPendaftaranId,
+                _csrf: yii.getCsrfToken()
+            },
+            success: function(response) {
+                alert(response.message);
+                table.ajax.reload();
+            },
+            error: function() {
+                alert('Terjadi kesalahan saat pengiriman data.');
+            }
+        });
+    });
+    $('#kodePsikotes').on('click', function() {
+        toggleCheckboxDisplay(true);
+
+        var selectedIds = $('.pendaftar-checkbox:checked').map(function() {
+            return $(this).val();
+        }).get();
+        
+        var gelombangPendaftaranId = $('#gelombang-pendaftaran-select').val(); 
+        $(this).html('<i class="fa fa-brain"></i> Assign Kode Ujian'); 
+        
+
+        if (selectedIds.length === 0) {
+            alert('Silakan pilih minimal satu pendaftar.');
+            return;
+        }
+
+        console.log('checkbox:',selectedIds);
+        console.log('gelombang',gelombangPendaftaranId);
+        $.ajax({
+            url: '$kodeUjianPsikotes ',
+            type: 'POST',
+            data: {
+                ids: selectedIds,
+                gelombangPendaftaranId: gelombangPendaftaranId,
                 _csrf: yii.getCsrfToken()
             },
             success: function(response) {
@@ -514,13 +558,11 @@ $(document).ready(function() {
         });
     }); 
     $(".select2").select2();
-        //Initialize Select2 Elements
         $(".select2bs4").select2({
           theme: "bootstrap4",
           
     });
     $(".selectjurusan").select2();
-        //Initialize Select2 Elements
         $(".select2bs4").select2({
           theme: "bootstrap4",
           
@@ -532,7 +574,6 @@ $(document).ready(function() {
 
     table.on('draw', function() {
         toggleCheckboxDisplay(showCheckbox);
-        //updateCheckboxVisibility();
 
     });
     
@@ -581,8 +622,17 @@ $this->registerJs($js, \yii\web\View::POS_READY);
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-2 custom-button-spacing">
-                <button id="assignmentButton" class="btn btn-primary">Assign Kode Ujian</button>
+            <div class="col-md-3 custom-button-spacing">
+                <button id="kodeWawancara" class="btn btn-warning">
+                    <i class="fa fa-microphone"></i>
+                    Kode Ujian Wawancara
+                </button>
+            </div>
+            <div class="col-md-3 custom-button-spacing">
+                <button id="kodePsikotes" class="btn btn-warning">
+                    <i class="fa fa-brain"></i>
+                    Kode Ujian Psikotes
+                </button>
             </div>
             <div class="col-md-3">
                 <?= Html::a('Download Lulus Adminstrasi', ['export-excel'], [
@@ -592,9 +642,6 @@ $this->registerJs($js, \yii\web\View::POS_READY);
                         'method' => 'post',
                     ],
                 ]) ?>
-            </div>
-
-            <div class="col-md-3">
             </div>
         </div>
 
@@ -608,7 +655,7 @@ $this->registerJs($js, \yii\web\View::POS_READY);
         </div>
     </div>
     <div class="card-body">
-        <table id="datatables" class="table table-bordered table-striped">
+        <table id="datatables" class="table table-bordered table-striped" style="width:100%">
             <thead>
                 <tr>
                     <th>No</th>
@@ -618,6 +665,7 @@ $this->registerJs($js, \yii\web\View::POS_READY);
                     <th>Lokasi Ujian</th>
                     <th>Kode Ujian</th>
                     <th>Action</th>
+                    <th>Pilih</th>
                 </tr>
             </thead>
             <tbody>
@@ -731,7 +779,19 @@ $this->registerJs($js, \yii\web\View::POS_READY);
 
 
 
+
 <style>
+    #datatables th:nth-child(2),
+    #datatables td:nth-child(2) {
+        /* untuk kolom 'No Pendaftaran' */
+        width: 50px;
+    }
+
+    #datatables td:nth-child(7) {
+        /* untuk kolom 'No Pendaftaran' */
+        width: 75px;
+    }
+
     .flex-item {
         margin-top: 20px;
         /* Atau berapa pun jarak yang Anda inginkan */
@@ -782,7 +842,7 @@ $this->registerJs($js, \yii\web\View::POS_READY);
     }
 
     .custom-button-spacing {
-        margin-right: -30px;
+        margin-right: -110px;
         /* Sesuaikan jarak */
     }
 

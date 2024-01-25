@@ -2,6 +2,9 @@
 
 namespace backend\models;
 
+use yii\behaviors\TimestampBehavior;
+use yii\behaviors\BlameableBehavior;
+use yii\db\Expression;
 use Yii;
 
 /**
@@ -23,6 +26,22 @@ class UangPembangunan extends \yii\db\ActiveRecord
     {
         return 't_r_uang_pembangunan';
     }
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className() => [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new Expression('NOW()'),
+            ],
+            BlameableBehavior::className() => [
+                'class' => BlameableBehavior::className(),
+                'createdByAttribute' => 'created_by',
+                'updatedByAttribute' => 'updated_by',
+            ],
+        ];
+    }
 
     /**
      * {@inheritdoc}
@@ -32,6 +51,7 @@ class UangPembangunan extends \yii\db\ActiveRecord
         return [
             [['gelombang_pendaftaran_id', 'jurusan_id', 'minimum_n', 'multi_n'], 'required'],
             [['gelombang_pendaftaran_id', 'jurusan_id', 'minimum_n', 'base_n', 'multi_n'], 'integer'],
+            [['created_at', 'updated_at', 'created_by', 'updated_by'], 'safe'],
         ];
     }
 
@@ -56,5 +76,14 @@ class UangPembangunan extends \yii\db\ActiveRecord
     public function getJurusan()
     {
         return $this->hasOne(Jurusan::class, ['jurusan_id' => 'jurusan_id']);
+    }
+    public function getCreator()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'created_by']);
+    }
+
+    public function getUpdater()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'updated_by']);
     }
 }

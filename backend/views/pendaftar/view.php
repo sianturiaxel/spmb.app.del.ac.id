@@ -8,6 +8,7 @@ use yii\widgets\DetailView;
 /** @var backend\models\Pendaftar $model */
 $kartuUjian = Url::to(['pendaftar/download-kartu']);
 $pilihanJurusan             = Url::to(['pendaftar/get-pilihan-jurusan']);
+$this->title = 'Pendaftar Detail';
 //$this->title = $model->pendaftar_id;
 // $this->params['breadcrumbs'][] = ['label' => 'Pendaftars', 'url' => ['index']];
 // $this->params['breadcrumbs'][] = $this->title;
@@ -53,7 +54,7 @@ $this->registerJs($script);
                 <div class="card card-primary card-outline">
                     <div class="card-body box-profile">
                         <div class="text-center">
-                            <img class="profile-user-img img-fluid" src="image/foto.png" alt="User profile picture" style="border-radius: 4px; width: 210px; height: 230px;">
+                            <img class="profile-user-img img-fluid" src="<?= Html::encode($model->pas_foto) ?>" alt="User profile picture" style="border-radius: 4px; width: 210px; height: 230px;">
                         </div>
                         <h3 class="profile-username text-center"><?= Html::encode($model->nama) ?> </h3>
                         <div class="text-center">
@@ -81,7 +82,7 @@ $this->registerJs($script);
                                         <tr>
                                             <td><b>Lokasi Ujian</b></td>
                                             <td>:</td>
-                                            <td><?= Html::encode($model->lokasi->alamat) ?></td>
+                                            <td><?= (isset($model->lokasi) && !empty($model->lokasi->alamat)) ? Html::encode($model->lokasi->alamat) : ' - ' ?></td>
                                         </tr>
                                         <tr>
                                             <td><b>Pilihan Program Studi</b></td>
@@ -119,7 +120,7 @@ $this->registerJs($script);
                                                 <tr>
                                                     <td><b>Tanggal Lahir</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->tanggal_lahir) ?></td>
+                                                    <td><?= Yii::$app->formatter->asDate($model->tanggal_lahir, 'long') ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td><b>Jenis Kelamin</b></td>
@@ -176,22 +177,24 @@ $this->registerJs($script);
                                                 <tr>
                                                     <td><b>Pekerjaan Ayah</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->pekerjaanAyah->nama) ?></td>
+                                                    <td><?= Html::encode($model->pekerjaanAyah && $model->pekerjaanAyah->nama ? $model->pekerjaanAyah->nama : '-') ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td><b>Penghasilan Ayah</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->penghasilan_ayah) ?></td>
+                                                    <td>Rp <?= Html::encode(number_format($model->penghasilan_ayah, 0, ',', '.')) ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td><b>Alamat</b></td>
                                                     <td>:</td>
                                                     <td><?= Html::encode($model->alamat_orang_tua) ?></td>
                                                 </tr>
+
                                                 <tr>
-                                                    <td><b>No Hp OrangTua</b></td>
+                                                    <td><b>Penghasilan Total</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->no_hp_orangtua) ?></td>
+                                                    <td>Rp <?= Html::encode(number_format($model->penghasilan_total, 0, ',', '.')) ?></td>
+
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -207,12 +210,17 @@ $this->registerJs($script);
                                                 <tr>
                                                     <td><b>Pekerjaan Ibu</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->pekerjaanIbu->nama) ?></td>
+                                                    <td><?= isset($model->pekerjaanIbu->nama) ? Html::encode($model->pekerjaanIbu->nama) : '-' ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td><b>Penghasilan Ibu</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->penghasilan_ibu) ?></td>
+                                                    <td>Rp <?= Html::encode(number_format($model->penghasilan_ibu, 0, ',', '.')) ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b>No Hp OrangTua</b></td>
+                                                    <td>:</td>
+                                                    <td><?= Html::encode($model->no_hp_orangtua) ?></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -230,13 +238,14 @@ $this->registerJs($script);
                                         <tr>
                                             <td><b>Asal Sekolah</b></td>
                                             <td>:</td>
-                                            <td><?= Html::encode($model->sekolah->nama) ?></td>
+                                            <td><?= (isset($model->sekolahId) && !empty($model->sekolahId->sekolah)) ? Html::encode($model->sekolahId->sekolah) : ' - ' ?></td>
                                         </tr>
                                         <tr>
                                             <td><b>Alamat</b></td>
                                             <td>:</td>
-                                            <td><?= Html::encode($model->sekolah->alamat) ?></td>
+                                            <td><?= (isset($model->sekolahId) && !empty($model->sekolahId->alamat_jalan)) ? Html::encode($model->sekolahId->alamat_jalan) : ' - ' ?></td>
                                         </tr>
+
                                     </tbody>
                                 </table>
                             </div>
