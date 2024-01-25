@@ -47,4 +47,9 @@ class PaymentDetail extends \yii\db\ActiveRecord
             'fee_name' => 'Fee Name',
         ];
     }
+
+    public function getCalonMahasiswa()
+    {
+        return $this->hasOne(CalonMahasiswa::class, ['calon_mahasiswa_id' => 'calon_mahasiswa_id']);
+    }
 }

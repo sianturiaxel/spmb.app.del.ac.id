@@ -39,6 +39,8 @@ class NilaiAkademik extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
+    public $excelFile;
+
     public static function tableName()
     {
         return 't_nilai_akademik';
@@ -50,7 +52,6 @@ class NilaiAkademik extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['pendaftar_id'], 'required'],
             [['pendaftar_id', 'mat_benar', 'mat_salah', 'ing_benar', 'ing_salah', 'tpa_benar', 'tpa_salah', 'total_kosong', 'jumlah_soal', 'hasil_score'], 'integer'],
             [['scala_score'], 'number'],
             [['created_at', 'updated_at', 'deleted_at'], 'safe'],
@@ -91,5 +92,9 @@ class NilaiAkademik extends \yii\db\ActiveRecord
             'deleted_at' => 'Deleted At',
             'deleted_by' => 'Deleted By',
         ];
+    }
+    public function getPendaftar()
+    {
+        return $this->hasOne(Pendaftar::class, ['pendaftar_id' => 'pendaftar_id']);
     }
 }

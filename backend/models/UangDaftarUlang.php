@@ -47,4 +47,9 @@ class UangDaftarUlang extends \yii\db\ActiveRecord
             'spp_tahap_1' => 'Spp Tahap 1',
         ];
     }
+
+    public function getGelombangPendaftaran()
+    {
+        return $this->hasOne(GelombangPendaftaran::className(), ['gelompang_pendaftaran_id' => 'gelompang_pendaftaran_id']);
+    }
 }

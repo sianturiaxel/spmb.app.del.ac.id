@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use backend\models\BiayaPendaftaran;
 use backend\models\GelombangPendaftaran;
+use backend\models\FincTFee;
 use yii\web\Controller;
 use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
@@ -81,53 +82,60 @@ class BiayaPendaftaranController extends Controller
         $model = BiayaPendaftaran::findOne($biaya_pendaftaran_id);
         if ($model) {
             return [
-                'gelombang' => $model->gelombang->desc,
+                'gelombangPendaftaran' => $model->gelombang->desc,
+                'fee_id' => $model->fincTFee->amount,
                 'biaya_daftar' => $model->biaya_daftar
             ];
         } else {
             throw new NotFoundHttpException('Data tidak ditemukan.');
         }
     }
+    // public function actionView($biaya_pendaftaran_id)
+    // {
+    //     $gelombangPendaftaran = GelombangPendaftaran::find()->asArray()->all();
+    //     return $this->render('view', [
+    //         'model' => $this->findModel($biaya_pendaftaran_id),
+    //         'gelombangPendaftaran' => $gelombangPendaftaran,
+    //     ]);
+    // }
 
     /**
      * Creates a new BiayaPendaftaran model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    // public function actionCreate()
-    // {
-    //     $model = new BiayaPendaftaran();
-
-    //     if ($this->request->isPost) {
-    //         if ($model->load($this->request->post()) && $model->save()) {
-    //             return $this->redirect(['index', 'biaya_pendaftaran_id' => $model->biaya_pendaftaran_id]);
-    //         }
-    //     } else {
-    //         $model->loadDefaultValues();
-    //     }
-
-    //     return $this->render('create', [
-    //         'model' => $model,
-    //     ]);
-    // }
     public function actionCreate()
     {
-        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON; // Set the response format to JSON
-
         $model = new BiayaPendaftaran();
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return [
-                'success' => true,
-                'redirectUrl' => Url::to(['index'])
-            ];
+        // Ambil semua data gelombang pendaftaran untuk ditampilkan di dropdown
+        $gelombangPendaftaran = GelombangPendaftaran::find()
+            ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
+
+        $feeId = FincTFee::find()
+            ->where(['is_spmb' => 1, 'is_active' => 1])
+            ->orderBy(['fee_id' => SORT_DESC])
+            ->all();
+
+
+
+
+        if ($this->request->isPost) {
+            if ($model->load($this->request->post()) && $model->save()) {
+                return $this->redirect(['index', 'biaya_pendaftaran_id' => $model->biaya_pendaftaran_id]);
+            }
         } else {
-            // Return error message if validation fails
-            return [
-                'success' => false,
-                'message' => 'Error message'
-            ];
+            $model->loadDefaultValues();
         }
+
+
+        return $this->render('create', [
+            'model' => $model,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'feeId' => $feeId,
+        ]);
     }
+
 
     /**
      * Updates an existing BiayaPendaftaran model.
@@ -140,13 +148,23 @@ class BiayaPendaftaranController extends Controller
     public function actionUpdate($biaya_pendaftaran_id)
     {
         $model = $this->findModel($biaya_pendaftaran_id);
+        $gelombangPendaftaran = GelombangPendaftaran::find()
+            ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
+        $feeId = FincTFee::find()
+            ->where(['is_spmb' => 1, 'is_active' => 1])
+            ->orderBy(['fee_id' => SORT_DESC])
+            ->all();
+
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'biaya_pendaftaran_id' => $model->biaya_pendaftaran_id]);
+            return $this->redirect(['index', 'biaya_pendaftaran_id' => $model->biaya_pendaftaran_id]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'feeId' => $feeId,
         ]);
     }
 

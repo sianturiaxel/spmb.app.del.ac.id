@@ -2,6 +2,7 @@
 
 use backend\assets\AppAsset;
 use common\widgets\Alert;
+use PhpOffice\PhpSpreadsheet\Reader\Xml\Style;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
 use yii\bootstrap4\Nav;
@@ -26,24 +27,50 @@ AppAsset::register($this);
     <?php $this->beginBody() ?>
 
     <div class="wrapper">
-        <?= $this->render('header.php');
-        ?>
-        <?= $this->render('sidebar.php');
-        ?>
+        <?= $this->render('header.php'); ?>
+        <?= $this->render('sidebar.php'); ?>
 
         <div class="content-wrapper ml-7">
             <?= Breadcrumbs::widget([
                 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
             ]) ?>
             <?= Alert::widget() ?>
-            <?= $content ?>
+            <?= $content ?> <!-- Konten utama -->
         </div>
-        <?= $this->render('footer.php');
-        ?>
+
+        <?= $this->render('footer.php'); ?> <!-- Footer -->
     </div>
 
     <?php $this->endBody() ?>
 </body>
 
+
 </html>
-<?php $this->endPage();
+<?php $this->endPage(); ?>
+
+<style>
+    .wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .content-wrapper {
+        flex: 1;
+        padding: 20px;
+    }
+
+    header,
+    .sidebar,
+    footer {
+        padding: 15px;
+        /* Warna latar belakang untuk header, sidebar, dan footer */
+    }
+
+    /* Gaya tambahan untuk header dan footer */
+    header,
+    footer {
+        text-align: center;
+        font-weight: bold;
+    }
+</style>

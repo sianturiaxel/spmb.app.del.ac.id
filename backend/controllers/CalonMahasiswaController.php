@@ -4,6 +4,8 @@ namespace backend\controllers;
 
 use backend\models\CalonMahasiswa;
 use backend\models\JalurPendaftaran;
+use backend\models\GelombangPendaftaran;
+use backend\models\Pendaftar;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\data\ActiveDataProvider;
@@ -36,13 +38,20 @@ class CalonMahasiswaController extends Controller
 
     public function actionDataForDatatables()
     {
+        $queryParams = Yii::$app->request->queryParams;
         $draw = Yii::$app->request->get('draw');
         $start = Yii::$app->request->get('start');
         $length = Yii::$app->request->get('length');
-        $query = CalonMahasiswa::find();
+        $query = CalonMahasiswa::find()->joinWith('pendaftar');
 
 
         $totalRecords = $query->count();
+        if (!empty($queryParams['gelombang_pendaftaran_id'])) {
+            $query->andWhere(['t_pendaftar.gelombang_pendaftaran_id' => $queryParams['gelombang_pendaftaran_id']]);
+        }
+        if (isset($queryParams['status_pembayaran']) && $queryParams['status_pembayaran'] !== '') {
+            $query->andWhere(['status_pembayaran' => $queryParams['status_pembayaran']]);
+        }
         if (!empty($search)) {
             $query->andFilterWhere(['like', 'nama', $search]);
         }
@@ -90,6 +99,27 @@ class CalonMahasiswaController extends Controller
      *
      * @return string
      */
+    public function actionGetGelombangPendaftaran($pendaftar_id)
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $pendaftar = Pendaftar::find()
+            ->with(['gelombangPendaftaran'])
+            ->where(['pendaftar_id' => $pendaftar_id])
+            ->one();
+
+        if ($pendaftar && $pendaftar->gelombangPendaftaran) {
+            return [
+                'gelombangPendaftaran' => [
+                    'id' => $pendaftar->gelombangPendaftaran->gelombang_pendaftaran_id,
+                    'deskripsi' => $pendaftar->gelombangPendaftaran->desc
+                ]
+            ];
+        } else {
+            return ['gelombangPendaftaran' => null];
+        }
+    }
+
     public function actionIndex()
     {
         $jalurPendaftaran = JalurPendaftaran::find()->all();
@@ -97,9 +127,15 @@ class CalonMahasiswaController extends Controller
             'query' => CalonMahasiswa::find(),
 
         ]);
+
+        $gelombangPendaftaran = GelombangPendaftaran::find()
+            ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
+
         return $this->render('index', [
             'dataProvider' => $dataProvider,
             'jalurPendaftaran' => $jalurPendaftaran,
+            'gelombangPendaftaran' => $gelombangPendaftaran, // Pastikan mengirimkan variabel ini ke view
         ]);
     }
 

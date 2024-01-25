@@ -4,9 +4,17 @@ namespace backend\controllers;
 
 use backend\models\UangPembangunan;
 use backend\models\UangPembangunanSearch;
+use backend\models\GelombangPendaftaran;
+use backend\models\JenisUjian;
+use backend\models\Jurusan;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\behaviors\TimestampBehavior;
+use yii\behaviors\BlameableBehavior;
+use yii\db\Expression;
+
+use yii;
 
 /**
  * UangPembangunanController implements the CRUD actions for UangPembangunan model.
@@ -18,18 +26,27 @@ class UangPembangunanController extends Controller
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
-                    ],
+        return array_merge(parent::behaviors(), [
+            'timestamp' => [ // Key 'timestamp' ini hanya untuk identifikasi, bisa diisi dengan string lain.
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new Expression('NOW()'), // Atau fungsi waktu yang sesuai dengan DBMS Anda
+            ],
+            'blameable' => [ // Key 'blameable' ini hanya untuk identifikasi, bisa diisi dengan string lain.
+                'class' => BlameableBehavior::className(),
+                'createdByAttribute' => 'created_by',
+                'updatedByAttribute' => 'updated_by',
+            ],
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
                 ],
-            ]
-        );
+            ],
+        ]);
     }
+
 
     /**
      * Lists all UangPembangunan models.
@@ -40,10 +57,14 @@ class UangPembangunanController extends Controller
     {
         $searchModel = new UangPembangunanSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $gelombangPendaftaran = UangPembangunan::find()->with('gelombangPendaftaran')->all();
+        $jurusan = UangPembangunan::find()->with('jurusan')->all();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'jurusan' => $jurusan,
         ]);
     }
 
@@ -68,10 +89,23 @@ class UangPembangunanController extends Controller
     public function actionCreate()
     {
         $model = new UangPembangunan();
+        $gelombangPendaftaran = GelombangPendaftaran::find()
+            ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
 
+        $jurusan = Jurusan::find()
+            ->all();
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'uang_pembangunan_id' => $model->uang_pembangunan_id]);
+            $postData = $this->request->post();
+            var_dump($postData); // Check the POST data
+            if ($model->load($postData)) {
+                if (!$model->save()) {
+                    var_dump($model->getErrors()); // Check for any errors if save fails
+                } else {
+                    return $this->redirect(['view', 'uang_pembangunan_id' => $model->uang_pembangunan_id]);
+                }
+            } else {
+                Yii::error("Model could not be loaded with the request data.");
             }
         } else {
             $model->loadDefaultValues();
@@ -79,6 +113,8 @@ class UangPembangunanController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'jurusan' => $jurusan,
         ]);
     }
 
@@ -92,6 +128,12 @@ class UangPembangunanController extends Controller
     public function actionUpdate($uang_pembangunan_id)
     {
         $model = $this->findModel($uang_pembangunan_id);
+        $gelombangPendaftaran = GelombangPendaftaran::find()
+            ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
+
+        $jurusan = Jurusan::find()
+            ->all();
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'uang_pembangunan_id' => $model->uang_pembangunan_id]);
@@ -99,6 +141,8 @@ class UangPembangunanController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'jurusan' => $jurusan,
         ]);
     }
 

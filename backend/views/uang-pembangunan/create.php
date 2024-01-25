@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var backend\models\UangPembangunan $model */
 
-$this->title = 'Create Uang Pembangunan';
-$this->params['breadcrumbs'][] = ['label' => 'Uang Pembangunans', 'url' => ['index']];
+
+$this->params['breadcrumbs'][] = ['label' => 'Uang Pembangunan', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="uang-pembangunan-create">
@@ -15,6 +15,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= $this->render('_form', [
         'model' => $model,
+        'gelombangPendaftaran' => $gelombangPendaftaran,
+        'jurusan' => $jurusan,
+
     ]) ?>
 
 </div>

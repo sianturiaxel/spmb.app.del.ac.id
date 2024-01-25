@@ -2,6 +2,9 @@
 
 namespace backend\models;
 
+use yii\behaviors\TimestampBehavior;
+use yii\behaviors\BlameableBehavior;
+use yii\db\Expression;
 use Yii;
 
 /**
@@ -33,6 +36,22 @@ class GelombangPendaftaran extends \yii\db\ActiveRecord
     {
         return 't_r_gelombang_pendaftaran';
     }
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className() => [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new Expression('NOW()'),
+            ],
+            BlameableBehavior::className() => [
+                'class' => BlameableBehavior::className(),
+                'createdByAttribute' => 'created_by',
+                'updatedByAttribute' => 'updated_by',
+            ],
+        ];
+    }
 
     /**
      * {@inheritdoc}
@@ -53,6 +72,7 @@ class GelombangPendaftaran extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
+
             'gelombang_pendaftaran_id' => 'Gelombang Pendaftaran ID',
             'tahun' => 'Tahun',
             'desc' => 'Desc',
@@ -70,5 +90,18 @@ class GelombangPendaftaran extends \yii\db\ActiveRecord
             'jam_mulai' => 'Jam Mulai',
             'jam_selesai' => 'Jam Selesai',
         ];
+    }
+    public function getJenisUjian()
+    {
+        return $this->hasOne(JenisUjian::className(), ['jenis_ujian_id' => 'jenis_ujian_id']);
+    }
+    public function getCreator()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'created_by']);
+    }
+
+    public function getUpdater()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'updated_by']);
     }
 }

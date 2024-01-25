@@ -1,18 +1,50 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /** @var yii\web\View $this */
 /** @var backend\models\Pendaftar $model */
+$kartuUjian = Url::to(['pendaftar/download-kartu']);
+$pilihanJurusan             = Url::to(['pendaftar/get-pilihan-jurusan']);
+$this->title = 'Pendaftar Detail';
+//$this->title = $model->pendaftar_id;
+// $this->params['breadcrumbs'][] = ['label' => 'Pendaftars', 'url' => ['index']];
+// $this->params['breadcrumbs'][] = $this->title;
+// \yii\web\YiiAsset::register($this);
+$script = <<< JS
+$(document).ready(function() {
+    var pendaftarId = $model->pendaftar_id; 
+    $.ajax({
+        url: '$pilihanJurusan', // Menggunakan helper Url untuk menghasilkan URL yang benar
+        type: 'GET',
+        dataType: 'json',
+        data: { pendaftar_id: pendaftarId },
+        success: function(response) {
+            if(response.pilihanJurusan && response.pilihanJurusan.length > 0) {
+                var jurusanHtml = '';
+                response.pilihanJurusan.forEach(function(pilihan) {
+                    jurusanHtml += '<li>' + pilihan.namaJurusan;
+                });
+                $('#pilihan-jurusan').html(jurusanHtml); // Menampilkan semua jurusan
+            } else {
+                $('#pilihan-jurusan').text('Tidak ada pilihan jurusan.'); // Menampilkan pesan jika tidak ada jurusan
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Terjadi kesalahan: " + error);
+        }
+    });
 
-$this->title = $model->pendaftar_id;
-$this->params['breadcrumbs'][] = ['label' => 'Pendaftars', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
-\yii\web\YiiAsset::register($this);
+    
+});
+JS;
+$this->registerJs($script);
+
 ?>
 
-<!-- Main content -->
+
 <section class="content">
     <div class="container-fluid">
         <div class="row">
@@ -22,10 +54,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class="card card-primary card-outline">
                     <div class="card-body box-profile">
                         <div class="text-center">
-                            <img class="profile-user-img img-fluid" src="image/foto.png" alt="User profile picture" style="border-radius: 4px; width: 210px; height: 230px;">
+                            <img class="profile-user-img img-fluid" src="<?= Html::encode($model->pas_foto) ?>" alt="User profile picture" style="border-radius: 4px; width: 210px; height: 230px;">
                         </div>
                         <h3 class="profile-username text-center"><?= Html::encode($model->nama) ?> </h3>
-                        <a href="#" class="btn btn-primary btn-block"><b>Cetak Kartu</b></a>
+                        <div class="text-center">
+                            <a href="<?= Url::to(['pendaftar/download-kartu', 'pendaftar_id' => $model->pendaftar_id]) ?>" class="btn btn-warning" target="_blank">Download Kartu Ujian</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -48,22 +82,22 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <tr>
                                             <td><b>Lokasi Ujian</b></td>
                                             <td>:</td>
-                                            <td>Data Lokasi Ujian dari Database</td>
+                                            <td><?= (isset($model->lokasi) && !empty($model->lokasi->alamat)) ? Html::encode($model->lokasi->alamat) : ' - ' ?></td>
                                         </tr>
                                         <tr>
                                             <td><b>Pilihan Program Studi</b></td>
                                             <td>:</td>
-                                            <td>Data Program Studi dari Database</td>
+                                            <td id="pilihan-jurusan"></td>
                                         </tr>
                                         <tr>
                                             <td><b>Jumlah N</b></td>
                                             <td>:</td>
-                                            <td>Data Jumlah N dari Database</td>
+                                            <td><?= Html::encode($model->n) ?></td>
                                         </tr>
                                         <tr>
                                             <td><b>Status Pembayaran</b></td>
                                             <td>:</td>
-                                            <td>Data Status Pembayaran dari Database</td>
+                                            <td><?= Html::encode($model->statusPendaftaran->desc) ?></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -86,7 +120,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 <tr>
                                                     <td><b>Tanggal Lahir</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->tanggal_lahir) ?></td>
+                                                    <td><?= Yii::$app->formatter->asDate($model->tanggal_lahir, 'long') ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td><b>Jenis Kelamin</b></td>
@@ -138,27 +172,29 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 <tr>
                                                     <td><b>Nama Ayah</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->nama) ?></td>
+                                                    <td><?= Html::encode($model->nama_ayah_kandung) ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td><b>Pekerjaan Ayah</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->tempat_lahir) ?></td>
+                                                    <td><?= Html::encode($model->pekerjaanAyah && $model->pekerjaanAyah->nama ? $model->pekerjaanAyah->nama : '-') ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td><b>Penghasilan Ayah</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->tanggal_lahir) ?></td>
+                                                    <td>Rp <?= Html::encode(number_format($model->penghasilan_ayah, 0, ',', '.')) ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td><b>Alamat</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->jenisKelamin->desc) ?></td>
+                                                    <td><?= Html::encode($model->alamat_orang_tua) ?></td>
                                                 </tr>
+
                                                 <tr>
-                                                    <td><b>No Hp OrangTua</b></td>
+                                                    <td><b>Penghasilan Total</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->agama->desc) ?></td>
+                                                    <td>Rp <?= Html::encode(number_format($model->penghasilan_total, 0, ',', '.')) ?></td>
+
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -169,114 +205,25 @@ $this->params['breadcrumbs'][] = $this->title;
                                                 <tr>
                                                     <td><b>Nama Ibu</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->email) ?></td>
+                                                    <td><?= Html::encode($model->nama_ibu_kandung) ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td><b>Pekerjaan Ibu</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->no_telepon_rumah) ?></td>
+                                                    <td><?= isset($model->pekerjaanIbu->nama) ? Html::encode($model->pekerjaanIbu->nama) : '-' ?></td>
                                                 </tr>
                                                 <tr>
                                                     <td><b>Penghasilan Ibu</b></td>
                                                     <td>:</td>
-                                                    <td><?= Html::encode($model->no_telepon_mobile) ?></td>
+                                                    <td>Rp <?= Html::encode(number_format($model->penghasilan_ibu, 0, ',', '.')) ?></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b>No Hp OrangTua</b></td>
+                                                    <td>:</td>
+                                                    <td><?= Html::encode($model->no_hp_orangtua) ?></td>
                                                 </tr>
                                             </tbody>
                                         </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="data-orangtua">
-                                <!-- The timeline -->
-                                <div class="timeline timeline-inverse">
-                                    <!-- timeline time label -->
-                                    <div class="time-label">
-                                        <span class="bg-danger">
-                                            10 Feb. 2014
-                                        </span>
-                                    </div>
-                                    <!-- /.timeline-label -->
-                                    <!-- timeline item -->
-                                    <div>
-                                        <i class="fas fa-envelope bg-primary"></i>
-
-                                        <div class="timeline-item">
-                                            <span class="time"><i class="far fa-clock"></i> 12:05</span>
-
-                                            <h3 class="timeline-header"><a href="#">Support Team</a> sent you an email</h3>
-
-                                            <div class="timeline-body">
-                                                Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
-                                                weebly ning heekya handango imeem plugg dopplr jibjab, movity
-                                                jajah plickers sifteo edmodo ifttt zimbra. Babblely odeo kaboodle
-                                                quora plaxo ideeli hulu weebly balihoo...
-                                            </div>
-                                            <div class="timeline-footer">
-                                                <a href="#" class="btn btn-primary btn-sm">Read more</a>
-                                                <a href="#" class="btn btn-danger btn-sm">Delete</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- END timeline item -->
-                                    <!-- timeline item -->
-                                    <div>
-                                        <i class="fas fa-user bg-info"></i>
-
-                                        <div class="timeline-item">
-                                            <span class="time"><i class="far fa-clock"></i> 5 mins ago</span>
-
-                                            <h3 class="timeline-header border-0"><a href="#">Sarah Young</a> accepted your friend request
-                                            </h3>
-                                        </div>
-                                    </div>
-                                    <!-- END timeline item -->
-                                    <!-- timeline item -->
-                                    <div>
-                                        <i class="fas fa-comments bg-warning"></i>
-
-                                        <div class="timeline-item">
-                                            <span class="time"><i class="far fa-clock"></i> 27 mins ago</span>
-
-                                            <h3 class="timeline-header"><a href="#">Jay White</a> commented on your post</h3>
-
-                                            <div class="timeline-body">
-                                                Take me to your leader!
-                                                Switzerland is small and neutral!
-                                                We are more like Germany, ambitious and misunderstood!
-                                            </div>
-                                            <div class="timeline-footer">
-                                                <a href="#" class="btn btn-warning btn-flat btn-sm">View comment</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- END timeline item -->
-                                    <!-- timeline time label -->
-                                    <div class="time-label">
-                                        <span class="bg-success">
-                                            3 Jan. 2014
-                                        </span>
-                                    </div>
-                                    <!-- /.timeline-label -->
-                                    <!-- timeline item -->
-                                    <div>
-                                        <i class="fas fa-camera bg-purple"></i>
-
-                                        <div class="timeline-item">
-                                            <span class="time"><i class="far fa-clock"></i> 2 days ago</span>
-
-                                            <h3 class="timeline-header"><a href="#">Mina Lee</a> uploaded new photos</h3>
-
-                                            <div class="timeline-body">
-                                                <img src="https://placehold.it/150x100" alt="...">
-                                                <img src="https://placehold.it/150x100" alt="...">
-                                                <img src="https://placehold.it/150x100" alt="...">
-                                                <img src="https://placehold.it/150x100" alt="...">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- END timeline item -->
-                                    <div>
-                                        <i class="far fa-clock bg-gray"></i>
                                     </div>
                                 </div>
                             </div>
@@ -286,18 +233,19 @@ $this->params['breadcrumbs'][] = $this->title;
                                         <tr>
                                             <td><b>Jurusan</b></td>
                                             <td>:</td>
-                                            <td>Data Lokasi Ujian dari Database</td>
+                                            <td><?= Html::encode($model->jurusan_sekolah) ?></td>
                                         </tr>
                                         <tr>
                                             <td><b>Asal Sekolah</b></td>
                                             <td>:</td>
-                                            <td>Data Program Studi dari Database</td>
+                                            <td><?= (isset($model->sekolahId) && !empty($model->sekolahId->sekolah)) ? Html::encode($model->sekolahId->sekolah) : ' - ' ?></td>
                                         </tr>
                                         <tr>
                                             <td><b>Alamat</b></td>
                                             <td>:</td>
-                                            <td>Data Jumlah N dari Database</td>
+                                            <td><?= (isset($model->sekolahId) && !empty($model->sekolahId->alamat_jalan)) ? Html::encode($model->sekolahId->alamat_jalan) : ' - ' ?></td>
                                         </tr>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -305,9 +253,14 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <table class="table">
                                     <tbody>
                                         <tr>
+                                            <td><b>Hobby</b></td>
+                                            <td>:</td>
+                                            <td><?= Html::encode($model->hobby) ?></td>
+                                        </tr>
+                                        <tr>
                                             <td><b>Motivasi</b></td>
                                             <td>:</td>
-                                            <td>Data Lokasi Ujian dari Database</td>
+                                            <td style="text-align: justify;"><?= Html::encode($model->motivasi) ?></td>
                                         </tr>
                                     </tbody>
                                 </table>
