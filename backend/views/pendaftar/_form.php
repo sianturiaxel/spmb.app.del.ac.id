@@ -300,10 +300,10 @@ $this->registerJs($js);
             <div class="card-body" id="data-akademik" style="display: none;">
                 <div class="row">
                     <div class="col-md-4">
-                        <?php if ($model->sekolahId) : ?>
+                        <?php if ($model->sekolahDapodik) : ?>
                             <div class="form-group">
                                 <label class="control-label">Nama Sekolah</label>
-                                <input type="text" class="form-control" value="<?= $model->sekolahId->sekolah ?>">
+                                <input type="text" class="form-control" value="<?= $model->sekolahDapodik->sekolah ?>">
                             </div>
                         <?php endif; ?>
                     </div>

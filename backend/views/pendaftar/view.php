@@ -238,12 +238,12 @@ $this->registerJs($script);
                                         <tr>
                                             <td><b>Asal Sekolah</b></td>
                                             <td>:</td>
-                                            <td><?= (isset($model->sekolahId) && !empty($model->sekolahId->sekolah)) ? Html::encode($model->sekolahId->sekolah) : ' - ' ?></td>
+                                            <td><?= (isset($model->sekolahDapodik) && !empty($model->sekolahDapodik->sekolah)) ? Html::encode($model->sekolahDapodik->sekolah) : ' - ' ?></td>
                                         </tr>
                                         <tr>
                                             <td><b>Alamat</b></td>
                                             <td>:</td>
-                                            <td><?= (isset($model->sekolahId) && !empty($model->sekolahId->alamat_jalan)) ? Html::encode($model->sekolahId->alamat_jalan) : ' - ' ?></td>
+                                            <td><?= (isset($model->sekolahDapodik) && !empty($model->sekolahDapodik->alamat_jalan)) ? Html::encode($model->sekolahDapodik->alamat_jalan) : ' - ' ?></td>
                                         </tr>
 
                                     </tbody>
