@@ -43,4 +43,13 @@ class JurusanMapel extends \yii\db\ActiveRecord
             'mata_pelajaran_id' => 'Mata Pelajaran ID',
         ];
     }
+
+    public function getJurusan()
+    {
+        return $this->hasOne(Jurusan::className(), ['jurusan_id' => 'jurusan_id']);
+    }
+    public function getMataPelajaran()
+    {
+        return $this->hasOne(MataPelajaran::className(), ['mata_pelajaran_id' => 'mata_pelajaran_id']);
+    }
 }

@@ -11,11 +11,10 @@ $this->params['breadcrumbs'][] = ['label' => $model->kode_ujian_id, 'url' => ['v
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="kode-ujian-update">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <?= $this->render('_form', [
         'model' => $model,
+        'gelombangPendaftaran' => $gelombangPendaftaran,
+        'jenisTest' => $jenisTest,
     ]) ?>
 
 </div>

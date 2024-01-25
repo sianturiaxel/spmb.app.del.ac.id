@@ -10,39 +10,76 @@ use yii\grid\GridView;
 /** @var backend\models\UangPembangunanSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = 'Uang Pembangunans';
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Uang Pembangunan';
+$dataProvider->pagination = false;
+$createUrl = Url::to(['create']);
+$js = <<<JS
+$(document).ready(function() {
+    $(function () {
+        $('#datatables').DataTable({
+            'paging': true,
+            'lengthChange': false,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': false,
+            'responsive': true,
+            'dom': "<'row'<'col-sm-12 col-md-4 toolbar'><'col-sm-12 col-md-8'f>>" + 
+               "<'row'<'col-sm-12'tr>>" + 
+               "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
+        })
+        $('div.toolbar').html('<a href=\"{$createUrl}\" class=\"btn btn-success\">Tambah Uang Pembangunan</a>');
+    });
+});
+
+function formatRupiahJS(angka) {
+        return "Rp " + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+JS;
+$this->registerJs($js);
 ?>
-<div class="uang-pembangunan-index">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Create Uang Pembangunan', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'uang_pembangunan_id',
-            'gelombang_pendaftaran_id',
-            'jurusan_id',
-            'minimum_n',
-            'base_n',
-            //'multi_n',
-            [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, UangPembangunan $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'uang_pembangunan_id' => $model->uang_pembangunan_id]);
-                 }
-            ],
-        ],
-    ]); ?>
 
 
+<div class="card">
+    <div class="card-body">
+        <table id="datatables" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Gelombang Pendaftaran</th>
+                    <th>Jurusan</th>
+                    <th>Minumum 'N'</th>
+                    <th>Base 'N'</th>
+                    <th>Multi 'N'</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($dataProvider->getModels() as $index => $model) : ?>
+                    <tr>
+                        <td><?= $index + 1 ?></td>
+                        <td> <?= $model->gelombangPendaftaran ? Html::encode($model->gelombangPendaftaran->desc) : 'Data tidak tersedia' ?></td>
+                        <td> <?= $model->jurusan ? Html::encode($model->jurusan->nama) : 'Data tidak tersedia' ?></td>
+                        <td><?= Html::encode($model->minimum_n) ?></td>
+                        <td><?= Html::encode($model->base_n) ?></td>
+                        <td><?= Html::encode(\app\components\RupiahFormatter::format($model->multi_n)) ?></td>
+
+                        <td>
+                            <?= Html::a('<i class="fa fa-eye"></i>', ['view', 'uang_pembangunan_id' => $model->uang_pembangunan_id], ['class' => 'btn btn-primary btn-sm', 'title' => 'View']) ?>
+                            <?= Html::a('<i class="fas fa-edit"></i>', ['update', 'uang_pembangunan_id' => $model->uang_pembangunan_id], ['class' => 'btn btn-info btn-sm', 'title' => 'Update']) ?>
+                            <?= Html::a('<i class="fa fa-trash"></i>', ['delete', 'uang_pembangunan_id' => $model->uang_pembangunan_id], [
+                                'class' => 'btn btn-danger btn-sm',
+                                'title' => 'Delete',
+                                'data' => [
+                                    'confirm' => 'Are you sure you want to delete this item?',
+                                    'method' => 'post',
+                                ],
+                            ]) ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 </div>

@@ -211,6 +211,12 @@ class CalonMahasiswa extends \yii\db\ActiveRecord
         ];
     }
 
+
+    public function getPendaftar()
+    {
+        return $this->hasOne(Pendaftar::class, ['pendaftar_id' => 'pendaftar_id']);
+    }
+
     public function getSekolah()
     {
         return $this->hasOne(Sekolah::class, ['sekolah_id' => 'sekolah_id']);
@@ -238,9 +244,6 @@ class CalonMahasiswa extends \yii\db\ActiveRecord
     {
         return $this->hasOne(KodeUjian::class, ['kode_ujian_id' => 'kode_ujian_id']);
     }
-
-
-
     public function getLokasi()
     {
         return $this->hasOne(LokasiUjian::class, ['lokasi_ujian_id' => 'lokasi_ujian_id']);

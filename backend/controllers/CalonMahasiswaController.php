@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use backend\models\CalonMahasiswa;
 use backend\models\JalurPendaftaran;
+use backend\models\Pendaftar;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\data\ActiveDataProvider;
@@ -90,6 +91,27 @@ class CalonMahasiswaController extends Controller
      *
      * @return string
      */
+    public function actionGetGelombangPendaftaran($pendaftar_id)
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $pendaftar = Pendaftar::find()
+            ->with(['gelombangPendaftaran'])
+            ->where(['pendaftar_id' => $pendaftar_id])
+            ->one();
+
+        if ($pendaftar && $pendaftar->gelombangPendaftaran) {
+            return [
+                'gelombangPendaftaran' => [
+                    'id' => $pendaftar->gelombangPendaftaran->gelombang_pendaftaran_id,
+                    'deskripsi' => $pendaftar->gelombangPendaftaran->desc
+                ]
+            ];
+        } else {
+            return ['gelombangPendaftaran' => null];
+        }
+    }
+
     public function actionIndex()
     {
         $jalurPendaftaran = JalurPendaftaran::find()->all();

@@ -32,7 +32,7 @@ class AppAsset extends AssetBundle
     ];
     public $js = [
         //'adminLTE/jquery.min.js',
-        'adminLTE/jquery/jquery.min.js',
+        //'adminLTE/jquery/jquery.min.js',
         'adminLTE/jquery-ui/jquery-ui.min.js',
         'adminLTE/bootstrap/js/bootstrap.bundle.min.js',
         'adminLTE/chart.js/Chart.min.js',

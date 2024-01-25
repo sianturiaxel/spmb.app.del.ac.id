@@ -8,13 +8,16 @@ use yii\helpers\Html;
 $this->title = 'Create Kode Ujian';
 $this->params['breadcrumbs'][] = ['label' => 'Kode Ujians', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
-?>
-<div class="kode-ujian-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+?>
+
+<div class="kode-ujian-create">
 
     <?= $this->render('_form', [
         'model' => $model,
-    ]) ?>
+        'gelombangPendaftaran' => $gelombangPendaftaran,
+        'jenisTest' => $jenisTest,
+    ])
+    ?>
 
 </div>

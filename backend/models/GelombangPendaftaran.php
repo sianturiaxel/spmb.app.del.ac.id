@@ -53,6 +53,7 @@ class GelombangPendaftaran extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
+
             'gelombang_pendaftaran_id' => 'Gelombang Pendaftaran ID',
             'tahun' => 'Tahun',
             'desc' => 'Desc',
@@ -70,5 +71,9 @@ class GelombangPendaftaran extends \yii\db\ActiveRecord
             'jam_mulai' => 'Jam Mulai',
             'jam_selesai' => 'Jam Selesai',
         ];
+    }
+    public function getJenisUjian()
+    {
+        return $this->hasOne(JenisUjian::className(), ['jenis_ujian_id' => 'jenis_ujian_id']);
     }
 }

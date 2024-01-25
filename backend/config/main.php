@@ -18,7 +18,7 @@ return [
     ],
     'components' => [
         'request' => [
-            'csrfParam' => '_csrf-backend',
+            'csrfParam' => '_csrf',
             'enableCsrfValidation' => true,
         ],
         'user' => [

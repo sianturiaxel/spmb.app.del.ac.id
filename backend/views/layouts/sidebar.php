@@ -6,7 +6,7 @@ use backend\components\RbacHelper;
 $js = <<< JS
 $(document).ready(function() {
     var activeController = '{$this->context->id}'; 
-    if (['kode-ujian', 'biaya-pendaftaran','lokasi-ujian', 'gelombang-pendaftaran'].includes(activeController)) {
+    if (['kode-ujian','sekolah-pmdk','jurusan-mapel','bidang-utbk','waktu-pengumuman','uang-pembangunan','biaya-pendaftaran','lokasi-ujian','uang-daftar-ulang','gelombang-pendaftaran'].includes(activeController)) {
         $(".nav-link.active").closest('.nav-treeview').parent().addClass('menu-open');
     }
 });
@@ -58,7 +58,7 @@ $isAdmin = Yii::$app->user->identity->roles[0]->name;
                 </li>
                 <?php if (RbacHelper::isUserAdmin(Yii::$app->user->id) || RbacHelper::isUserPanitia(Yii::$app->user->id)) : ?>
                     <li class="nav-item">
-                        <a href="#" class="nav-link  <?= in_array(Yii::$app->controller->id, ['gelombang-pendaftaran', 'lokasi-ujian', 'kode-ujian', 'sekolah-pmdk', 'jurusan-mapel', 'bidang-pmdk', 'waktu-pengumuman', 'uang-pembangunan', 'biaya-pendaftaran', 'uang-daftar-ulang']) ? 'active menu-open' : '' ?>">
+                        <a href="#" class="nav-link  <?= in_array(Yii::$app->controller->id, ['gelombang-pendaftaran', 'sekolah-pmdk', 'lokasi-ujian', 'kode-ujian', 'sekolah-pmdk', 'jurusan-mapel', 'bidang-pmdk', 'waktu-pengumuman', 'uang-pembangunan', 'biaya-pendaftaran', 'uang-daftar-ulang']) ? 'active menu-open' : '' ?>">
 
                             <i class="nav-icon fas fa-file-signature"></i>
                             <p>

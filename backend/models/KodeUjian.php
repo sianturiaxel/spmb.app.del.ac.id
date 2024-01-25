@@ -65,4 +65,12 @@ class KodeUjian extends \yii\db\ActiveRecord
             'deleted_by' => 'Deleted By',
         ];
     }
+    public function getGelombangPendaftaran()
+    {
+        return $this->hasOne(GelombangPendaftaran::className(), ['gelombang_pendaftaran_id' => 'gelombang_pendaftaran_id']);
+    }
+    public function getJenisTest()
+    {
+        return $this->hasOne(JenisTest::className(), ['jenis_test_id' => 'jenis_test_id']);
+    }
 }
