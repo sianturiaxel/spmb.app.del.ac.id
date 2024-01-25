@@ -13,7 +13,7 @@ $dataUrl = Url::to(['nilai-wawancara/data-for-datatables']);
 $createUrl = Url::to(['create']);
 $uploadUrl = Url::to(['nilai-wawancara/upload']);
 
-$this->title = 'Nilai Wawancaras';
+$this->title = 'Nilai Wawancara';
 $dataProvider->pagination = false;
 
 $js = <<<JS

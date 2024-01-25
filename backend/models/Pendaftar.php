@@ -3,8 +3,10 @@
 namespace backend\models;
 
 use backend\models\JalurPendaftaran;
+
 use backend\models\JalurPendaftaran as ModelsJalurPendaftaran;
 use yii\data\ActiveDataProvider;
+use yii\helpers\Security;
 use Yii;
 
 
@@ -95,6 +97,7 @@ use Yii;
  */
 class Pendaftar extends \yii\db\ActiveRecord
 {
+
     /**
      * {@inheritdoc}
      */
@@ -103,20 +106,33 @@ class Pendaftar extends \yii\db\ActiveRecord
         return 't_pendaftar';
     }
 
+    public $fileFoto;
+    public $fileNilaiRapor;
+    public $fileSertifikat;
+    public $fileFormulir;
+    public $fileRekomendasi;
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['jalur_pendaftaran_id', 'user_id', 'jenis_kelamin_id', 'agama_id', 'kewarganegaraan_id', 'sekolah_id', 'npwp', 'kebutuhan_khusus_mahasiswa', 'informasi_del_id', 'n', 'gelombang_pendaftaran_id', 'lokasi_ujian_id', 'kode_ujian_id'], 'required'],
-            [['jalur_pendaftaran_id', 'user_id', 'penerima_kps', 'jenis_kelamin_id', 'agama_id', 'alamat_kec', 'alamat_kab', 'alamat_prov', 'kewarganegaraan_id', 'pendidikan_ayah_id', 'pendidikan_ibu_id', 'alamat_kec_orangtua', 'alamat_kab_orangtua', 'alamat_prov_orangtua', 'pekerjaan_ayah_id', 'pekerjaan_ibu_id', 'penghasilan_ayah', 'penghasilan_ibu', 'penghasilan_total', 'sekolah_id', 'npwp', 'kemampuan_bahasa_inggris', 'kemampuan_bahasa_asing_lainnya', 'informasi_del_id', 'n', 'metode_pembayaran_id', 'no_pendaftaran', 'status_pendaftaran_id', 'status_adminstrasi_id', 'status_test_akademik_id', 'status_test_psikologi_id', 'status_kelulusan', 'gelombang_pendaftaran_id', 'lokasi_ujian_id', 'kode_ujian_id', 'jurusan_sekolah_id', 'sekolah_dapodik_id'], 'integer'],
+            [['fileFoto'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg', 'maxSize' => 1024 * 1024 * 5],
+            [['fileNilaiRapor'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, pdf', 'maxSize' => 1024 * 1024 * 5],
+            [['fileSertifikat'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, pdf', 'maxSize' => 1024 * 1024 * 5],
+            [['fileFormulir'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, pdf', 'maxSize' => 1024 * 1024 * 5],
+            [['fileRekomendasi'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, pdf', 'maxSize' => 1024 * 1024 * 5],
+
+            //[['jalur_pendaftaran_id', 'user_id', 'jenis_kelamin_id', 'agama_id', 'kewarganegaraan_id', 'sekolah_id', 'npwp', 'kebutuhan_khusus_mahasiswa', 'informasi_del_id', 'n', 'gelombang_pendaftaran_id', 'lokasi_ujian_id', 'kode_ujian_id'], 'required'],
+            [['penghasilan_ayah', 'penghasilan_ibu', 'penghasilan_total'], 'convertRupiahToInt', 'skipOnEmpty' => true],
+            [['jalur_pendaftaran_id', 'user_id', 'penerima_kps', 'jenis_kelamin_id', 'agama_id', 'alamat_kec', 'alamat_kab', 'alamat_prov', 'pendidikan_ayah_id', 'pendidikan_ibu_id', 'alamat_kec_orangtua', 'alamat_kab_orangtua', 'alamat_prov_orangtua', 'pekerjaan_ayah_id', 'pekerjaan_ibu_id', 'sekolah_id', 'no_npwp', 'kemampuan_bahasa_inggris', 'kemampuan_bahasa_asing_lainnya', 'informasi_del_id', 'n', 'metode_pembayaran_id', 'no_pendaftaran', 'status_pendaftaran_id', 'status_adminstrasi_id', 'status_test_akademik_id', 'status_test_psikologi_id', 'status_kelulusan', 'gelombang_pendaftaran_id', 'lokasi_ujian_id', 'kode_ujian_id', 'jurusan_sekolah_id', 'sekolah_dapodik_id'], 'integer'],
             [['tanggal_lahir', 'tanggal_lahir_ayah', 'tanggal_lahir_ibu', 'tanggal_pendaftaran', 'created_at', 'updated_at'], 'safe'],
             [['alamat', 'alamat_orang_tua', 'informasi_del_lainnya', 'motivasi'], 'string'],
             [['nik', 'nik_ayah', 'nik_ibu'], 'string', 'max' => 16],
             [['nisn', 'prefix_kode_pendaftaran'], 'string', 'max' => 10],
             [['no_kps', 'akreditasi_sekolah', 'kab_domisili', 'virtual_account', 'voucher_daftar', 'created_by', 'updated_by'], 'string', 'max' => 100],
-            [['nama', 'tempat_lahir', 'email', 'nama_ayah_kandung', 'jurusan_sekolah', 'file_verifikasi_pembayaran', 'pas_foto', 'file_nilai_rapor', 'file_sertifikat', 'file_formulir', 'file_rekomendasi'], 'string', 'max' => 128],
+            [['nama', 'tempat_lahir', 'email', 'nama_ayah_kandung', 'jurusan_sekolah', 'file_verifikasi_pembayaran', 'pas_foto', 'file_sertifikat', 'file_formulir', 'file_rekomendasi'], 'string', 'max' => 128],
             [['kode_pos', 'no_telepon_rumah', 'no_telepon_mobile', 'nama_ibu_kandung', 'kode_pos_orang_tua', 'bahasa_asing_lainnya', 'no_hp_orangtua'], 'string', 'max' => 45],
             [['kelurahan'], 'string', 'max' => 32],
             [['kebutuhan_khusus_mahasiswa'], 'string', 'max' => 225],
@@ -131,7 +147,7 @@ class Pendaftar extends \yii\db\ActiveRecord
     {
         return [
             'pendaftar_id' => 'Pendaftar ID',
-            'jalur_pendaftaran_id' => 'Jalur Pendaftaran ID',
+            //'jalur_pendaftaran_id' => 'Jalur Pendaftaran ID',
             'user_id' => 'User ID',
             'nik' => 'Nik',
             'nisn' => 'Nisn',
@@ -148,7 +164,7 @@ class Pendaftar extends \yii\db\ActiveRecord
             'kecamatan_id' => 'Kecamatan ID',
             'kabupaten_id' => 'Kabupaten ID',
             'provinsi_id' => 'Provinsi ID',
-            'kewarganegaraan_id' => 'Kewarganegaraan ID',
+            //'kewarganegaraan_id' => 'Kewarganegaraan ID',
             'no_telepon_rumah' => 'No Telepon Rumah',
             'no_telepon_mobile' => 'No Telepon Mobile',
             'email' => 'Email',
@@ -173,7 +189,7 @@ class Pendaftar extends \yii\db\ActiveRecord
             'sekolah_id' => 'Sekolah ID',
             'jurusan_sekolah' => 'Jurusan Sekolah',
             'akreditasi_sekolah' => 'Akreditasi Sekolah',
-            'npwp' => 'Npwp',
+            'no_npwp' => 'Npwp',
             'kebutuhan_khusus_mahasiswa' => 'Kebutuhan Khusus Mahasiswa',
             'kemampuan_bahasa_inggris' => 'Kemampuan Bahasa Inggris',
             'bahasa_asing_lainnya' => 'Bahasa Asing Lainnya',
@@ -215,6 +231,14 @@ class Pendaftar extends \yii\db\ActiveRecord
         ];
     }
 
+    public function convertRupiahToInt($attribute, $params)
+    {
+        if (is_string($this->$attribute)) {
+            $this->$attribute = (int) str_replace(['Rp', '.', ','], '', $this->$attribute);
+        }
+    }
+
+
     public function search($params)
     {
         $query = self::find();
@@ -224,9 +248,10 @@ class Pendaftar extends \yii\db\ActiveRecord
             // ... konfigurasi lainnya ...
         ]);
     }
-    public function getSekolah()
+
+    public function getSekolahId()
     {
-        return $this->hasOne(Sekolah::class, ['sekolah_id' => 'sekolah_id']);
+        return $this->hasOne(SekolahDapodik::class, ['id' => 'sekolah_id']);
     }
 
     public function getJalurPendaftaran()
@@ -275,7 +300,82 @@ class Pendaftar extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Pekerjaan::class, ['pekerjaan_id' => 'pekerjaan_ibu_id']);
     }
-    /**
-     * Metode untuk meluluskan pendaftar.
-     */
+    public function getKecamatan()
+    {
+        return $this->hasOne(Kecamatan::class, ['kecamatan_id' => 'alamat_kec']);
+    }
+    public function getKabupaten()
+    {
+        return $this->hasOne(Kabupaten::class, ['kabupaten_id' => 'alamat_kab']);
+    }
+    public function getProvinsi()
+    {
+        return $this->hasOne(Provinsi::class, ['provinsi_id' => 'alamat_prov']);
+    }
+    public function getKecamatanOrangtua()
+    {
+        return $this->hasOne(Kecamatan::class, ['kecamatan_id' => 'alamat_kec_orangtua']);
+    }
+    public function getKabupatenOrangtua()
+    {
+        return $this->hasOne(Kabupaten::class, ['kabupaten_id' => 'alamat_kab_orangtua']);
+    }
+    public function getProvinsiOrangtua()
+    {
+        return $this->hasOne(Provinsi::class, ['provinsi_id' => 'alamat_prov_orangtua']);
+    }
+    public function getPendidikanAyah()
+    {
+        return $this->hasOne(JenjangPendidikan::class, ['jenjang_pendidikan_id' => 'pendidikan_ayah_id']);
+    }
+    public function getPendidikanIbu()
+    {
+        return $this->hasOne(JenjangPendidikan::class, ['jenjang_pendidikan_id' => 'pendidikan_ibu_id']);
+    }
+
+    public function getKemampuanBahasaInggris()
+    {
+        return $this->hasOne(KemampuanBahasa::class, ['kemampuan_bahasa_id' => 'kemampuan_bahasa_inggris']);
+    }
+    public function getKemampuanBahasaAsing()
+    {
+        return $this->hasOne(KemampuanBahasa::class, ['kemampuan_bahasa_id' => 'kemampuan_bahasa_asing_lainnya']);
+    }
+    public function getMetodePendaftaran()
+    {
+        return $this->hasOne(MetodePembayaran::class, ['metode_pembayaran_id' => 'metode_pembayaran_id']);
+    }
+
+    public function upload()
+    {
+        if ($this->validate()) {
+            if ($this->fileFoto) {
+                $this->pas_foto = $this->fileFoto->baseName . '.' . $this->fileFoto->extension;
+                $this->fileFoto->saveAs('uploads/' . $this->pas_foto);
+            }
+
+            if ($this->fileNilaiRapor) {
+                $this->file_nilai_rapor = $this->fileNilaiRapor->baseName . '.' . $this->fileNilaiRapor->extension;
+                $this->fileNilaiRapor->saveAs('uploads/' . $this->file_nilai_rapor);
+            }
+
+            if ($this->fileSertifikat) {
+                $this->file_sertifikat = $this->fileSertifikat->baseName . '.' . $this->fileSertifikat->extension;
+                $this->fileSertifikat->saveAs('uploads/' . $this->file_sertifikat);
+            }
+
+            if ($this->fileFormulir) {
+                $this->file_formulir = $this->fileFormulir->baseName . '.' . $this->fileFormulir->extension;
+                $this->fileFormulir->saveAs('uploads/' . $this->file_formulir);
+            }
+
+            if ($this->fileRekomendasi) {
+                $this->file_rekomendasi = $this->fileRekomendasi->baseName . '.' . $this->fileRekomendasi->extension;
+                $this->fileRekomendasi->saveAs('uploads/' . $this->file_formulir);
+            }
+
+            return true;
+        }
+        return false;
+    }
 }

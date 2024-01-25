@@ -39,12 +39,13 @@ $(document).ready(function() {
     $(document).on('click', '.view-button', function() {
         var biayaPendaftaranId = $(this).data('id');
         $.ajax({
-            url: '$view', // Sesuaikan URL
+            url: '$view',
             type: 'GET',
             data: { biaya_pendaftaran_id: biayaPendaftaranId },
             success: function(data) {
-                // Ambil data dari response dan tampilkan di modal
-                $('#modalGelombang').text(data.gelombang);
+                console.log(data)
+                $('#modalGelombang').text(data.gelombangPendaftaran);
+                $('#feeId').text(formatRupiahJS(data.fee_id));
                 $('#modalBiayaDaftar').text(formatRupiahJS(data.biaya_daftar));
             },
             error: function(error) {
@@ -64,6 +65,7 @@ $this->registerJs($js);
                 <tr>
                     <th>No</th>
                     <th>Gelombang Pendaftaran</th>
+                    <th>Fee</th>
                     <th>Biaya Daftar</th>
                     <th>Action</th>
                 </tr>
@@ -73,6 +75,7 @@ $this->registerJs($js);
                     <tr>
                         <td><?= $index + 1 ?></td>
                         <td><?= Html::encode($model->gelombang->desc) ?></td>
+                        <td><?= $model->fincTFee ? Html::encode(\app\components\RupiahFormatter::format($model->fincTFee->amount)) : '-' ?></td>
                         <td><?= Html::encode(\app\components\RupiahFormatter::format($model->biaya_daftar)) ?></td>
                         <td>
                             <?= Html::button('<i class="fa fa-eye"></i>', ['class' => 'btn btn-primary btn-sm view-button', 'title' => 'View', 'data-toggle' => 'modal', 'data-target' => '#viewModal', 'data-id' => $model->biaya_pendaftaran_id]) ?>
@@ -101,6 +104,11 @@ $this->registerJs($js);
                         <th>Nama Gelombang</th>
                         <td>:</td>
                         <td id="modalGelombang"></td>
+                    </tr>
+                    <tr>
+                        <th>Fee</th>
+                        <td>:</td>
+                        <td id="feeId"></td>
                     </tr>
                     <tr>
                         <th>Biaya Pendaftaran</th>

@@ -59,9 +59,7 @@ $this->registerJs($js);
                 <tr>
                     <th>No</th>
                     <th>Kategori Biang UTBK</th>
-                    <th>Jenis Ujian</th>
-                    <th>Kode Ujian</th>
-                    <th>Username</th>
+                    <th>Nama</th>
                     <th>Action</th>
                 </tr>
             </thead>
