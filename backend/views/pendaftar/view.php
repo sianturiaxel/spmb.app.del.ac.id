@@ -238,20 +238,12 @@ $this->registerJs($script);
                                         <tr>
                                             <td><b>Asal Sekolah</b></td>
                                             <td>:</td>
-<<<<<<< HEAD
-                                            <td><?= (isset($model->sekolahId) && !empty($model->sekolahId->sekolah)) ? Html::encode($model->sekolahId->sekolah) : ' - ' ?></td>
-=======
                                             <td><?= (isset($model->sekolahDapodik) && !empty($model->sekolahDapodik->sekolah)) ? Html::encode($model->sekolahDapodik->sekolah) : ' - ' ?></td>
->>>>>>> 6d807d99a78098a7485130a146d84503a1f32f36
                                         </tr>
                                         <tr>
                                             <td><b>Alamat</b></td>
                                             <td>:</td>
-<<<<<<< HEAD
-                                            <td><?= (isset($model->sekolahId) && !empty($model->sekolahId->alamat_jalan)) ? Html::encode($model->sekolahId->alamat_jalan) : ' - ' ?></td>
-=======
                                             <td><?= (isset($model->sekolahDapodik) && !empty($model->sekolahDapodik->alamat_jalan)) ? Html::encode($model->sekolahDapodik->alamat_jalan) : ' - ' ?></td>
->>>>>>> 6d807d99a78098a7485130a146d84503a1f32f36
                                         </tr>
 
                                     </tbody>
