@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /** @var backend\models\JurusanMapel $model */
 
 $this->title = $model->jurusan_mapel_id;
-$this->params['breadcrumbs'][] = ['label' => 'Jurusan Mapels', 'url' => ['index']];
+
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>

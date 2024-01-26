@@ -32,7 +32,7 @@ use yii\helpers\Html;
                         <tr>
                             <td>
                                 <div class="pas-foto-container">
-                                    <img src="image/foto.png" alt="pas-foto" class="logo">
+                                    <img class="profile-user-img img-fluid" src="<?= Html::encode($model->pas_foto) ?>" alt="User profile picture" style="border-radius: 4px; width: 210px; height: 230px;">
                                 </div>
                             </td>
                             <td>
@@ -80,11 +80,11 @@ use yii\helpers\Html;
                         </tr>
                         <tr>
                             <td>LOKASI</td>
-                            <td><?= Html::encode($model->lokasi->gedung) ?></td>
+                            <td><?= Html::encode($model->lokasi->alamat) ?></td>
                         </tr>
                         <tr>
                             <td>ALAMAT</td>
-                            <td><?= Html::encode($model->lokasi->alamat) ?></td>
+                            <td><?= Html::encode($model->lokasi->desc) ?></td>
                         </tr>
                         <tr>
                             <td><b>PILIHAN PRODI</b></td>

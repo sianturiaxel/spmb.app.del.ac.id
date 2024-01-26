@@ -30,6 +30,8 @@ $(document).ready(function() {
                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
     });
     $('div.toolbar').html('<a href="$createUrl" class="btn btn-success">Tambah Mapel Jurusan</a>');
+    
+    
 });
 JS;
 
@@ -44,30 +46,24 @@ $this->registerJs($js, \yii\web\View::POS_READY);
                     <th>No</th>
                     <th>Nama Jurusan</th>
                     <th>Nama Mata Pelajaran</th>
-                    <th>Action</th>
+                    <th>Aksi</th> <!-- Tambahkan header untuk kolom aksi -->
                 </tr>
             </thead>
+
             <tbody>
-                <?php foreach ($dataProvider->getModels() as $index => $model) : ?>
+                <?php $no = 1; ?>
+                <?php foreach ($jurusanMapelData as $jurusanId => $data) : ?>
                     <tr>
-                        <td><?= $index + 1 ?></td>
-                        <td> <?= $model->jurusan ? Html::encode($model->jurusan->nama) : 'Data tidak tersedia' ?></td>
-                        <td> <?= $model->mataPelajaran ? Html::encode($model->mataPelajaran->desc) : 'Data tidak tersedia' ?></td>
+                        <td><?= $no++ ?></td>
+                        <td><?= Html::encode($data['nama']) ?></td>
+                        <td><?= Html::encode(implode(', ', $data['mapel'])) ?></td>
                         <td>
-                            <?= Html::a('<i class="fa fa-eye"></i>', ['view', 'jurusan_mapel_id' => $model->jurusan_mapel_id], ['class' => 'btn btn-primary btn-sm', 'title' => 'View']) ?>
-                            <?= Html::a('<i class="fas fa-edit"></i>', ['update', 'jurusan_mapel_id' => $model->jurusan_mapel_id], ['class' => 'btn btn-info btn-sm', 'title' => 'Update']) ?>
-                            <?= Html::a('<i class="fa fa-trash"></i>', ['delete', 'jurusan_mapel_id' => $model->jurusan_mapel_id], [
-                                'class' => 'btn btn-danger btn-sm',
-                                'title' => 'Delete',
-                                'data' => [
-                                    'confirm' => 'Are you sure you want to delete this item?',
-                                    'method' => 'post',
-                                ],
-                            ]) ?>
+                            <?= Html::a('Edit', ['update', 'jurusan_mapel_id' => $jurusanId], ['class' => 'btn btn-primary btn-sm']) ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
+
         </table>
     </div>
 </div>
