@@ -26,7 +26,11 @@ $this->params['breadcrumbs'][] = 'Update';
         'provinsiOrangtua' => $provinsiOrangtua,
         'pekerjaanAyah' => $pekerjaanAyah,
         'pekerjaanIbu' => $pekerjaanIbu,
+<<<<<<< HEAD
+        'sekolahId' => $sekolahId,
+=======
         'sekolahDapodik' => $sekolahDapodik,
+>>>>>>> 6d807d99a78098a7485130a146d84503a1f32f36
         'kemampuanBahasaInggris' => $kemampuanBahasaInggris,
         'kemampuanBahasaAsing' => $kemampuanBahasaAsing,
         'metodePembayaran' => $metodePembayaran,

@@ -250,12 +250,17 @@ class Pendaftar extends \yii\db\ActiveRecord
     }
 
     public function getSekolahId()
+<<<<<<< HEAD
+    {
+        return $this->hasOne(SekolahDapodik::class, ['id' => 'sekolah_id']);
+=======
     {
         return $this->hasOne(SekolahDapodik::class, ['id' => 'sekolah_id']);
     }
     public function getSekolahDapodik()
     {
         return $this->hasOne(SekolahDapodik::class, ['id' => 'sekolah_dapodik_id']);
+>>>>>>> 6d807d99a78098a7485130a146d84503a1f32f36
     }
     public function getJalurPendaftaran()
     {

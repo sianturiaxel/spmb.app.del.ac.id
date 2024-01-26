@@ -300,10 +300,17 @@ $this->registerJs($js);
             <div class="card-body" id="data-akademik" style="display: none;">
                 <div class="row">
                     <div class="col-md-4">
+<<<<<<< HEAD
+                        <?php if ($model->sekolahId) : ?>
+                            <div class="form-group">
+                                <label class="control-label">Nama Sekolah</label>
+                                <input type="text" class="form-control" value="<?= $model->sekolahId->sekolah ?>">
+=======
                         <?php if ($model->sekolahDapodik) : ?>
                             <div class="form-group">
                                 <label class="control-label">Nama Sekolah</label>
                                 <input type="text" class="form-control" value="<?= $model->sekolahDapodik->sekolah ?>">
+>>>>>>> 6d807d99a78098a7485130a146d84503a1f32f36
                             </div>
                         <?php endif; ?>
                     </div>
