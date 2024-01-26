@@ -109,14 +109,14 @@ class PendaftarController extends Controller
         $filterAkademik = Yii::$app->request->get('status_test_akademik_id');
         $filterPsikotes = Yii::$app->request->get('status_test_psikologi_id');
         $filterKelulusan = Yii::$app->request->get('status_kelulusan');
-        $query = Pendaftar::find()->with(['sekolahId', 'lokasi', 'kode']);
+        $query = Pendaftar::find()->with(['sekolahDapodik', 'lokasi', 'kode']);
         $query->orderBy(['pendaftar_id' => SORT_DESC]);
 
         $totalRecords = Yii::$app->cache->get($cacheKeyTotalRecords);
         $totalDisplayRecords = Yii::$app->cache->get($cacheKeyTotalDisplayRecords);
 
         if ($totalRecords === false || $totalDisplayRecords === false) {
-            $query = Pendaftar::find()->with(['sekolahId', 'lokasi', 'kode']);
+            $query = Pendaftar::find()->with(['sekolahDapodik', 'lokasi', 'kode']);
             $query->orderBy(['pendaftar_id' => SORT_DESC]);
             if ($filterAdminstrasi !== null && $filterAdminstrasi !== '') {
                 $query->andWhere(['status_adminstrasi_id' => $filterAdminstrasi]);
@@ -199,7 +199,7 @@ class PendaftarController extends Controller
                 'pendaftar_id' => $this->getEncryptedIdCached($pendaftar->pendaftar_id),
                 'no_pendaftaran' => $pendaftar->prefix_kode_pendaftaran . $pendaftar->no_pendaftaran,
                 'nama_pendaftar' => $pendaftar->nama,
-                'nama_sekolah' => $pendaftar->sekolahId ? $pendaftar->sekolahId->sekolah : 'Tidak ditemukan',
+                'nama_sekolah' => $pendaftar->sekolahDapodik ? $pendaftar->sekolahDapodik->sekolah : 'Tidak ditemukan',
                 'lokasi_ujian' => $pendaftar->lokasi ? $pendaftar->lokasi->alamat : 'Tidak ditemukan',
                 'kode_ujian' => $pendaftar->kode ? $pendaftar->kode->kode_ujian : 'Tidak ditemukan',
                 'action' => $actionButtons,
@@ -744,7 +744,7 @@ class PendaftarController extends Controller
         $pendidikanIbu = JenjangPendidikan::find()->asArray()->all();
         $pekerjaanAyah = Pekerjaan::find()->asArray()->all();
         $pekerjaanIbu = Pekerjaan::find()->asArray()->all();
-        $sekolahId = SekolahDapodik::find()->asArray()->all();
+        $sekolahDapodik = SekolahDapodik::find()->asArray()->all();
         $kemampuanBahasaInggris = KemampuanBahasa::find()->asArray()->all();
         $kemampuanBahasaAsing = KemampuanBahasa::find()->asArray()->all();
         $metodePembayaran = MetodePembayaran::find()->asArray()->all();
@@ -819,7 +819,7 @@ class PendaftarController extends Controller
                 'pendidikanIbu' => $pendidikanIbu,
                 'pekerjaanAyah' => $pekerjaanAyah,
                 'pekerjaanIbu' => $pekerjaanIbu,
-                'sekolahId' => $sekolahId,
+                'sekolahDapodik' => $sekolahDapodik,
                 'kemampuanBahasaInggris' => $kemampuanBahasaInggris,
                 'kemampuanBahasaAsing' => $kemampuanBahasaAsing,
                 'metodePembayaran' => $metodePembayaran,

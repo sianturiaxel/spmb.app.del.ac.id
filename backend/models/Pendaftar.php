@@ -248,12 +248,10 @@ class Pendaftar extends \yii\db\ActiveRecord
             // ... konfigurasi lainnya ...
         ]);
     }
-
-    public function getSekolahId()
+    public function getSekolahDapodik()
     {
-        return $this->hasOne(SekolahDapodik::class, ['id' => 'sekolah_id']);
+        return $this->hasOne(SekolahDapodik::class, ['id' => 'sekolah_dapodik_id']);
     }
-
     public function getJalurPendaftaran()
     {
         return $this->hasOne(JalurPendaftaran::class, ['jalur_pendaftaran_id' => 'jalur_pendaftaran_id']);

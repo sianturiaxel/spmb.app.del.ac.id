@@ -11,26 +11,26 @@ $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="pendaftar-update">
 
-    <?= $this->render('_form', [
-        'model' => $model,
-        'gelombangPendaftaran' => $gelombangPendaftaran,
-        'jenisKelamin' => $jenisKelamin,
-        'agama' => $agama,
-        'kecamatan' => $kecamatan,
-        'kabupaten' => $kabupaten,
-        'provinsi' => $provinsi,
-        'pendidikanAyah' => $pendidikanAyah,
-        'pendidikanIbu' => $pendidikanIbu,
-        'kecamatanOrangtua' => $kecamatanOrangtua,
-        'kabupatenOrangtua' => $kabupatenOrangtua,
-        'provinsiOrangtua' => $provinsiOrangtua,
-        'pekerjaanAyah' => $pekerjaanAyah,
-        'pekerjaanIbu' => $pekerjaanIbu,
-        'sekolahId' => $sekolahId,
-        'kemampuanBahasaInggris' => $kemampuanBahasaInggris,
-        'kemampuanBahasaAsing' => $kemampuanBahasaAsing,
-        'metodePembayaran' => $metodePembayaran,
-        'statusPendaftaran' => $statusPendaftaran,
-    ]) ?>
+        <?= $this->render('_form', [
+                'model' => $model,
+                'gelombangPendaftaran' => $gelombangPendaftaran,
+                'jenisKelamin' => $jenisKelamin,
+                'agama' => $agama,
+                'kecamatan' => $kecamatan,
+                'kabupaten' => $kabupaten,
+                'provinsi' => $provinsi,
+                'pendidikanAyah' => $pendidikanAyah,
+                'pendidikanIbu' => $pendidikanIbu,
+                'kecamatanOrangtua' => $kecamatanOrangtua,
+                'kabupatenOrangtua' => $kabupatenOrangtua,
+                'provinsiOrangtua' => $provinsiOrangtua,
+                'pekerjaanAyah' => $pekerjaanAyah,
+                'pekerjaanIbu' => $pekerjaanIbu,
+                'sekolahDapodik' => $sekolahDapodik,
+                'kemampuanBahasaInggris' => $kemampuanBahasaInggris,
+                'kemampuanBahasaAsing' => $kemampuanBahasaAsing,
+                'metodePembayaran' => $metodePembayaran,
+                'statusPendaftaran' => $statusPendaftaran,
+        ]) ?>
 
 </div>
