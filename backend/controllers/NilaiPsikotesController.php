@@ -46,9 +46,11 @@ class NilaiPsikotesController extends Controller
         $start = Yii::$app->request->get('start');
         $length = Yii::$app->request->get('length');
         $query = NilaiPsikotes::find();
+        $query->joinWith(['pendaftar p']);
         $totalRecords = $query->count();
-        if (!empty($search)) {
-            $query->andFilterWhere(['like', 'nama', $search]);
+        $search = Yii::$app->request->getQueryParam('search', null);
+        if ($search && !empty($search['value'])) {
+            $query->andFilterWhere(['like', 'p.nama', $search['value']]);
         }
         $totalDisplayRecords = $query->count();
         $data = $query->offset($start)->limit($length)->all();

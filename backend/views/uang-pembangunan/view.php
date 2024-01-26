@@ -2,40 +2,66 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
 /** @var backend\models\UangPembangunan $model */
 
-$this->title = $model->uang_pembangunan_id;
-$this->params['breadcrumbs'][] = ['label' => 'Uang Pembangunans', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Uang Pembangunan', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="uang-pembangunan-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+<div class="uang-pembangunan-form container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="kode-ujian-view">
+                    <?= DetailView::widget([
+                        'model' => $model,
+                        'attributes' => [
+                            //'uang_pembangunan_id'',
+                            [
+                                'attribute' => 'gelombang_pendaftaran',
+                                'value' => function ($model) {
+                                    return $model->gelombangPendaftaran ? $model->gelombangPendaftaran->desc : 'Tidak Ada';
+                                },
+                            ],
+                            [
+                                'attribute' => 'jurusan',
+                                'value' => function ($model) {
+                                    return $model->jurusan ? $model->jurusan->nama : 'Tidak Ada';
+                                },
+                            ],
+                            'minimum_n',
+                            'base_n',
+                            'multi_n',
+                            'created_at:datetime',
+                            [
+                                'attribute' => 'created_by',
+                                'value' => function ($model) {
+                                    return $model->creator ? $model->creator->username : '-';
+                                },
+                            ],
+                            'updated_at:datetime',
+                            [
+                                'attribute' => 'updated_by',
+                                'value' => function ($model) {
+                                    return $model->updater ? $model->updater->username : '-';
+                                },
+                            ],
 
-    <p>
-        <?= Html::a('Update', ['update', 'uang_pembangunan_id' => $model->uang_pembangunan_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'uang_pembangunan_id' => $model->uang_pembangunan_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+                        ],
+                    ]) ?>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <?= Html::a('Kembali', Url::to(['index']), ['class' => 'btn btn-warning']) ?>
+                </div>
+            </div>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'uang_pembangunan_id',
-            'gelombang_pendaftaran_id',
-            'jurusan_id',
-            'minimum_n',
-            'base_n',
-            'multi_n',
-        ],
-    ]) ?>
+        </div>
 
+    </div>
 </div>

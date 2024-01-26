@@ -17,6 +17,11 @@ return [
         ]
     ],
     'components' => [
+        'formatter' => [
+            'class' => 'yii\i18n\Formatter',
+            'dateFormat' => 'dd MMMM yyyy',
+            'locale' => 'id-ID',
+        ],
         'request' => [
             'csrfParam' => '_csrf',
             'enableCsrfValidation' => true,

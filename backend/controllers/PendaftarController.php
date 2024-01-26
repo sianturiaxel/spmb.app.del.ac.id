@@ -744,7 +744,7 @@ class PendaftarController extends Controller
         $pendidikanIbu = JenjangPendidikan::find()->asArray()->all();
         $pekerjaanAyah = Pekerjaan::find()->asArray()->all();
         $pekerjaanIbu = Pekerjaan::find()->asArray()->all();
-        $sekolahId = SekolahDapodik::find()->asArray()->all();
+        $sekolahDapodik = SekolahDapodik::find()->asArray()->all();
         $kemampuanBahasaInggris = KemampuanBahasa::find()->asArray()->all();
         $kemampuanBahasaAsing = KemampuanBahasa::find()->asArray()->all();
         $metodePembayaran = MetodePembayaran::find()->asArray()->all();
@@ -819,7 +819,7 @@ class PendaftarController extends Controller
                 'pendidikanIbu' => $pendidikanIbu,
                 'pekerjaanAyah' => $pekerjaanAyah,
                 'pekerjaanIbu' => $pekerjaanIbu,
-                'sekolahId' => $sekolahId,
+                'sekolahDapodik' => $sekolahDapodik,
                 'kemampuanBahasaInggris' => $kemampuanBahasaInggris,
                 'kemampuanBahasaAsing' => $kemampuanBahasaAsing,
                 'metodePembayaran' => $metodePembayaran,
