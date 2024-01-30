@@ -2,8 +2,11 @@
 
 namespace backend\controllers;
 
+
+
 use backend\models\UserRole;
-use backend\models\UserRoleSearch;
+use backend\models\Users;
+use backend\models\Role;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -36,16 +39,21 @@ class UserRoleController extends Controller
      *
      * @return string
      */
+
     public function actionIndex()
     {
-        $searchModel = new UserRoleSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => UserRole::find(),
+            'sort' => [
+                'defaultOrder' => ['user_id' => SORT_DESC]
+            ],
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
+
 
     /**
      * Displays a single UserRole model.
@@ -69,6 +77,8 @@ class UserRoleController extends Controller
     public function actionCreate()
     {
         $model = new UserRole();
+        $user = Users::find()->asArray()->all();
+        $role = Role::find()->asArray()->all();
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
@@ -80,6 +90,8 @@ class UserRoleController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'user' => $user,
+            'role' => $role,
         ]);
     }
 
@@ -94,6 +106,8 @@ class UserRoleController extends Controller
     public function actionUpdate($user_id, $role_id)
     {
         $model = $this->findModel($user_id, $role_id);
+        $user = Users::find()->asArray()->all();
+        $role = Role::find()->asArray()->all();
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'user_id' => $model->user_id, 'role_id' => $model->role_id]);
@@ -101,6 +115,8 @@ class UserRoleController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'user' => $user,
+            'role' => $role,
         ]);
     }
 

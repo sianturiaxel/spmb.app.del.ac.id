@@ -2,9 +2,7 @@
 
 namespace backend\controllers;
 
-use backend\models\NilaiAkademik;
 use backend\models\NilaiWawancara;
-use backend\models\NilaiWawancaraSearch;
 use yii\web\UploadedFile;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -86,11 +84,11 @@ class NilaiWawancaraController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new NilaiWawancaraSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
 
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => NilaiWawancara::find(),
+        ]);
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
