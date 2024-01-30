@@ -40,9 +40,13 @@ class Kabupaten extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'kabupaten_id' => 'Kabupaten ID',
+            'kabupaten_id' => 'Kode Kabupaten',
             'provinsi_id' => 'Provinsi ID',
             'nama' => 'Nama',
         ];
+    }
+    public function getProvinsi()
+    {
+        return $this->hasOne(Provinsi::className(), ['provinsi_id' => 'provinsi_id']);
     }
 }

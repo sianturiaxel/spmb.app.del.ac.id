@@ -3,7 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\Kabupaten;
-use backend\models\KabupatenSearch;
+use backend\models\Provinsi;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -36,16 +36,8 @@ class KabupatenController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
-    {
-        $searchModel = new KabupatenSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
+
 
     /**
      * Displays a single Kabupaten model.
@@ -60,14 +52,10 @@ class KabupatenController extends Controller
         ]);
     }
 
-    /**
-     * Creates a new Kabupaten model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return string|\yii\web\Response
-     */
     public function actionCreate()
     {
         $model = new Kabupaten();
+        $provinsi = Provinsi::find()->asArray()->all();
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
@@ -79,6 +67,26 @@ class KabupatenController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'provinsi' => $provinsi,
+        ]);
+    }
+
+
+    /**
+     * Creates a new Kabupaten model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return string|\yii\web\Response
+     */
+    public function actionIndex()
+    {
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => Kabupaten::find(),
+        ]);
+        $provinsi = Provinsi::find()->asArray()->all();
+
+        return $this->render('index', [
+            'dataProvider' => $dataProvider,
+            'provinsi' => $provinsi,
         ]);
     }
 
@@ -92,6 +100,8 @@ class KabupatenController extends Controller
     public function actionUpdate($kabupaten_id)
     {
         $model = $this->findModel($kabupaten_id);
+        $provinsi = Provinsi::find()->asArray()->all();
+
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'kabupaten_id' => $model->kabupaten_id]);
@@ -99,6 +109,7 @@ class KabupatenController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'provinsi' => $provinsi,
         ]);
     }
 

@@ -40,9 +40,14 @@ class Kecamatan extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'kecamatan_id' => 'Kecamatan ID',
+            'kecamatan_id' => 'Kode Kecamatan',
             'kabupaten_id' => 'Kabupaten ID',
             'nama' => 'Nama',
         ];
+    }
+
+    public function getKabupaten()
+    {
+        return $this->hasOne(Kabupaten::className(), ['kabupaten_id' => 'kabupaten_id']);
     }
 }
