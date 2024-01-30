@@ -5,7 +5,7 @@ namespace backend\controllers;
 use backend\models\GelombangPendaftaran;
 use backend\models\JenisTest;
 use backend\models\KodeUjian;
-use backend\models\KodeUjianSearch;
+//use backend\models\KodeUjianSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -52,6 +52,7 @@ class KodeUjianController extends Controller
         $start = Yii::$app->request->get('start');
         $length = Yii::$app->request->get('length');
         $query = KodeUjian::find();
+        $query->orderBy(['kode_ujian_id' => SORT_DESC]);
         $totalRecords = $query->count();
         if (!empty($search)) {
             $query->andFilterWhere(['like', 'nama', $search]);
@@ -62,14 +63,14 @@ class KodeUjianController extends Controller
         $totalDisplayRecords = $query->count();
         $data = $query->offset($start)->limit($length)->all();
         $dataArray = [];
-
+        $no = $start + 1;
         foreach ($data as $kodeUjian) {
             $statusToggleHTML = $kodeUjian->status == 1
                 ? '<label class="switch"><input class="status-toggle" type="checkbox" checked data-id="' . $kodeUjian->kode_ujian_id . '"><span class="slider round"></span></label>'
                 : '<label class="switch"><input class="status-toggle" type="checkbox" data-id="' . $kodeUjian->kode_ujian_id . '"><span class="slider round"></span></label>';
 
             $dataArray[] = [
-                'no' => $kodeUjian->kode_ujian_id,
+                'no' => $no++,
                 'gelombang_pendaftaran' => $kodeUjian->gelombangPendaftaran ? $kodeUjian->gelombangPendaftaran->desc : 'Tidak ditemukan',
                 'jenis_test' => $kodeUjian->jenisTest ? $kodeUjian->jenisTest->nama : 'Tidak ditemukan',
                 'kode_ujian' => $kodeUjian->kode_ujian,
@@ -94,20 +95,20 @@ class KodeUjianController extends Controller
 
     public function actionIndex()
     {
-        $searchModel = new KodeUjianSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-        // $gelombangPendaftaran = KodeUjian::find()->with('gelombangPendaftaran')->all();
+        $query = KodeUjian::find()->with('jenisTest');
+
+
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => $query,
+        ]);
+
         $gelombangPendaftaran = GelombangPendaftaran::find()
             ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
             ->all();
-        $jenisTest = KodeUjian::find()->with('jenisTest')->all();
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'gelombangPendaftaran' => $gelombangPendaftaran,
-
-            'jenisTest' => $jenisTest,
         ]);
     }
 

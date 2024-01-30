@@ -3,7 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\BidangUtbk;
-use backend\models\BidangUtbkSearch;
+use backend\models\KategoriBidangUtbk;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,11 +38,15 @@ class BidangUtbkController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new BidangUtbkSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => BidangUtbk::find(),
+            'sort' => [
+                'defaultOrder' => ['bidang_utbk_id' => SORT_DESC]
+            ],
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -68,7 +72,7 @@ class BidangUtbkController extends Controller
     public function actionCreate()
     {
         $model = new BidangUtbk();
-
+        $kategoriBidangUtbk = KategoriBidangUtbk::find()->asArray()->all();
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'bidang_utbk_id' => $model->bidang_utbk_id]);
@@ -79,6 +83,7 @@ class BidangUtbkController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'kategoriBidangUtbk' => $kategoriBidangUtbk,
         ]);
     }
 
@@ -91,7 +96,9 @@ class BidangUtbkController extends Controller
      */
     public function actionUpdate($bidang_utbk_id)
     {
+
         $model = $this->findModel($bidang_utbk_id);
+        $kategoriBidangUtbk = KategoriBidangUtbk::find()->asArray()->all();
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'bidang_utbk_id' => $model->bidang_utbk_id]);
@@ -99,6 +106,7 @@ class BidangUtbkController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'kategoriBidangUtbk' => $kategoriBidangUtbk,
         ]);
     }
 

@@ -44,4 +44,10 @@ class MataPelajaran extends \yii\db\ActiveRecord
             'desc' => 'Desc',
         ];
     }
+
+    public function getJurusans()
+    {
+        return $this->hasMany(Jurusan::className(), ['jurusan_id' => 'jurusan_id'])
+            ->viaTable('t_jurusan_mapel', ['mata_pelajaran_id' => 'mata_pelajaran_id']);
+    }
 }

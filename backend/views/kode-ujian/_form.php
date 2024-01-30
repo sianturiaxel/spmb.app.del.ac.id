@@ -50,7 +50,6 @@ $this->registerJs($js);
                             </option>
                         <?php endforeach; ?>
                     </select>
-
                 </div>
                 <div class="col-md-4">
                     <?= $form->field($model, 'kode_ujian')->textInput(['maxlength' => true])->label('Kode Ujian') ?>

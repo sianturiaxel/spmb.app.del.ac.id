@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Kode Ujians', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="kode-ujian-form container mt-5">
+<div class="kode-ujian-view container mt-5">
     <div class="card">
         <div class="card-body">
             <div class="row">

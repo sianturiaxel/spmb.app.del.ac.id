@@ -10,11 +10,9 @@ $this->params['breadcrumbs'][] = ['label' => 'Uang Daftar Ulangs', 'url' => ['in
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="uang-daftar-ulang-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <?= $this->render('_form', [
         'model' => $model,
+        'gelombangPendaftaran' => $gelombangPendaftaran,
     ]) ?>
 
 </div>

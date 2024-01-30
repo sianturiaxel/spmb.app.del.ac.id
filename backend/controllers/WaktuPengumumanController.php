@@ -4,9 +4,13 @@ namespace backend\controllers;
 
 use backend\models\WaktuPengumuman;
 use backend\models\WaktuPengumumanSearch;
+use backend\models\GelombangPendaftaran;
+use backend\models\JenisTest;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii;
+
 
 /**
  * WaktuPengumumanController implements the CRUD actions for WaktuPengumuman model.
@@ -38,11 +42,14 @@ class WaktuPengumumanController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new WaktuPengumumanSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => WaktuPengumuman::find(),
+            'sort' => [
+                'defaultOrder' => ['waktu_pengumuman_id' => SORT_DESC]
+            ],
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -55,8 +62,13 @@ class WaktuPengumumanController extends Controller
      */
     public function actionView($waktu_pengumuman_id)
     {
+        $gelombangPendaftaran = GelombangPendaftaran::find()->asArray()->all();
+        $jenisTest = JenisTest::find()->asArray()->all();
+
         return $this->render('view', [
             'model' => $this->findModel($waktu_pengumuman_id),
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'jenisTest' => $jenisTest,
         ]);
     }
 
@@ -68,10 +80,20 @@ class WaktuPengumumanController extends Controller
     public function actionCreate()
     {
         $model = new WaktuPengumuman();
+        $gelombangPendaftaran = GelombangPendaftaran::find()
+            ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
+
+        $jenisTest = JenisTest::find()->asArray()->all();
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'waktu_pengumuman_id' => $model->waktu_pengumuman_id]);
+            if ($model->load($this->request->post())) {
+                $model->tanggal_mulai = Yii::$app->formatter->asDate($model->tanggal_mulai, 'php:Y-m-d');
+                $model->tanggal_akhir = Yii::$app->formatter->asDate($model->tanggal_akhir, 'php:Y-m-d');
+
+                if ($model->save()) {
+                    return $this->redirect(['view', 'waktu_pengumuman_id' => $model->waktu_pengumuman_id]);
+                }
             }
         } else {
             $model->loadDefaultValues();
@@ -79,8 +101,11 @@ class WaktuPengumumanController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'jenisTest' => $jenisTest,
         ]);
     }
+
 
     /**
      * Updates an existing WaktuPengumuman model.
@@ -92,15 +117,28 @@ class WaktuPengumumanController extends Controller
     public function actionUpdate($waktu_pengumuman_id)
     {
         $model = $this->findModel($waktu_pengumuman_id);
+        $gelombangPendaftaran = GelombangPendaftaran::find()
+            ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'waktu_pengumuman_id' => $model->waktu_pengumuman_id]);
+        $jenisTest = JenisTest::find()->asArray()->all();
+
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            $model->tanggal_mulai = Yii::$app->formatter->asDate($model->tanggal_mulai, 'php:Y-m-d');
+            $model->tanggal_akhir = Yii::$app->formatter->asDate($model->tanggal_akhir, 'php:Y-m-d');
+
+            if ($model->save()) {
+                return $this->redirect(['view', 'waktu_pengumuman_id' => $model->waktu_pengumuman_id]);
+            }
         }
 
         return $this->render('update', [
             'model' => $model,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'jenisTest' => $jenisTest,
         ]);
     }
+
 
     /**
      * Deletes an existing WaktuPengumuman model.
