@@ -3,7 +3,6 @@
 namespace backend\controllers;
 
 use backend\models\Role;
-use backend\models\RoleSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,14 +37,18 @@ class RoleController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new RoleSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => Role::find(),
+            'sort' => [
+                'defaultOrder' => ['id' => SORT_DESC]
+            ],
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
+
 
     /**
      * Displays a single Role model.

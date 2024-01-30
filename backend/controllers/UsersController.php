@@ -4,7 +4,6 @@ namespace backend\controllers;
 
 
 use backend\models\Users;
-use backend\models\UsersSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -39,11 +38,14 @@ class UsersController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new UsersSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => Users::find(),
+            'sort' => [
+                'defaultOrder' => ['id' => SORT_DESC]
+            ],
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }

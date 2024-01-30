@@ -24,6 +24,7 @@ class Users extends \yii\db\ActiveRecord implements IdentityInterface
             [['created_at', 'updated_at'], 'safe'],
             [['username'], 'string', 'max' => 50],
             [['password'], 'string', 'max' => 255],
+            [['nama'], 'string', 'max' => 50],
             [['email'], 'string', 'max' => 100],
         ];
     }
@@ -34,6 +35,7 @@ class Users extends \yii\db\ActiveRecord implements IdentityInterface
             'id' => 'ID',
             'username' => 'Username',
             'password' => 'Password',
+            'nama' => 'Nama',
             'email' => 'Email',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
