@@ -3,7 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\NilaiPsikotes;
-use backend\models\NilaiPsikotesSearch;
+//use backend\models\NilaiPsikotesSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -83,11 +83,11 @@ class NilaiPsikotesController extends Controller
 
     public function actionIndex()
     {
-        $searchModel = new NilaiPsikotesSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
 
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => NilaiPsikotes::find(),
+        ]);
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
