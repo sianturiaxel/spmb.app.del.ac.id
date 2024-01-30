@@ -7,7 +7,7 @@ use yii\helpers\Url;
 /** @var yii\web\View $this */
 /** @var backend\models\BidangUtbk $model */
 
-$this->title = $model->name;
+$this->title = 'Detail Bidang Utbk';
 $this->params['breadcrumbs'][] = ['label' => 'Bidang Utbks', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
