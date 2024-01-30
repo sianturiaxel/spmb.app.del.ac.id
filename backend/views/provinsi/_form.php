@@ -8,18 +8,33 @@ use yii\widgets\ActiveForm;
 /** @var yii\widgets\ActiveForm $form */
 ?>
 
-<div class="provinsi-form">
 
+
+<div class="provinsi-form container mt-5">
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'provinsi_id')->textInput() ?>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <?= $form->field($model, 'provinsi_id')->textInput() ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <?= $form->field($model, 'nama')->textInput(['maxlength' => true]) ?>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <?= Html::button('Kembali', ['class' => 'btn btn-warning', 'onclick' => 'history.go(-1)']) ?>
 
-    <?= $form->field($model, 'nama')->textInput(['maxlength' => true]) ?>
+                    <?= Html::submitButton('Simpan', ['class' => 'btn btn-primary']) ?>
+                </div>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+            </div>
+        </div>
+
+        <?php ActiveForm::end(); ?>
     </div>
-
-    <?php ActiveForm::end(); ?>
-
 </div>

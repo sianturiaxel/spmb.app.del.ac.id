@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
 /** @var backend\models\Kecamatan $model */
@@ -11,28 +12,36 @@ $this->params['breadcrumbs'][] = ['label' => 'Kecamatans', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="kecamatan-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+<div class="kode-ujian-view container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="kode-ujian-view">
+                    <?= DetailView::widget([
+                        'model' => $model,
+                        'attributes' => [
+                            //'kecamatan_id',
+                            [
+                                'attribute' => 'Kode Kabupaten',
+                                'value' => function ($model) {
+                                    return $model->kabupaten_id ? $model->kabupaten->nama : 'Tidak Ada';
+                                },
+                            ],
+                            'kecamatan_id',
+                            'nama',
 
-    <p>
-        <?= Html::a('Update', ['update', 'kecamatan_id' => $model->kecamatan_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'kecamatan_id' => $model->kecamatan_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+                        ],
+                    ]) ?>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <?= Html::a('Kembali', Url::to(['index']), ['class' => 'btn btn-warning']) ?>
+                </div>
+            </div>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'kecamatan_id',
-            'kabupaten_id',
-            'nama',
-        ],
-    ]) ?>
+        </div>
 
+    </div>
 </div>

@@ -2,9 +2,9 @@
 
 namespace backend\controllers;
 
+use backend\models\Kabupaten;
 use yii\helpers\Url;
 use backend\models\Kecamatan;
-use backend\models\KecamatanSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -85,11 +85,13 @@ class KecamatanController extends Controller
 
     public function actionIndex()
     {
-        $searchModel = new KecamatanSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => Kecamatan::find(),
+            'sort' => [
+                'defaultOrder' => ['kecamatan_id']
+            ],
+        ]);
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -115,6 +117,7 @@ class KecamatanController extends Controller
     public function actionCreate()
     {
         $model = new Kecamatan();
+        $kabupaten = Kabupaten::find()->asArray()->all();
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
@@ -126,6 +129,7 @@ class KecamatanController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'kabupaten' => $kabupaten,
         ]);
     }
 
@@ -139,6 +143,7 @@ class KecamatanController extends Controller
     public function actionUpdate($kecamatan_id)
     {
         $model = $this->findModel($kecamatan_id);
+        $kabupaten = Kabupaten::find()->asArray()->all();
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'kecamatan_id' => $model->kecamatan_id]);
@@ -146,6 +151,7 @@ class KecamatanController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'kabupaten' => $kabupaten,
         ]);
     }
 

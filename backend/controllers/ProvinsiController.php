@@ -3,7 +3,6 @@
 namespace backend\controllers;
 
 use backend\models\Provinsi;
-use backend\models\ProvinsiSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,14 +37,15 @@ class ProvinsiController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new ProvinsiSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => Provinsi::find(),
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
+
 
     /**
      * Displays a single Provinsi model.
