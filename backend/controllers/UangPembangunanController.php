@@ -3,7 +3,6 @@
 namespace backend\controllers;
 
 use backend\models\UangPembangunan;
-use backend\models\UangPembangunanSearch;
 use backend\models\GelombangPendaftaran;
 use backend\models\JenisUjian;
 use backend\models\Jurusan;
@@ -55,16 +54,15 @@ class UangPembangunanController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new UangPembangunanSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-        $gelombangPendaftaran = UangPembangunan::find()->with('gelombangPendaftaran')->all();
-        $jurusan = UangPembangunan::find()->with('jurusan')->all();
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => UangPembangunan::find()->with('gelombangPendaftaran', 'jurusan'),
+            'sort' => [
+                'defaultOrder' => ['uang_pembangunan_id' => SORT_DESC] // Sesuaikan field jika diperlukan
+            ],
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'gelombangPendaftaran' => $gelombangPendaftaran,
-            'jurusan' => $jurusan,
         ]);
     }
 

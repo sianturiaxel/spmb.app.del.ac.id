@@ -2,6 +2,9 @@
 
 namespace backend\models;
 
+use yii\behaviors\TimestampBehavior;
+use yii\behaviors\BlameableBehavior;
+use yii\db\Expression;
 use Yii;
 
 /**
@@ -28,6 +31,22 @@ class WaktuPengumuman extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 't_waktu_pengumuman';
+    }
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className() => [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new Expression('NOW()'),
+            ],
+            BlameableBehavior::className() => [
+                'class' => BlameableBehavior::className(),
+                'createdByAttribute' => 'created_by',
+                'updatedByAttribute' => 'updated_by',
+            ],
+        ];
     }
 
     /**
@@ -70,5 +89,14 @@ class WaktuPengumuman extends \yii\db\ActiveRecord
     public function getJenisTest()
     {
         return $this->hasOne(JenisTest::class, ['jenis_test_id' => 'jenis_test_id']);
+    }
+    public function getCreator()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'created_by']);
+    }
+
+    public function getUpdater()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'updated_by']);
     }
 }

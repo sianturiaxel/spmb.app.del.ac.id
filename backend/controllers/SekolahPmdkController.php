@@ -4,7 +4,7 @@ namespace backend\controllers;
 
 use backend\models\Sekolah;
 use backend\models\SekolahPmdk;
-use backend\models\SekolahPmdkSearch;
+//use backend\models\SekolahPmdkSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -41,14 +41,17 @@ class SekolahPmdkController extends Controller
 
     public function actionIndex()
     {
-        $searchModel = new SekolahPmdkSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-        $sekolah = SekolahPmdk::find()->with('sekolah')->all();
 
+        $query = SekolahPmdk::find()->with('sekolah');
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => $query,
+            'sort' => [
+                'defaultOrder' => ['sekolah_pmdk_id' => SORT_DESC]
+            ],
+        ]);
+        // Render view dengan dataProvider
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'sekolah' => $sekolah,
         ]);
     }
 

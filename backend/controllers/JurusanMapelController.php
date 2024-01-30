@@ -4,7 +4,7 @@ namespace backend\controllers;
 
 use backend\models\Jurusan;
 use backend\models\JurusanMapel;
-use backend\models\JurusanMapelSearch;
+// use backend\models\JurusanMapelSearch;
 use backend\models\MataPelajaran;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
@@ -41,14 +41,13 @@ class JurusanMapelController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new JurusanMapelSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-
-        $jurusanMapelQuery = JurusanMapel::find()->with('jurusan', 'mataPelajaran');
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => JurusanMapel::find()->with('jurusan', 'mataPelajaran'),
+        ]);
 
         $jurusanMapelData = [];
 
-        foreach ($jurusanMapelQuery->all() as $jm) {
+        foreach ($dataProvider->getModels() as $jm) {
             $jurusanNama = $jm->jurusan ? $jm->jurusan->nama : 'Data tidak tersedia';
             $mapelNama = $jm->mataPelajaran ? $jm->mataPelajaran->name : 'Data tidak tersedia';
 
@@ -62,11 +61,11 @@ class JurusanMapelController extends Controller
         }
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'jurusanMapelData' => $jurusanMapelData,
         ]);
     }
+
 
 
 

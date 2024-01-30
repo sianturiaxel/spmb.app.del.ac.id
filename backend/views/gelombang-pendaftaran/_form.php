@@ -37,7 +37,7 @@ JS;
 $this->registerJs($js);
 ?>
 
-<div class="kode-ujian-form container mt-5">
+<div class="gelombang-pendaftaran-form container mt-5">
     <?php $form = ActiveForm::begin(); ?>
     <div class="card">
         <div class="card-body">

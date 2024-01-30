@@ -2,8 +2,8 @@
 
 namespace backend\controllers;
 
+use backend\models\GelombangPendaftaran;
 use backend\models\UangDaftarUlang;
-use backend\models\UangDaftarUlangSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,14 +38,16 @@ class UangDaftarUlangController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new UangDaftarUlangSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-        $gelombangPendaftaran = UangDaftarUlang::find()->with('gelombangPendaftaran')->all();
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => UangDaftarUlang::find()->with('gelombangPendaftaran'),
+            'sort' => [
+                'defaultOrder' => ['uang_daftar_ulang_id' => SORT_DESC]
+            ],
+
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'gelombangPendaftaran' => $gelombangPendaftaran,
         ]);
     }
 
@@ -57,8 +59,10 @@ class UangDaftarUlangController extends Controller
      */
     public function actionView($uang_daftar_ulang_id)
     {
+        $gelombangPendaftaran = GelombangPendaftaran::find()->asArray()->all();
         return $this->render('view', [
             'model' => $this->findModel($uang_daftar_ulang_id),
+            'gelombangPendaftaran' => $gelombangPendaftaran,
         ]);
     }
 
@@ -70,7 +74,9 @@ class UangDaftarUlangController extends Controller
     public function actionCreate()
     {
         $model = new UangDaftarUlang();
-
+        $gelombangPendaftaran = GelombangPendaftaran::find()
+            ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'uang_daftar_ulang_id' => $model->uang_daftar_ulang_id]);
@@ -81,6 +87,7 @@ class UangDaftarUlangController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
         ]);
     }
 
@@ -94,6 +101,7 @@ class UangDaftarUlangController extends Controller
     public function actionUpdate($uang_daftar_ulang_id)
     {
         $model = $this->findModel($uang_daftar_ulang_id);
+        $gelombangPendaftaran = GelombangPendaftaran::find()->asArray()->all();
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'uang_daftar_ulang_id' => $model->uang_daftar_ulang_id]);
@@ -101,6 +109,7 @@ class UangDaftarUlangController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
         ]);
     }
 

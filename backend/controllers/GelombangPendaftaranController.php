@@ -3,7 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\GelombangPendaftaran;
-use backend\models\GelombangPendaftaranSearch;
+//use backend\models\GelombangPendaftaranSearch;
 use backend\models\JenisTest;
 use backend\models\JenisUjian;
 use yii\web\Controller;
@@ -41,14 +41,17 @@ class GelombangPendaftaranController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new GelombangPendaftaranSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
-        $jenisUjian = GelombangPendaftaran::find()->with('jenisUjian')->all();
+        $query = GelombangPendaftaran::find()->with('jenisUjian');
+
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => $query,
+            'sort' => [
+                'defaultOrder' => ['gelombang_pendaftaran_id' => SORT_DESC]
+            ],
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'jenisUjian' => $jenisUjian,
         ]);
     }
 
