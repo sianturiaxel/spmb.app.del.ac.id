@@ -6,8 +6,8 @@ use yii\helpers\Html;
 /** @var backend\models\BiayaPendaftaran $model */
 
 
+$this->title = 'Update Biaya Pendaftaran';
 $this->params['breadcrumbs'][] = ['label' => 'Biaya Pendaftarans', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->biaya_pendaftaran_id, 'url' => ['view', 'biaya_pendaftaran_id' => $model->biaya_pendaftaran_id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="biaya-pendaftaran-update">

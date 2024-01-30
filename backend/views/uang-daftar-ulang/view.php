@@ -9,7 +9,7 @@ use yii;
 /** @var yii\web\View $this */
 /** @var backend\models\UangDaftarUlang $model */
 
-
+$this->title = 'Uang Daftar Ulang Detail';
 $this->params['breadcrumbs'][] = ['label' => 'Uang Daftar Ulangs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);

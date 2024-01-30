@@ -9,7 +9,7 @@ use yii\helpers\Url;
 /** @var yii\web\View $this */
 /** @var backend\models\GelombangPendaftaran $model */
 
-$this->title = $model->gelombang_pendaftaran_id;
+$this->title = 'Gelombang Pendaftaran Detail';
 $this->params['breadcrumbs'][] = ['label' => 'Gelombang Pendaftaran', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
