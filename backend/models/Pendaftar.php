@@ -275,6 +275,13 @@ class Pendaftar extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Pekerjaan::class, ['pekerjaan_id' => 'pekerjaan_ibu_id']);
     }
+
+    // untuk user generation number di finance, HARUS KONFIRMASI ini saat daftar atau daftar ulang
+    public function getKodePendaftaran(){
+        $suffix = sprintf("%04d", $this->no_pendaftaran);
+        return $this->prefix_kode_pendaftaran.$suffix;
+    }
+    
     /**
      * Metode untuk meluluskan pendaftar.
      */

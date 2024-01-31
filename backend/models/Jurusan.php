@@ -59,4 +59,9 @@ class Jurusan extends \yii\db\ActiveRecord
             'afis_id' => 'Afis ID',
         ];
     }
+
+    public function getFakultas()
+    {
+        return $this->hasOne(Fakultas::className(), ['fakultas_id' => 'fakultas_id']);
+    }
 }
