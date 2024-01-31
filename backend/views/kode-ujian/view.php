@@ -7,7 +7,7 @@ use yii\helpers\Url;
 /** @var yii\web\View $this */
 /** @var backend\models\KodeUjian $model */
 
-$this->title = $model->kode_ujian_id;
+
 $this->params['breadcrumbs'][] = ['label' => 'Kode Ujians', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
@@ -20,9 +20,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     <?= DetailView::widget([
                         'model' => $model,
                         'attributes' => [
-                            'kode_ujian_id',
+                            //'kode_ujian_id',
                             [
-                                'attribute' => 'gelombang_pendaftaran_id',
+                                'attribute' => 'gelombang_pendaftaran',
                                 'value' => function ($model) {
                                     return $model->gelombangPendaftaran ? $model->gelombangPendaftaran->desc : 'Tidak Ada';
                                 },
@@ -35,12 +35,29 @@ $this->params['breadcrumbs'][] = $this->title;
                             ],
                             'kode_ujian',
                             'username',
-                            // Jangan tampilkan password untuk alasan keamanan
-                            'status',
-                            'created_at:datetime', // Format sebagai tanggal dan waktu
-                            'created_by',
+
+                            [
+                                'attribute' => 'status',
+                                'value' => function ($model) {
+                                    return $model->status == 1 ? 'Aktif' : 'Tidak Aktif';
+                                },
+                                'format' => 'text',
+                            ],
+                            'created_at:datetime',
+                            [
+                                'attribute' => 'created_by',
+                                'value' => function ($model) {
+                                    return $model->creator ? $model->creator->username : '-';
+                                },
+                            ],
                             'updated_at:datetime',
-                            'updated_by',
+                            [
+                                'attribute' => 'updated_by',
+                                'value' => function ($model) {
+                                    return $model->updater ? $model->updater->username : '-';
+                                },
+                            ],
+
                         ],
                     ]) ?>
                 </div>

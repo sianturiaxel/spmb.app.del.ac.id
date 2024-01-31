@@ -217,6 +217,7 @@ class CalonMahasiswa extends \yii\db\ActiveRecord
         return $this->hasOne(Pendaftar::class, ['pendaftar_id' => 'pendaftar_id']);
     }
 
+
     public function getSekolah()
     {
         return $this->hasOne(Sekolah::class, ['sekolah_id' => 'sekolah_id']);
