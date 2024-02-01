@@ -65,4 +65,9 @@ class Jurusan extends \yii\db\ActiveRecord
         return $this->hasMany(MataPelajaran::className(), ['id' => 'mata_pelajaran_id'])
             ->viaTable('t_r_jurusan_mapel', ['jurusan_id' => 'id']);
     }
+
+    public function getFakultas()
+    {
+        return $this->hasOne(Fakultas::className(), ['fakultas_id' => 'fakultas_id']);
+    }
 }

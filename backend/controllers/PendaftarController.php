@@ -20,6 +20,9 @@ use backend\models\KemampuanBahasa;
 use backend\models\MetodePembayaran;
 use backend\models\Pekerjaan;
 use backend\models\StatusPendaftaran;
+use backend\models\finance\UserFinance;
+use backend\models\finance\UserRegistrationNumber;
+use backend\models\PaymentDetail;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -613,7 +616,7 @@ class PendaftarController extends Controller
         ];
     }
 
-    private function actionDataCalonMahasiswa($pendaftar_id)
+    public function actionDataCalonMahasiswa($pendaftar_id)
     {
         $pendaftar = Pendaftar::findOne($pendaftar_id);
 
@@ -627,6 +630,19 @@ class PendaftarController extends Controller
         if (!$pilihanJurusanLulus) {
             Yii::error("Tidak ada jurusan yang lulus untuk pendaftar ID $pendaftar_id.");
             return false;
+        }
+        
+        //Virtual Account
+        $va = NULL;
+        $userFinance = NULL;
+        
+        if(!is_null($pendaftar->virtual_account) && !empty($pendaftar->virtual_account)){
+            $va = $pendaftar->virtual_account;
+            $userFinance = UserRegistrationNumber::updateDataProdi($pilihanJurusanLulus->jurusan_id, $va);
+        }
+        else{
+            $va = CalonMahasiswa::generateVa($pendaftar_id);
+            $userFinance = UserFinance::createUser($pendaftar_id, $va);
         }
 
         $calonMahasiswa = new CalonMahasiswa();
@@ -642,6 +658,7 @@ class PendaftarController extends Controller
         $calonMahasiswa->no_telepon_rumah = $pendaftar->no_telepon_rumah;
         //$calonMahasiswa->golongan_darah_id = $pendaftar->golongan_darah_id;
         $calonMahasiswa->jurusan_id = $pilihanJurusanLulus->jurusan_id;
+
         $calonMahasiswa->tanggal_lahir = $pendaftar->tanggal_lahir;
         $calonMahasiswa->agama_id = $pendaftar->agama_id;
         $calonMahasiswa->alamat = $pendaftar->alamat;
@@ -684,9 +701,46 @@ class PendaftarController extends Controller
         // var_dump($calonMahasiswa);
         // die();
 
+        $calonMahasiswa->virtual_account_number = $va;
+        $calonMahasiswa->bank_name = 'Bank Mandiri';
+        $calonMahasiswa-> n = $pendaftar->n;
+
+
         if ($calonMahasiswa->save()) {
-            Yii::info("Data pendaftar ID $pendaftar_id berhasil disalin ke calon mahasiswa.");
-            return true;
+            $updateCalonMahasiswa = $calonMahasiswa;
+            //Tagihan Daftar Ulang
+            if($userFinance != NULL){
+                $cekTagihan = \Yii::$app->runAction('payment/cek-tagihan-penulang', ['calon_mahasiswa_id' => $calonMahasiswa->calon_mahasiswa_id]);
+                $result = json_decode($cekTagihan);
+                if(isset($result->status) && strtolower($result->status) === 'success' && isset($result->user_id)){
+                    // disini populate from spmb
+                    $payment = \Yii::$app->runAction('payment/generate-tagihan-penulang', ['userId' => $result->user_id, 'calonMahasiswaId' => $calonMahasiswa->calon_mahasiswa_id]);
+                    //IF SUCCESS GENERATE TAGIHAN
+                    if($payment){
+                        $updateCalonMahasiswa->total_pembayaran = $payment->total_amount_paid;
+                        if($updateCalonMahasiswa->save()){
+                            foreach($payment->paymentDetails as $pd){
+                                $paymentDetailSpmb = new PaymentDetail();
+                                $paymentDetailSpmb->calon_mahasiswa_id = $calonMahasiswa->calon_mahasiswa_id;
+                                $paymentDetailSpmb->total_amount = $pd->total_amount_paid;
+                                $paymentDetailSpmb->fee_name = $pd->fee->name;
+                                $paymentDetailSpmb->save();
+                            }
+                            Yii::info("Data pendaftar ID $pendaftar_id berhasil disalin ke calon mahasiswa.");
+                            return true;
+                        }
+                    }  
+                    else{
+                        return false;
+                    }             
+                }
+                else{
+                    return false;
+                }
+            }
+            else{
+                return false;
+            }
         } else {
             Yii::error("Gagal menyimpan calon mahasiswa: " . json_encode($calonMahasiswa->getErrors()));
             return false;
@@ -905,7 +959,8 @@ class PendaftarController extends Controller
             $pilihanJurusan->lulus = 1;
             if ($pilihanJurusan->save()) {
                 // Memanggil fungsi untuk menyalin data ke t_calon_mahasiswa
-                if ($this->actionDataCalonMahasiswa($pendaftarId)) {
+                $calonMahasiswa = $this->actionDataCalonMahasiswa($pendaftarId);
+                if ($calonMahasiswa) {
                     return ['success' => true, 'message' => 'Data berhasil disimpan dan disalin ke calon mahasiswa.'];
                 } else {
                     return ['success' => false, 'error' => 'Data disimpan tetapi gagal menyalin ke calon mahasiswa.'];
