@@ -27,9 +27,9 @@ $(document).ready(function() {
                 response.pilihanJurusan.forEach(function(pilihan) {
                     jurusanHtml += '<li>' + pilihan.namaJurusan;
                 });
-                $('#pilihan-jurusan').html(jurusanHtml); // Menampilkan semua jurusan
+                $('#pilihan-jurusan').html(jurusanHtml); 
             } else {
-                $('#pilihan-jurusan').text('Tidak ada pilihan jurusan.'); // Menampilkan pesan jika tidak ada jurusan
+                $('#pilihan-jurusan').text('Tidak ada pilihan jurusan.'); 
             }
         },
         error: function(xhr, status, error) {
