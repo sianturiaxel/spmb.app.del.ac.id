@@ -103,18 +103,18 @@ class CalonMahasiswa extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            // [['pendaftar_id', 'jalur_pendaftaran_id', 'cis_imported', 'jurusan_id', 'user_id', 'jenis_kelamin_id', 'golongan_darah_id', 'agama_id', 'alamat_kab', 'alamat_prov', 'kewarganegaraan_id', 'alamat_kec_orangtua', 'alamat_kab_orangtua', 'alamat_prov_orangtua', 'pekerjaan_ayah_id', 'pekerjaan_ibu_id', 'penghasilan_ayah_id', 'penghasilan_ibu_id', 'nik_wali', 'alamat_wali', 'sekolah_id', 'akreditasi_sekolah', 'npwp', 'kebutuhan_khusus_mahasiswa', 'informasi_del_id', 'tanggal_pendaftaran', 'bank_name', 't_payment_detail'], 'required'],
-            // [['pendaftar_id', 'jalur_pendaftaran_id', 'cis_imported', 'jurusan_id', 'user_id', 'jenis_kelamin_id', 'golongan_darah_id', 'agama_id', 'anak_ke', 'jumlah_bersaudara', 'jumlah_tanggungan_ortu', 'alamat_kec', 'alamat_kab', 'alamat_prov', 'kewarganegaraan_id', 'pendidikan_ayah_id', 'pendidikan_ibu_id', 'alamat_kec_orangtua', 'alamat_kab_orangtua', 'alamat_prov_orangtua', 'pekerjaan_ayah_id', 'pekerjaan_ibu_id', 'penghasilan_ayah_id', 'penghasilan_ibu_id', 'penghasilan_ayah', 'penghasilan_ibu', 'penghasilan_total', 'pekerjaan_wali_id', 'penghasilan_wali', 'alamat_wali', 'sekolah_id', 'npwp', 'kebutuhan_khusus_mahasiswa', 'informasi_del_id', 'n', 'jurusan_sekolah_id', 'sekolah_dapodik_id', 't_payment_detail'], 'integer'],
-            // [['tanggal_lahir', 'tanggal_lahir_ayah', 'tanggal_lahir_ibu', 'tanggal_pendaftaran', 'created_at', 'updated_at'], 'safe'],
-            // [['alamat', 'alamat_orang_tua', 'informasi_del_lainnya'], 'string'],
-            // [['total_pembayaran'], 'number'],
-            // [['nik', 'nik_ayah', 'nik_ibu'], 'string', 'max' => 16],
-            // [['nisn', 'akreditasi_sekolah'], 'string', 'max' => 10],
-            // [['no_kps', 'virtual_account_number', 'created_by', 'updated_by'], 'string', 'max' => 100],
-            // [['nama', 'tempat_lahir', 'email', 'nama_ayah_kandung', 'jurusan_sekolah', 'pas_foto', 'berkas_pendaftaran_ulang'], 'string', 'max' => 128],
-            // [['kode_pos', 'no_telepon_rumah', 'no_telepon_mobile', 'nama_ibu_kandung', 'kode_pos_orang_tua', 'no_telepon_mobile_ayah', 'no_telepon_mobile_ibu', 'nama_wali', 'nik_wali', 'no_hp_wali', 'nim'], 'string', 'max' => 45],
-            // [['kelurahan'], 'string', 'max' => 32],
-            // [['bank_name'], 'string', 'max' => 50],
+            //[['pendaftar_id', 'jalur_pendaftaran_id', 'cis_imported', 'jurusan_id', 'user_id', 'jenis_kelamin_id', 'golongan_darah_id', 'agama_id', 'alamat_kab', 'alamat_prov', 'kewarganegaraan_id', 'alamat_kec_orangtua', 'alamat_kab_orangtua', 'alamat_prov_orangtua', 'pekerjaan_ayah_id', 'pekerjaan_ibu_id', 'penghasilan_ayah_id', 'penghasilan_ibu_id', 'nik_wali', 'alamat_wali', 'sekolah_id', 'akreditasi_sekolah', 'npwp', 'kebutuhan_khusus_mahasiswa', 'informasi_del_id', 'tanggal_pendaftaran', 'bank_name', 't_payment_detail'], 'required'],
+            [['pendaftar_id', 'jalur_pendaftaran_id', 'cis_imported', 'jurusan_id', 'user_id', 'jenis_kelamin_id', 'golongan_darah_id', 'agama_id', 'anak_ke', 'jumlah_bersaudara', 'jumlah_tanggungan_ortu', 'alamat_kec', 'alamat_kab', 'alamat_prov', 'kewarganegaraan_id', 'pendidikan_ayah_id', 'pendidikan_ibu_id', 'alamat_kec_orangtua', 'alamat_kab_orangtua', 'alamat_prov_orangtua', 'pekerjaan_ayah_id', 'pekerjaan_ibu_id', 'penghasilan_ayah_id', 'penghasilan_ibu_id', 'penghasilan_ayah', 'penghasilan_ibu', 'penghasilan_total', 'pekerjaan_wali_id', 'penghasilan_wali', 'alamat_wali', 'sekolah_id', 'npwp', 'kebutuhan_khusus_mahasiswa', 'informasi_del_id', 'n', 'jurusan_sekolah_id', 'sekolah_dapodik_id', 't_payment_detail'], 'integer'],
+            [['tanggal_lahir', 'tanggal_lahir_ayah', 'tanggal_lahir_ibu', 'tanggal_pendaftaran', 'created_at', 'updated_at'], 'safe'],
+            [['alamat', 'alamat_orang_tua', 'informasi_del_lainnya'], 'string'],
+            [['total_pembayaran'], 'number'],
+            [['nik', 'nik_ayah', 'nik_ibu'], 'string', 'max' => 16],
+            [['nisn', 'akreditasi_sekolah'], 'string', 'max' => 10],
+            [['no_kps', 'virtual_account_number', 'created_by', 'updated_by'], 'string', 'max' => 100],
+            [['nama', 'tempat_lahir', 'email', 'nama_ayah_kandung', 'jurusan_sekolah', 'pas_foto', 'berkas_pendaftaran_ulang'], 'string', 'max' => 128],
+            [['kode_pos', 'no_telepon_rumah', 'no_telepon_mobile', 'nama_ibu_kandung', 'kode_pos_orang_tua', 'no_telepon_mobile_ayah', 'no_telepon_mobile_ibu', 'nama_wali', 'nik_wali', 'no_hp_wali', 'nim'], 'string', 'max' => 45],
+            [['kelurahan'], 'string', 'max' => 32],
+            [['bank_name'], 'string', 'max' => 50],
 
             [['pendaftar_id', 'jalur_pendaftaran_id', 'user_id'], 'required'],
             [['pendaftar_id', 'jalur_pendaftaran_id', 'user_id', 'jurusan_id'], 'integer'],
@@ -140,13 +140,13 @@ class CalonMahasiswa extends \yii\db\ActiveRecord
             // 'no_kps' => 'No Kps',
             'nama' => 'Nama',
             // 'jenis_kelamin_id' => 'Jenis Kelamin ID',
-            // 'golongan_darah_id' => 'Golongan Darah ID',
+            'golongan_darah_id' => 'Golongan Darah ID',
             // 'tanggal_lahir' => 'Tanggal Lahir',
             // 'tempat_lahir' => 'Tempat Lahir',
             // 'agama_id' => 'Agama ID',
-            // 'anak_ke' => 'Anak Ke',
-            // 'jumlah_bersaudara' => 'Jumlah Bersaudara',
-            // 'jumlah_tanggungan_ortu' => 'Jumlah Tanggungan Ortu',
+            'anak_ke' => 'Anak Ke',
+            'jumlah_bersaudara' => 'Jumlah Bersaudara',
+            'jumlah_tanggungan_ortu' => 'Jumlah Tanggungan Ortu',
             // 'alamat' => 'Alamat',
             // 'kode_pos' => 'Kode Pos',
             // 'kelurahan' => 'Kelurahan',
@@ -218,20 +218,20 @@ class CalonMahasiswa extends \yii\db\ActiveRecord
     }
 
 
-    public function getSekolah()
+    public function getSekolahDapodik()
     {
-        return $this->hasOne(Sekolah::class, ['sekolah_id' => 'sekolah_id']);
+        return $this->hasOne(SekolahDapodik::class, ['id' => 'sekolah_dapodik_id']);
     }
-
-    public function getNamaJalur()
+    public function getJalurPendaftaran()
     {
         return $this->hasOne(JalurPendaftaran::class, ['jalur_pendaftaran_id' => 'jalur_pendaftaran_id']);
     }
-    public function getJurusan()
+    public function getGelombangPendaftaran()
     {
-        return $this->hasOne(Jurusan::class, ['jurusan_id' => 'jurusan_id']);
+        return $this->hasOne(GelombangPendaftaran::class, ['gelombang_pendaftaran_id' => 'gelombang_pendaftaran_id']);
     }
-    public function getjenisKelamin()
+
+    public function getJenisKelamin()
     {
         return $this->hasOne(JenisKelamin::class, ['jenis_kelamin_id' => 'jenis_kelamin_id']);
     }
@@ -240,16 +240,100 @@ class CalonMahasiswa extends \yii\db\ActiveRecord
         return $this->hasOne(Agama::class, ['agama_id' => 'agama_id']);
     }
 
+    public function getstatusPendaftaran()
+    {
+        return $this->hasOne(StatusPendaftaran::class, ['status_pendaftaran_id' => 'status_pendaftaran_id']);
+    }
 
     public function getKode()
     {
         return $this->hasOne(KodeUjian::class, ['kode_ujian_id' => 'kode_ujian_id']);
     }
+
     public function getLokasi()
     {
         return $this->hasOne(LokasiUjian::class, ['lokasi_ujian_id' => 'lokasi_ujian_id']);
     }
 
+
+    public function getJurusan()
+    {
+        return $this->hasOne(Jurusan::class, ['jurusan_id' => 'jurusan_id']);
+    }
+
+    public function getPekerjaanAyah()
+    {
+        return $this->hasOne(Pekerjaan::class, ['pekerjaan_id' => 'pekerjaan_ayah_id']);
+    }
+    public function getPekerjaanIbu()
+    {
+        return $this->hasOne(Pekerjaan::class, ['pekerjaan_id' => 'pekerjaan_ibu_id']);
+    }
+    public function getPekerjaanWali()
+    {
+        return $this->hasOne(Pekerjaan::class, ['pekerjaan_id' => 'pekerjaan_wali_id']);
+    }
+    public function getKecamatan()
+    {
+        return $this->hasOne(Kecamatan::class, ['kecamatan_id' => 'alamat_kec']);
+    }
+    public function getKabupaten()
+    {
+        return $this->hasOne(Kabupaten::class, ['kabupaten_id' => 'alamat_kab']);
+    }
+    public function getProvinsi()
+    {
+        return $this->hasOne(Provinsi::class, ['provinsi_id' => 'alamat_prov']);
+    }
+    public function getKecamatanOrangtua()
+    {
+        return $this->hasOne(Kecamatan::class, ['kecamatan_id' => 'alamat_kec_orangtua']);
+    }
+    public function getKabupatenOrangtua()
+    {
+        return $this->hasOne(Kabupaten::class, ['kabupaten_id' => 'alamat_kab_orangtua']);
+    }
+    public function getProvinsiOrangtua()
+    {
+        return $this->hasOne(Provinsi::class, ['provinsi_id' => 'alamat_prov_orangtua']);
+    }
+    public function getKecamatanWali()
+    {
+        return $this->hasOne(Kecamatan::class, ['kecamatan_id' => 'alamat_kec_wali']);
+    }
+    public function getKabupatenWali()
+    {
+        return $this->hasOne(Kabupaten::class, ['kabupaten_id' => 'alamat_kab_wali']);
+    }
+    public function getProvinsiWali()
+    {
+        return $this->hasOne(Provinsi::class, ['provinsi_id' => 'alamat_prov_wali']);
+    }
+    public function getPendidikanAyah()
+    {
+        return $this->hasOne(JenjangPendidikan::class, ['jenjang_pendidikan_id' => 'pendidikan_ayah_id']);
+    }
+    public function getPendidikanIbu()
+    {
+        return $this->hasOne(JenjangPendidikan::class, ['jenjang_pendidikan_id' => 'pendidikan_ibu_id']);
+    }
+
+    public function getKemampuanBahasaInggris()
+    {
+        return $this->hasOne(KemampuanBahasa::class, ['kemampuan_bahasa_id' => 'kemampuan_bahasa_inggris']);
+    }
+    public function getKemampuanBahasaAsing()
+    {
+        return $this->hasOne(KemampuanBahasa::class, ['kemampuan_bahasa_id' => 'kemampuan_bahasa_asing_lainnya']);
+    }
+    public function getMetodePendaftaran()
+    {
+        return $this->hasOne(MetodePembayaran::class, ['metode_pembayaran_id' => 'metode_pembayaran_id']);
+    }
+    public function getGolonganDarah()
+    {
+        return $this->hasOne(GolonganDarah::class, ['golongan_darah_id' => 'golongan_darah_id']);
+      
     public static function generateVa($pendaftar_id){
         $pendaftar = Pendaftar::find()->where(['pendaftar_id' => $pendaftar_id])->one();
         $prefix = $pendaftar->prefix_kode_pendaftaran;
@@ -280,5 +364,6 @@ class CalonMahasiswa extends \yii\db\ActiveRecord
 
         $va .= str_pad($pendaftar->no_pendaftaran, 4, '0', STR_PAD_LEFT);
         return $va;
+
     }
 }

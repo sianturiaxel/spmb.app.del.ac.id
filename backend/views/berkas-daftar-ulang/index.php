@@ -51,7 +51,7 @@ $this->registerJs($js);
                 <?php foreach ($dataProvider->getModels() as $index => $model) : ?>
                     <tr>
 
-                        <td><?= Html::encode($model->berkas_daftar_ulang_id) ?></td>
+                        <td><?= $index + 1 ?></td>
                         <td><?= Html::encode($model->name) ?></td>
                         <td><?= Html::encode($model->desc) ?></td>
                         <td><?= Html::encode($model->berkas) ?></td>

@@ -242,10 +242,8 @@ class Pendaftar extends \yii\db\ActiveRecord
     public function search($params)
     {
         $query = self::find();
-        // ... tambahkan logika pencarian di sini ...
         return new ActiveDataProvider([
             'query' => $query,
-            // ... konfigurasi lainnya ...
         ]);
     }
     public function getSekolahDapodik()
