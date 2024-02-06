@@ -67,7 +67,7 @@ $this->registerJs($js);
                 <?php foreach ($dataProvider->getModels() as $index => $model) : ?>
                     <tr>
                         <td><?= $index + 1 ?></td>
-                        <td><?= Html::encode($model->kategori_bidang_utbk_id) ?></td>
+                        <td><?= Html::encode($model->kategoriBidangUtbk->name) ?></td>
                         <td><?= Html::encode($model->name) ?></td>
 
                         <td>

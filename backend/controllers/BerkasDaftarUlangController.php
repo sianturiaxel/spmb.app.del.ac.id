@@ -3,7 +3,6 @@
 namespace backend\controllers;
 
 use backend\models\BerkasDaftarUlang;
-use backend\models\BerkasDaftarUlangSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,12 +37,16 @@ class BerkasDaftarUlangController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new BerkasDaftarUlangSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => BerkasDaftarUlang::find(),
+            'sort' => [
+                'defaultOrder' => ['berkas_daftar_ulang_id' => SORT_DESC]
+            ],
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+
         ]);
     }
 

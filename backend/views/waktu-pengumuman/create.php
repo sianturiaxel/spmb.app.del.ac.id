@@ -10,11 +10,10 @@ $this->params['breadcrumbs'][] = ['label' => 'Waktu Pengumumen', 'url' => ['inde
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="waktu-pengumuman-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <?= $this->render('_form', [
         'model' => $model,
+        'gelombangPendaftaran' => $gelombangPendaftaran,
+        'jenisTest' => $jenisTest,
     ]) ?>
 
 </div>

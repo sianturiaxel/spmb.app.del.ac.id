@@ -2,6 +2,9 @@
 
 namespace backend\models;
 
+use yii\behaviors\TimestampBehavior;
+use yii\behaviors\BlameableBehavior;
+use yii\db\Expression;
 use Yii;
 
 /**
@@ -21,6 +24,23 @@ class UangDaftarUlang extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 't_r_uang_daftar_ulang';
+    }
+
+    public function behaviors()
+    {
+        return [
+            // TimestampBehavior::className() => [
+            //     'class' => TimestampBehavior::className(),
+            //     'createdAtAttribute' => 'created_at',
+            //     'updatedAtAttribute' => 'updated_at',
+            //     'value' => new Expression('NOW()'),
+            // ],
+            // BlameableBehavior::className() => [
+            //     'class' => BlameableBehavior::className(),
+            //     'createdByAttribute' => 'created_by',
+            //     'updatedByAttribute' => 'updated_by',
+            // ],
+        ];
     }
 
     /**
@@ -50,6 +70,6 @@ class UangDaftarUlang extends \yii\db\ActiveRecord
 
     public function getGelombangPendaftaran()
     {
-        return $this->hasOne(GelombangPendaftaran::className(), ['gelompang_pendaftaran_id' => 'gelompang_pendaftaran_id']);
+        return $this->hasOne(GelombangPendaftaran::className(), ['gelombang_pendaftaran_id' => 'gelombang_pendaftaran_id']);
     }
 }

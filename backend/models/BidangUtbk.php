@@ -2,6 +2,9 @@
 
 namespace backend\models;
 
+use yii\behaviors\TimestampBehavior;
+use yii\behaviors\BlameableBehavior;
+use yii\db\Expression;
 use Yii;
 
 /**
@@ -30,6 +33,22 @@ class BidangUtbk extends \yii\db\ActiveRecord
     {
         return 't_r_bidang_utbk';
     }
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className() => [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new Expression('NOW()'),
+            ],
+            BlameableBehavior::className() => [
+                'class' => BlameableBehavior::className(),
+                'createdByAttribute' => 'created_by',
+                'updatedByAttribute' => 'updated_by',
+            ],
+        ];
+    }
 
     /**
      * {@inheritdoc}
@@ -42,7 +61,7 @@ class BidangUtbk extends \yii\db\ActiveRecord
             [['deleted_at', 'created_at', 'updated_at'], 'safe'],
             [['name'], 'string', 'max' => 125],
             [['deleted_by', 'created_by', 'updated_by'], 'string', 'max' => 32],
-            [['kategori_bidang_utbk_id'], 'exist', 'skipOnError' => true, 'targetClass' => TRKategoriBidangUtbk::class, 'targetAttribute' => ['kategori_bidang_utbk_id' => 'kategori_bidang_utbk_id']],
+            [['kategori_bidang_utbk_id'], 'exist', 'skipOnError' => true, 'targetClass' => KategoriBidangUtbk::class, 'targetAttribute' => ['kategori_bidang_utbk_id' => 'kategori_bidang_utbk_id']],
         ];
     }
 
@@ -72,7 +91,16 @@ class BidangUtbk extends \yii\db\ActiveRecord
      */
     public function getKategoriBidangUtbk()
     {
-        return $this->hasOne(TRKategoriBidangUtbk::class, ['kategori_bidang_utbk_id' => 'kategori_bidang_utbk_id']);
+        return $this->hasOne(KategoriBidangUtbk::class, ['kategori_bidang_utbk_id' => 'kategori_bidang_utbk_id']);
+    }
+    public function getCreator()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'created_by']);
+    }
+
+    public function getUpdater()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'updated_by']);
     }
 
     /**
@@ -80,8 +108,4 @@ class BidangUtbk extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getTNilaiUtbks()
-    {
-        return $this->hasMany(TNilaiUtbk::class, ['bidang_utbk_id' => 'bidang_utbk_id']);
-    }
 }

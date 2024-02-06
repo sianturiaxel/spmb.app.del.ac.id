@@ -50,7 +50,7 @@ $this->registerJs($js, \yii\web\View::POS_READY);
                 <?php foreach ($dataProvider->getModels() as $index => $model) : ?>
                     <tr>
                         <td><?= $index + 1 ?></td>
-                        <td><?= Html::encode($model->provinsi_id) ?></td>
+                        <td><?= $model->provinsi ? Html::encode($model->provinsi->nama) : 'Tidak tersedia' ?></td>
                         <td><?= Html::encode($model->kabupaten_id) ?></td>
                         <td><?= Html::encode($model->nama) ?></td>
                         <td>

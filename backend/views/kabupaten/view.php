@@ -2,37 +2,47 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
 /** @var backend\models\Kabupaten $model */
 
-$this->title = $model->kabupaten_id;
+$this->title = 'Kabupaten Detail';
 $this->params['breadcrumbs'][] = ['label' => 'Kabupatens', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="kabupaten-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Update', ['update', 'kabupaten_id' => $model->kabupaten_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'kabupaten_id' => $model->kabupaten_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+<div class="kode-ujian-view container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="kode-ujian-view">
+                    <?= DetailView::widget([
+                        'model' => $model,
+                        'attributes' => [
+                            //'kabupaten_id',
+                            [
+                                'attribute' => 'Kode Provinsi',
+                                'value' => function ($model) {
+                                    return $model->provinsi_id ? $model->provinsi->nama : 'Tidak Ada';
+                                },
+                            ],
+                            'kabupaten_id',
+                            'nama',
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'kabupaten_id',
-            'provinsi_id',
-            'nama',
-        ],
-    ]) ?>
+                        ],
+                    ]) ?>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <?= Html::a('Kembali', Url::to(['index']), ['class' => 'btn btn-warning']) ?>
+                </div>
+            </div>
 
+        </div>
+
+    </div>
 </div>

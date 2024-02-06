@@ -6,7 +6,7 @@ use yii\helpers\Html;
 /** @var backend\models\GelombangPendaftaran $model */
 
 $this->title = 'Create Gelombang Pendaftaran';
-$this->params['breadcrumbs'][] = ['label' => 'Gelombang Pendaftarans', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Gelombang Pendaftaran', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="gelombang-pendaftaran-create">

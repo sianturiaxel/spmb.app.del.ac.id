@@ -34,7 +34,7 @@ $(document).ready(function() {
                "<'row'<'col-sm-12'tr>>" +
                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
     });
-    $('div.toolbar').html('<a href="$createUrl" class="btn btn-success">Tambah Mapel Jurusan</a>');
+    $('div.toolbar').html('<a href="$createUrl" class="btn btn-success">Tambah Uang Daftar Ulang</a>');
 });
 JS;
 

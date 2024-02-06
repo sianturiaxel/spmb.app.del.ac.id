@@ -3,7 +3,6 @@
 namespace backend\controllers;
 
 use backend\models\NilaiAkademik;
-use backend\models\NilaiAkademikSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -81,13 +80,15 @@ class NilaiAkademikController extends Controller
      *
      * @return string
      */
+
+
     public function actionIndex()
     {
-        $searchModel = new NilaiAkademikSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
 
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => NilaiAkademik::find(),
+        ]);
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
