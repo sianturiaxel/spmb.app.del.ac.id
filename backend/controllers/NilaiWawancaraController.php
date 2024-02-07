@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\NilaiWawancara;
+use backend\models\Pendaftar;
 use yii\web\UploadedFile;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -114,6 +115,10 @@ class NilaiWawancaraController extends Controller
     public function actionCreate()
     {
         $model = new NilaiWawancara();
+        $pendaftar = Pendaftar::find()
+            ->orderBy(['pendaftar_id' => SORT_DESC])
+            ->all();
+
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
@@ -125,6 +130,7 @@ class NilaiWawancaraController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'pendaftar' => $pendaftar,
         ]);
     }
 
@@ -138,6 +144,10 @@ class NilaiWawancaraController extends Controller
     public function actionUpdate($nilai_wawancara_id)
     {
         $model = $this->findModel($nilai_wawancara_id);
+        $pendaftar = Pendaftar::find()
+            ->orderBy(['pendaftar_id' => SORT_DESC])
+            ->all();
+
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'nilai_wawancara_id' => $model->nilai_wawancara_id]);
@@ -145,6 +155,7 @@ class NilaiWawancaraController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'pendaftar' => $pendaftar,
         ]);
     }
 
