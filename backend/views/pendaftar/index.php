@@ -24,14 +24,11 @@ $kodeUjianWawancara         = Url::to(['pendaftar/kode-ujian-wawancara']);
 $kodeUjianPsikotes        = Url::to(['pendaftar/kode-ujian-psikotes']);
 $this->title = 'Pendaftar  SPMB IT Del';
 $dataProvider->pagination = false;
-
 $js = <<<JS
  
 $(document).ready(function() {
     let tombolKelulusanDiklik = false;
-    
     var table = $('#datatables').DataTable({
-        'scrollX'   : true,
         'processing': true,
         'serverSide': true,
         'ajax': {
@@ -84,6 +81,8 @@ $(document).ready(function() {
                "<'row'<'col-sm-12'tr>>" +
                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
     });    
+
+
     var showCheckbox = false;
     function toggleCheckboxDisplay(show) {
         if (show) {
@@ -93,7 +92,6 @@ $(document).ready(function() {
         }
     }
     toggleCheckboxDisplay(false);
-
     
     $('#apply-filter').on('click', function() {
         table.ajax.reload();
@@ -575,9 +573,14 @@ $(document).ready(function() {
     table.on('draw', function() {
         toggleCheckboxDisplay(showCheckbox);
 
-    });
-    
+    }); 
 });
+
+
+
+
+
+
 function updateCheckboxVisibility() {
     table.rows().every(function() {
         var data = this.data();

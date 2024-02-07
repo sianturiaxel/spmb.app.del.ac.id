@@ -2,6 +2,9 @@
 
 namespace backend\models;
 
+use yii\behaviors\TimestampBehavior;
+use yii\behaviors\BlameableBehavior;
+use yii\db\Expression;
 use Yii;
 
 /**
@@ -43,6 +46,22 @@ class NilaiPsikotes extends \yii\db\ActiveRecord
         return 't_nilai_psikotes';
     }
 
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className() => [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new Expression('NOW()'),
+            ],
+            BlameableBehavior::className() => [
+                'class' => BlameableBehavior::className(),
+                'createdByAttribute' => 'created_by',
+                'updatedByAttribute' => 'updated_by',
+            ],
+        ];
+    }
     /**
      * {@inheritdoc}
      */
@@ -88,5 +107,14 @@ class NilaiPsikotes extends \yii\db\ActiveRecord
     public function getPendaftar()
     {
         return $this->hasOne(Pendaftar::class, ['pendaftar_id' => 'pendaftar_id']);
+    }
+    public function getCreator()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'created_by']);
+    }
+
+    public function getUpdater()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'updated_by']);
     }
 }

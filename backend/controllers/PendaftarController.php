@@ -631,16 +631,15 @@ class PendaftarController extends Controller
             Yii::error("Tidak ada jurusan yang lulus untuk pendaftar ID $pendaftar_id.");
             return false;
         }
-        
+
         //Virtual Account
         $va = NULL;
         $userFinance = NULL;
-        
-        if(!is_null($pendaftar->virtual_account) && !empty($pendaftar->virtual_account)){
+
+        if (!is_null($pendaftar->virtual_account) && !empty($pendaftar->virtual_account)) {
             $va = $pendaftar->virtual_account;
             $userFinance = UserRegistrationNumber::updateDataProdi($pilihanJurusanLulus->jurusan_id, $va);
-        }
-        else{
+        } else {
             $va = CalonMahasiswa::generateVa($pendaftar_id);
             $userFinance = UserFinance::createUser($pendaftar_id, $va);
         }
@@ -703,23 +702,23 @@ class PendaftarController extends Controller
 
         $calonMahasiswa->virtual_account_number = $va;
         $calonMahasiswa->bank_name = 'Bank Mandiri';
-        $calonMahasiswa-> n = $pendaftar->n;
+        $calonMahasiswa->n = $pendaftar->n;
 
 
         if ($calonMahasiswa->save()) {
             $updateCalonMahasiswa = $calonMahasiswa;
             //Tagihan Daftar Ulang
-            if($userFinance != NULL){
+            if ($userFinance != NULL) {
                 $cekTagihan = \Yii::$app->runAction('payment/cek-tagihan-penulang', ['calon_mahasiswa_id' => $calonMahasiswa->calon_mahasiswa_id]);
                 $result = json_decode($cekTagihan);
-                if(isset($result->status) && strtolower($result->status) === 'success' && isset($result->user_id)){
+                if (isset($result->status) && strtolower($result->status) === 'success' && isset($result->user_id)) {
                     // disini populate from spmb
                     $payment = \Yii::$app->runAction('payment/generate-tagihan-penulang', ['userId' => $result->user_id, 'calonMahasiswaId' => $calonMahasiswa->calon_mahasiswa_id]);
                     //IF SUCCESS GENERATE TAGIHAN
-                    if($payment){
+                    if ($payment) {
                         $updateCalonMahasiswa->total_pembayaran = $payment->total_amount_paid;
-                        if($updateCalonMahasiswa->save()){
-                            foreach($payment->paymentDetails as $pd){
+                        if ($updateCalonMahasiswa->save()) {
+                            foreach ($payment->paymentDetails as $pd) {
                                 $paymentDetailSpmb = new PaymentDetail();
                                 $paymentDetailSpmb->calon_mahasiswa_id = $calonMahasiswa->calon_mahasiswa_id;
                                 $paymentDetailSpmb->total_amount = $pd->total_amount_paid;
@@ -729,16 +728,13 @@ class PendaftarController extends Controller
                             Yii::info("Data pendaftar ID $pendaftar_id berhasil disalin ke calon mahasiswa.");
                             return true;
                         }
-                    }  
-                    else{
+                    } else {
                         return false;
-                    }             
-                }
-                else{
+                    }
+                } else {
                     return false;
                 }
-            }
-            else{
+            } else {
                 return false;
             }
         } else {
