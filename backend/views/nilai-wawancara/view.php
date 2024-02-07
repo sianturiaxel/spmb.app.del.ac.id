@@ -2,39 +2,46 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
 /** @var backend\models\NilaiWawancara $model */
 
-$this->title = $model->nilai_wawancara_id;
+$this->title = 'Nilai Wawancara Ujian Detail';
 $this->params['breadcrumbs'][] = ['label' => 'Nilai Wawancaras', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="nilai-wawancara-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+<div class="nilai-wawancara-view container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="nilai-wawancara-view">
+                    <?= DetailView::widget([
+                        'model' => $model,
+                        'attributes' => [
+                            //'nilai_wawancara_id',
+                            [
+                                'attribute' => 'Nama Pendaftar',
+                                'value' => function ($model) {
+                                    return $model->pendaftar ? $model->pendaftar->nama : 'Tidak Ada';
+                                },
+                            ],
+                            'nilai_motivasi',
+                            'nilai_gambaran_karir',
+                            'nilai_rekomendasi',
+                        ],
+                    ]) ?>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <?= Html::a('Kembali', Url::to(['index']), ['class' => 'btn btn-warning']) ?>
+                </div>
+            </div>
 
-    <p>
-        <?= Html::a('Update', ['update', 'nilai_wawancara_id' => $model->nilai_wawancara_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'nilai_wawancara_id' => $model->nilai_wawancara_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+        </div>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'nilai_wawancara_id',
-            'pendaftar_id',
-            'nilai_motivasi',
-            'nilai_gambaran_karir',
-            'nilai_rekomendasi',
-        ],
-    ]) ?>
-
+    </div>
 </div>

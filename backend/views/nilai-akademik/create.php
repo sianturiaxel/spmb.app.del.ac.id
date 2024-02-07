@@ -10,11 +10,9 @@ $this->params['breadcrumbs'][] = ['label' => 'Nilai Akademiks', 'url' => ['index
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="nilai-akademik-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <?= $this->render('_form', [
         'model' => $model,
+        'pendaftar' => $pendaftar,
     ]) ?>
 
 </div>

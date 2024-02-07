@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\NilaiPsikotes;
+use backend\models\Pendaftar;
 //use backend\models\NilaiPsikotesSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -113,6 +114,9 @@ class NilaiPsikotesController extends Controller
     public function actionCreate()
     {
         $model = new NilaiPsikotes();
+        $pendaftar = Pendaftar::find()
+            ->orderBy(['pendaftar_id' => SORT_DESC])
+            ->all();
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
@@ -124,6 +128,8 @@ class NilaiPsikotesController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'pendaftar' => $pendaftar,
+
         ]);
     }
 
@@ -137,6 +143,9 @@ class NilaiPsikotesController extends Controller
     public function actionUpdate($nilai_psikotes_id)
     {
         $model = $this->findModel($nilai_psikotes_id);
+        $pendaftar = Pendaftar::find()
+            ->orderBy(['pendaftar_id' => SORT_DESC])
+            ->all();
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'nilai_psikotes_id' => $model->nilai_psikotes_id]);
@@ -144,6 +153,8 @@ class NilaiPsikotesController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'pendaftar' => $pendaftar,
+
         ]);
     }
 

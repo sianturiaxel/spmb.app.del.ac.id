@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\NilaiAkademik;
+use backend\models\Pendaftar;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -114,6 +115,9 @@ class NilaiAkademikController extends Controller
     public function actionCreate()
     {
         $model = new NilaiAkademik();
+        $pendaftar = Pendaftar::find()
+            ->orderBy(['pendaftar_id' => SORT_DESC])
+            ->all();
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
@@ -125,6 +129,7 @@ class NilaiAkademikController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'pendaftar' => $pendaftar,
         ]);
     }
 
@@ -138,6 +143,9 @@ class NilaiAkademikController extends Controller
     public function actionUpdate($nilai_akademik_id)
     {
         $model = $this->findModel($nilai_akademik_id);
+        $pendaftar = Pendaftar::find()
+            ->orderBy(['pendaftar_id' => SORT_DESC])
+            ->all();
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'nilai_akademik_id' => $model->nilai_akademik_id]);
@@ -145,6 +153,7 @@ class NilaiAkademikController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'pendaftar' => $pendaftar,
         ]);
     }
 

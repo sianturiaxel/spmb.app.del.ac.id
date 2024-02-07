@@ -333,28 +333,25 @@ class CalonMahasiswa extends \yii\db\ActiveRecord
     public function getGolonganDarah()
     {
         return $this->hasOne(GolonganDarah::class, ['golongan_darah_id' => 'golongan_darah_id']);
-      
-    public static function generateVa($pendaftar_id){
+    }
+
+    public static function generateVa($pendaftar_id)
+    {
         $pendaftar = Pendaftar::find()->where(['pendaftar_id' => $pendaftar_id])->one();
         $prefix = $pendaftar->prefix_kode_pendaftaran;
-        $kode_gel = substr($prefix, 0,4);
+        $kode_gel = substr($prefix, 0, 4);
         $va = '8823399';
-        if($kode_gel == 'PMDK'){
+        if ($kode_gel == 'PMDK') {
             $va .= '01';
-        }
-        else if($kode_gel == 'JPSN'){
+        } else if ($kode_gel == 'JPSN') {
             $va .= '02';
-        }
-        else if($kode_gel == 'USM1'){
+        } else if ($kode_gel == 'USM1') {
             $va .= '03';
-        }
-        else if($kode_gel == 'USM2'){
+        } else if ($kode_gel == 'USM2') {
             $va .= '04';
-        }
-        else if($kode_gel == 'USM3'){
+        } else if ($kode_gel == 'USM3') {
             $va .= '05';
-        }
-        else if($kode_gel == 'UTBK'){
+        } else if ($kode_gel == 'UTBK') {
             $va .= '06';
         }
 
@@ -364,6 +361,5 @@ class CalonMahasiswa extends \yii\db\ActiveRecord
 
         $va .= str_pad($pendaftar->no_pendaftaran, 4, '0', STR_PAD_LEFT);
         return $va;
-
     }
 }

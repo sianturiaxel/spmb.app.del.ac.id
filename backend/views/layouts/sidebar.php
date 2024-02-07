@@ -6,7 +6,8 @@ use backend\components\RbacHelper;
 $js = <<< JS
 $(document).ready(function() {
     var activeController = '{$this->context->id}'; 
-    if (['kode-ujian','sekolah-pmdk','jurusan-mapel','bidang-utbk','waktu-pengumuman','uang-pembangunan','biaya-pendaftaran','lokasi-ujian','uang-daftar-ulang','gelombang-pendaftaran'].includes(activeController)) {
+    if (['kode-ujian','sekolah-pmdk','jurusan-mapel','bidang-utbk','waktu-pengumuman','uang-pembangunan','biaya-pendaftaran','lokasi-ujian','uang-daftar-ulang','gelombang-pendaftaran', 'users','role','user-role',
+        'nilai-wawancara','nilai-psikotes','nilai-akademik','calon-mahasiswa', 'berkas-daftar-ulang', 'payment-detail', 'penangguhan-daftar-ulang','pendaftar'].includes(activeController)) {
         $(".nav-link.active").closest('.nav-treeview').parent().addClass('menu-open');
     }
 });
@@ -386,7 +387,7 @@ $isAdmin = Yii::$app->user->identity->roles[0]->name;
                 <?php endif; ?>
                 <?php if (RbacHelper::isUserAdmin(Yii::$app->user->id) || RbacHelper::isUserPanitia(Yii::$app->user->id) || RbacHelper::isUserKaprodi(Yii::$app->user->id)) : ?>
                     <li class="nav-item">
-                        <a href="#" class="nav-link <?= in_array(Yii::$app->controller->id, ['pendaftr-ulang', 'berkas-daftar-ulang', 'payment-detail', 'penangguhan-daftar-ulang']) ? 'active menu-open' : '' ?>">
+                        <a href="#" class="nav-link <?= in_array(Yii::$app->controller->id, ['calon-mahasiswa', 'berkas-daftar-ulang', 'payment-detail', 'penangguhan-daftar-ulang']) ? 'active menu-open' : '' ?>">
                             <i class="nav-icon fas fa-user-graduate"></i>
                             <p>
                                 Calon Mahasiswa
@@ -415,19 +416,12 @@ $isAdmin = Yii::$app->user->identity->roles[0]->name;
                                     ['class' => Yii::$app->controller->id == 'payment-detail' ? 'nav-link active' : 'nav-link']
                                 ) ?>
                             </li>
-                            <li class="nav-item">
-                                <?= \yii\helpers\Html::a(
-                                    '<i class="fas fa-money-check nav-icon"></i><p>Penangguhan Daftar Ulang</p>',
-                                    ['penangguhan-daftar-ulang/index'],
-                                    ['class' => Yii::$app->controller->id == 'penangguhan-daftar-ulang' ? 'nav-link active' : 'nav-link']
-                                ) ?>
-                            </li>
                         </ul>
                     </li>
                 <?php endif; ?>
                 <?php if (RbacHelper::isUserAdmin(Yii::$app->user->id)) : ?>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="#" class="nav-link  <?= in_array(Yii::$app->controller->id, ['users', 'role', 'user-role']) ? 'active menu-open' : '' ?>">
                             <i class="nav-icon fa fa-user"></i>
                             <p>
                                 User

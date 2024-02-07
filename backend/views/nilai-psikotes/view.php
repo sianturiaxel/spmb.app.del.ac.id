@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
 /** @var backend\models\NilaiPsikotes $model */
@@ -11,46 +12,60 @@ $this->params['breadcrumbs'][] = ['label' => 'Nilai Psikotes', 'url' => ['index'
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="nilai-psikotes-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+<div class="nilai-psikotes-view container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="nilai-wawancara-view">
+                    <?= DetailView::widget([
+                        'model' => $model,
+                        'attributes' => [
+                            //'nilai_akademik_id',
+                            [
+                                'attribute' => 'Nama Pendaftar',
+                                'value' => function ($model) {
+                                    return $model->pendaftar ? $model->pendaftar->nama : 'Tidak Ada';
+                                },
+                            ],
+                            'kode_tes',
+                            'kehadiran',
+                            'tiu',
+                            'kategori_tiu',
+                            'stabilit_as_emosi',
+                            'temp_kerja',
+                            'ketelitian',
+                            'konsistensi',
+                            'daya_tahan',
+                            'iq',
+                            'kategori_iq',
+                            'hasil',
+                            'peringkat',
+                            'created_at:datetime',
+                            [
+                                'attribute' => 'created_by',
+                                'value' => function ($model) {
+                                    return $model->creator ? $model->creator->username : '-';
+                                },
+                            ],
+                            'updated_at:datetime',
+                            [
+                                'attribute' => 'updated_by',
+                                'value' => function ($model) {
+                                    return $model->updater ? $model->updater->username : '-';
+                                },
+                            ],
+                        ],
+                    ]) ?>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <?= Html::a('Kembali', Url::to(['index']), ['class' => 'btn btn-warning']) ?>
+                </div>
+            </div>
 
-    <p>
-        <?= Html::a('Update', ['update', 'nilai_psikotes_id' => $model->nilai_psikotes_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'nilai_psikotes_id' => $model->nilai_psikotes_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+        </div>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'nilai_psikotes_id',
-            'pendaftar_id',
-            'kode_tes',
-            'kehadiran',
-            'tiu',
-            'kategori_tiu',
-            'stabilit_as_emosi',
-            'temp_kerja',
-            'ketelitian',
-            'konsistensi',
-            'daya_tahan',
-            'iq',
-            'kategori_iq',
-            'hasil',
-            'peringkat',
-            'created_at',
-            'created_by',
-            'updated_at',
-            'updated_by',
-            'deleted_at',
-            'deleted_by',
-        ],
-    ]) ?>
-
+    </div>
 </div>

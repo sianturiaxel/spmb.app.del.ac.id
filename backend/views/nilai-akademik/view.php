@@ -2,60 +2,74 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
 /** @var backend\models\NilaiAkademik $model */
 
-$this->title = $model->nilai_akademik_id;
+$this->title = 'Nilai Akademik Ujian Detail';
 $this->params['breadcrumbs'][] = ['label' => 'Nilai Akademiks', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="nilai-akademik-view">
+<div class="nilai-akademik-view container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="nilai-wawancara-view">
+                    <?= DetailView::widget([
+                        'model' => $model,
+                        'attributes' => [
+                            //'nilai_akademik_id',
+                            [
+                                'attribute' => 'Nama Pendaftar',
+                                'value' => function ($model) {
+                                    return $model->pendaftar ? $model->pendaftar->nama : 'Tidak Ada';
+                                },
+                            ],
+                            'mat_benar',
+                            'mat_salah',
+                            'ing_benar',
+                            'ing_salah',
+                            'tpa_benar',
+                            'tpa_salah',
+                            'total_kosong',
+                            'mp_tinggi',
+                            'mp_rendah',
+                            'perbandingan_mat_ing',
+                            'jumlah_soal',
+                            'hasil_score',
+                            'scala_score',
+                            'usulan_panitia',
+                            'pilihan1',
+                            'pilihan2',
+                            'pilihan3',
+                            'hasil_akhir_pilihan',
+                            'created_at:datetime',
+                            [
+                                'attribute' => 'created_by',
+                                'value' => function ($model) {
+                                    return $model->creator ? $model->creator->username : '-';
+                                },
+                            ],
+                            'updated_at:datetime',
+                            [
+                                'attribute' => 'updated_by',
+                                'value' => function ($model) {
+                                    return $model->updater ? $model->updater->username : '-';
+                                },
+                            ],
+                        ],
+                    ]) ?>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <?= Html::a('Kembali', Url::to(['index']), ['class' => 'btn btn-warning']) ?>
+                </div>
+            </div>
 
-    <h1><?= Html::encode($this->title) ?></h1>
+        </div>
 
-    <p>
-        <?= Html::a('Update', ['update', 'nilai_akademik_id' => $model->nilai_akademik_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'nilai_akademik_id' => $model->nilai_akademik_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'nilai_akademik_id',
-            'pendaftar_id',
-            'mat_benar',
-            'mat_salah',
-            'ing_benar',
-            'ing_salah',
-            'tpa_benar',
-            'tpa_salah',
-            'total_kosong',
-            'mp_tinggi',
-            'mp_rendah',
-            'perbandingan_mat_ing',
-            'jumlah_soal',
-            'hasil_score',
-            'scala_score',
-            'usulan_panitia',
-            'pilihan1',
-            'pilihan2',
-            'pilihan3',
-            'hasil_akhir_pilihan',
-            'created_at',
-            'created_by',
-            'updated_at',
-            'updated_by',
-            'deleted_at',
-            'deleted_by',
-        ],
-    ]) ?>
-
+    </div>
 </div>

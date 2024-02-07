@@ -10,11 +10,9 @@ $this->params['breadcrumbs'][] = ['label' => 'Nilai Psikotes', 'url' => ['index'
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="nilai-psikotes-create">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <?= $this->render('_form', [
         'model' => $model,
+        'pendaftar' => $pendaftar,
     ]) ?>
 
 </div>
