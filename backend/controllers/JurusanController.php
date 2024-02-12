@@ -2,8 +2,8 @@
 
 namespace backend\controllers;
 
+use backend\models\Fakultas;
 use backend\models\Jurusan;
-use backend\models\JurusanSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,11 +38,13 @@ class JurusanController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new JurusanSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => Jurusan::find(),
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
+
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -68,6 +70,7 @@ class JurusanController extends Controller
     public function actionCreate()
     {
         $model = new Jurusan();
+        $fakultas = Fakultas::find()->asArray()->all();
 
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
@@ -79,6 +82,7 @@ class JurusanController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'fakultas' => $fakultas,
         ]);
     }
 
@@ -92,6 +96,7 @@ class JurusanController extends Controller
     public function actionUpdate($jurusan_id)
     {
         $model = $this->findModel($jurusan_id);
+        $fakultas = Fakultas::find()->asArray()->all();
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'jurusan_id' => $model->jurusan_id]);
@@ -99,6 +104,7 @@ class JurusanController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'fakultas' => $fakultas,
         ]);
     }
 

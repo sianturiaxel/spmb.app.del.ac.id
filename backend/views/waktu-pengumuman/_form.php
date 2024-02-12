@@ -58,19 +58,19 @@ $this->registerJs($js);
             </div><br>
             <div class="row">
                 <div class="col-md-4">
-                    <label for="reservationdate-ujian">Tanggal Mulai</label>
-                    <div class="input-group date" id="reservationdate-ujian" data-target-input="nearest">
-                        <?= $form->field($model, 'tanggal_mulai')->textInput(['class' => 'form-control datetimepicker-input', 'data-target' => '#reservationdate-ujian'])->label(false) ?>
-                        <div class="input-group-append" data-target="#reservationdate-ujian" data-toggle="datetimepicker">
+                    <label for="reservationdate-mulai">Tanggal Mulai</label>
+                    <div class="input-group date" id="reservationdate-mulai" data-target-input="nearest">
+                        <?= $form->field($model, 'tanggal_mulai')->textInput(['class' => 'form-control datetimepicker-input', 'data-target' => '#reservationdate-mulai'])->label(false) ?>
+                        <div class="input-group-append" data-target="#reservationdate-mulai" data-toggle="datetimepicker">
                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <label for="reservationdate-ujian">Tanggal Selesai</label>
-                    <div class="input-group date" id="reservationdate-ujian" data-target-input="nearest">
-                        <?= $form->field($model, 'tanggal_akhir')->textInput(['class' => 'form-control datetimepicker-input', 'data-target' => '#reservationdate-ujian'])->label(false) ?>
-                        <div class="input-group-append" data-target="#reservationdate-ujian" data-toggle="datetimepicker">
+                    <label for="reservationdate-berakhir">Tanggal Selesai</label>
+                    <div class="input-group date" id="reservationdate-berakhir" data-target-input="nearest">
+                        <?= $form->field($model, 'tanggal_akhir')->textInput(['class' => 'form-control datetimepicker-input', 'data-target' => '#reservationdate-berakhir'])->label(false) ?>
+                        <div class="input-group-append" data-target="#reservationdate-berakhir" data-toggle="datetimepicker">
                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                         </div>
                     </div>
