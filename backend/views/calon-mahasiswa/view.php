@@ -1,5 +1,6 @@
 <?php
 
+
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\helpers\Url;
@@ -36,6 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <li class="nav-item"><a class="nav-link" href="#data-orangtua" data-toggle="tab">Data OrangTua</a></li>
                             <li class="nav-item"><a class="nav-link" href="#data-wali" data-toggle="tab">Data Wali</a></li>
                             <li class="nav-item"><a class="nav-link" href="#data-akademis" data-toggle="tab">Data Akademis</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#data-payment-detail" data-toggle="tab">Payment Detail</a></li>
                             <li class="nav-item"><a class="nav-link" href="#data-lain" data-toggle="tab">Data Lain</a></li>
                         </ul>
                     </div>
@@ -316,6 +318,24 @@ $this->params['breadcrumbs'][] = $this->title;
                                             <td><?= (isset($model->sekolahDapodik) && !empty($model->sekolahDapodik->alamat_jalan)) ? Html::encode($model->sekolahDapodik->alamat_jalan) : ' - ' ?></td>
                                         </tr>
 
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane" id="data-payment-detail">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fee Name</th>
+                                            <th>Total Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($paymentDetail as $paymentDetail) : ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($paymentDetail->fee_name); ?></td>
+                                                <td><?= "Rp " . number_format($paymentDetail->total_amount, 0, ',', '.') ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>

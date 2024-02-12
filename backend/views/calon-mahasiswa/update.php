@@ -31,6 +31,7 @@ $this->params['breadcrumbs'][] = 'Update';
         'kemampuanBahasaAsing' => $kemampuanBahasaAsing,
         'metodePembayaran' => $metodePembayaran,
         'statusPendaftaran' => $statusPendaftaran,
+        'paymentDetail' => $paymentDetail,
     ]) ?>
 
 </div>

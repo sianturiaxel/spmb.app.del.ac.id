@@ -98,9 +98,9 @@ $this->registerJs($js);
 
     #datatables td:nth-child(5) {
         /* Sesuaikan indeks sesuai dengan kolom 'Berkas' */
-        max-width: 200px;
+        max-width: 100px;
         /* Atau lebar maksimum yang diinginkan */
-        min-width: 200px;
+        min-width: 100px;
         /* Atau lebar minimum yang diinginkan */
     }
 
