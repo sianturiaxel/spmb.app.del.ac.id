@@ -146,12 +146,12 @@ $isAdmin = Yii::$app->user->identity->roles[0]->name;
                             </p>
                         </a>
                         <ul class="nav nav-treeview" style="margin-left: 20px;">
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a href="pages/mailbox/mailbox.html" class="nav-link">
                                     <i class="fas fa-newspaper nav-icon"></i>
                                     <p>Informasi Del</p>
                                 </a>
-                            </li>
+                            </li> -->
                             <li class="nav-item">
                                 <?= \yii\helpers\Html::a(
                                     '<i class="fas fa-map-marker-alt nav-icon"></i><p>Kecamatan</p>',
@@ -173,12 +173,12 @@ $isAdmin = Yii::$app->user->identity->roles[0]->name;
                                     ['class' => Yii::$app->controller->id == 'provinsi' ? 'nav-link active' : 'nav-link']
                                 ) ?>
                             </li>
-                            <li class="nav-item">
+                            <!-- <li class="nav-item">
                                 <a href="pages/mailbox/mailbox.html" class="nav-link">
                                     <i class="fas fa-id-card-alt nav-icon"></i>
                                     <p>Kewarganegaraan</p>
                                 </a>
-                            </li>
+                            </li> -->
                             <li class="nav-item">
                                 <a href="pages/mailbox/mailbox.html" class="nav-link">
                                     <i class="fas fa-book nav-icon"></i>
