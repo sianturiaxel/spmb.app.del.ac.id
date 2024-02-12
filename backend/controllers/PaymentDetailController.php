@@ -2,8 +2,8 @@
 
 namespace backend\controllers;
 
+use backend\models\CalonMahasiswa;
 use backend\models\PaymentDetail;
-use backend\models\PaymentDetailSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -84,11 +84,11 @@ class PaymentDetailController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new PaymentDetailSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
 
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => PaymentDetail::find(),
+        ]);
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -114,7 +114,7 @@ class PaymentDetailController extends Controller
     public function actionCreate()
     {
         $model = new PaymentDetail();
-
+        $calonMahasiswa = CalonMahasiswa::find()->asArray()->all();
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'payment_detail_id' => $model->payment_detail_id]);
@@ -125,6 +125,7 @@ class PaymentDetailController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'calonMahasiswa' => $calonMahasiswa,
         ]);
     }
 
@@ -138,13 +139,14 @@ class PaymentDetailController extends Controller
     public function actionUpdate($payment_detail_id)
     {
         $model = $this->findModel($payment_detail_id);
-
+        $calonMahasiswa = CalonMahasiswa::find()->asArray()->all();
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'payment_detail_id' => $model->payment_detail_id]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'calonMahasiswa' => $calonMahasiswa,
         ]);
     }
 

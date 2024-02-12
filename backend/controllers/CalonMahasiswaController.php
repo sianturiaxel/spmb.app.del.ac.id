@@ -15,7 +15,7 @@ use backend\models\SekolahDapodik;
 use backend\models\MetodePembayaran;
 use backend\models\KemampuanBahasa;
 use backend\models\StatusPendaftaran;
-
+use backend\models\PaymentDetail;
 use backend\models\JalurPendaftaran;
 use backend\models\GelombangPendaftaran;
 use backend\models\GolonganDarah;
@@ -196,8 +196,14 @@ class CalonMahasiswaController extends Controller
 
             if ($calon_mahasiswa_id) {
                 $model = CalonMahasiswa::findOne($calon_mahasiswa_id);
+
                 if ($model !== null) {
-                    return $this->render('view', ['model' => $model]);
+                    $paymentDetail = $model->paymentDetail;
+
+                    return $this->render('view', [
+                        'model' => $model,
+                        'paymentDetail' => $paymentDetail,
+                    ]);
                 } else {
                     throw new NotFoundHttpException('Calon Mahasiswa tidak ditemukan.');
                 }
@@ -209,44 +215,6 @@ class CalonMahasiswaController extends Controller
             throw new InvalidParamException('Terjadi kesalahan dalam proses dekripsi.');
         }
     }
-
-
-    // public function actionView($calon_mahasiswa_id)
-    // {
-    //     return $this->render('view', [
-    //         'model' => $this->findModel($calon_mahasiswa_id),
-    //     ]);
-    // }
-
-    // public function actionCreate()
-    // {
-    //     $model = new CalonMahasiswa();
-
-    //     if ($this->request->isPost) {
-    //         if ($model->load($this->request->post()) && $model->save()) {
-    //             return $this->redirect(['view', 'calon_mahasiswa_id' => $model->calon_mahasiswa_id]);
-    //         }
-    //     } else {
-    //         $model->loadDefaultValues();
-    //     }
-
-    //     return $this->render('create', [
-    //         'model' => $model,
-    //     ]);
-    // }
-
-    // public function actionUpdate($calon_mahasiswa_id)
-    // {
-    //     $model = $this->findModel($calon_mahasiswa_id);
-
-    //     if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-    //         return $this->redirect(['view', 'calon_mahasiswa_id' => $model->calon_mahasiswa_id]);
-    //     }
-
-    //     return $this->render('update', [
-    //         'model' => $model,
-    //     ]);
-    // }
 
     public function actionUpdate($calon_mahasiswa_id)
     {
@@ -273,23 +241,31 @@ class CalonMahasiswaController extends Controller
         $kemampuanBahasaAsing = KemampuanBahasa::find()->asArray()->all();
         $metodePembayaran = MetodePembayaran::find()->asArray()->all();
         $statusPendaftaran = StatusPendaftaran::find()->asArray()->all();
-        // var_dump($kecamatan);
-        // die();
 
         try {
             $calon_mahasiswa_id = $security->decryptByPassword(base64_decode($calon_mahasiswa_id), $secretKey);
             $model = $this->findModel($calon_mahasiswa_id);
 
+            $paymentDetail = PaymentDetail::findAll(['calon_mahasiswa_id' => $calon_mahasiswa_id]);
+            $paymentDetailData = [];
+            foreach ($paymentDetail as $key => $paymentDetailItem) {
+                $paymentDetailData['PaymentDetail_' . $key] = $paymentDetailItem->attributes;
+            }
+
             if ($this->request->isPost) {
-                Yii::info("Data POST: " . print_r(Yii::$app->request->post(), true), __METHOD__);
                 if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                    foreach ($paymentDetail as $key => $paymentDetailItem) {
+                        $postKey = 'PaymentDetail_' . $key;
+                        $paymentDetailItem->load(Yii::$app->request->post($postKey));
+                        $paymentDetailItem->save();
+                    }
+
                     $encrypted_id = base64_encode($security->encryptByPassword($model->calon_mahasiswa_id, $secretKey));
                     return $this->redirect(['index', 'calon_mahasiswa_id' => $encrypted_id]);
                 } else {
                     Yii::error("Error saat menyimpan: " . print_r($model->getErrors(), true), __METHOD__);
                 }
             }
-
 
             return $this->render('update', [
                 'model' => $model,
@@ -311,8 +287,9 @@ class CalonMahasiswaController extends Controller
                 'kemampuanBahasaAsing' => $kemampuanBahasaAsing,
                 'metodePembayaran' => $metodePembayaran,
                 'statusPendaftaran' => $statusPendaftaran,
-                'golonganDarah' => $golonganDarah
-
+                'golonganDarah' => $golonganDarah,
+                'paymentDetail' => $paymentDetail,
+                'paymentDetailData' => $paymentDetailData,
             ]);
         } catch (\Exception $e) {
             Yii::error("Exception: " . $e->getMessage(), __METHOD__);
@@ -320,6 +297,125 @@ class CalonMahasiswaController extends Controller
         }
     }
 
+    public function actionPaymentEdit($payment_detail_id)
+    {
+        $model = PaymentDetail::findOne($payment_detail_id);
+
+        if (!$model) {
+            Yii::error("Payment Detail not found for ID: $payment_detail_id", __METHOD__);
+            throw new NotFoundHttpException('Payment Detail not found.');
+        }
+
+        $calon_mahasiswa_id = $model->calon_mahasiswa_id;
+
+        if ($this->request->isPost) {
+            $postData = Yii::$app->request->post();
+
+            // Load data ke model PaymentDetail
+            if ($model->load($postData) && $model->save()) {
+                // Set flash message
+                Yii::$app->getSession()->setFlash('success', 'Payment Detail successfully updated.');
+
+                // Render partial view untuk ditampilkan dalam modal
+                $view = $this->renderAjax('_success_message', [
+                    'message' => 'Payment Detail successfully updated.',
+                ]);
+
+                // Return partial view sebagai respons AJAX
+                return $this->asJson(['success' => true, 'view' => $view]);
+            } else {
+                Yii::error("Error saat menyimpan: " . print_r($model->getErrors(), true), __METHOD__);
+                Yii::$app->getSession()->setFlash('error', 'Failed to update Payment Detail.');
+
+                // Render partial view untuk ditampilkan dalam modal
+                $view = $this->renderAjax('_error_message', [
+                    'message' => 'Failed to update Payment Detail.',
+                ]);
+
+                // Return partial view sebagai respons AJAX
+                return $this->asJson(['success' => false, 'view' => $view]);
+            }
+        }
+
+        return $this->render('payment-edit', [
+            'model' => $model,
+        ]);
+    }
+
+
+
+
+    // public function actionUpdate($calon_mahasiswa_id)
+    // {
+    //     $security = new Security();
+    //     $secretKey = 'YourComplexSecretKey123!';
+    //     $gelombangPendaftaran = GelombangPendaftaran::find()
+    //         ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+    //         ->all();
+    //     $jenisKelamin = JenisKelamin::find()->asArray()->all();
+    //     $golonganDarah = GolonganDarah::find()->asArray()->all();
+    //     $agama = Agama::find()->asArray()->all();
+    //     $kecamatan = Kecamatan::find()->asArray()->all();
+    //     $kabupaten = Kabupaten::find()->asArray()->all();
+    //     $provinsi = Provinsi::find()->asArray()->all();
+    //     $kecamatanOrangtua = Kecamatan::find()->asArray()->all();
+    //     $kabupatenOrangtua = Kabupaten::find()->asArray()->all();
+    //     $provinsiOrangtua = Provinsi::find()->asArray()->all();
+    //     $pendidikanAyah = JenjangPendidikan::find()->asArray()->all();
+    //     $pendidikanIbu = JenjangPendidikan::find()->asArray()->all();
+    //     $pekerjaanAyah = Pekerjaan::find()->asArray()->all();
+    //     $pekerjaanIbu = Pekerjaan::find()->asArray()->all();
+    //     $sekolahDapodik = SekolahDapodik::find()->asArray()->all();
+    //     $kemampuanBahasaInggris = KemampuanBahasa::find()->asArray()->all();
+    //     $kemampuanBahasaAsing = KemampuanBahasa::find()->asArray()->all();
+    //     $metodePembayaran = MetodePembayaran::find()->asArray()->all();
+    //     $statusPendaftaran = StatusPendaftaran::find()->asArray()->all();
+    //     // var_dump($kecamatan);
+    //     // die();
+
+    //     try {
+    //         $calon_mahasiswa_id = $security->decryptByPassword(base64_decode($calon_mahasiswa_id), $secretKey);
+    //         $model = $this->findModel($calon_mahasiswa_id);
+
+    //         if ($this->request->isPost) {
+    //             Yii::info("Data POST: " . print_r(Yii::$app->request->post(), true), __METHOD__);
+    //             if ($model->load(Yii::$app->request->post()) && $model->save()) {
+    //                 $encrypted_id = base64_encode($security->encryptByPassword($model->calon_mahasiswa_id, $secretKey));
+    //                 return $this->redirect(['index', 'calon_mahasiswa_id' => $encrypted_id]);
+    //             } else {
+    //                 Yii::error("Error saat menyimpan: " . print_r($model->getErrors(), true), __METHOD__);
+    //             }
+    //         }
+
+
+    //         return $this->render('update', [
+    //             'model' => $model,
+    //             'gelombangPendaftaran' => $gelombangPendaftaran,
+    //             'jenisKelamin' => $jenisKelamin,
+    //             'agama' => $agama,
+    //             'kecamatan' => $kecamatan,
+    //             'kabupaten' => $kabupaten,
+    //             'provinsi' => $provinsi,
+    //             'kecamatanOrangtua' => $kecamatanOrangtua,
+    //             'kabupatenOrangtua' => $kabupatenOrangtua,
+    //             'provinsiOrangtua' => $provinsiOrangtua,
+    //             'pendidikanAyah' => $pendidikanAyah,
+    //             'pendidikanIbu' => $pendidikanIbu,
+    //             'pekerjaanAyah' => $pekerjaanAyah,
+    //             'pekerjaanIbu' => $pekerjaanIbu,
+    //             'sekolahDapodik' => $sekolahDapodik,
+    //             'kemampuanBahasaInggris' => $kemampuanBahasaInggris,
+    //             'kemampuanBahasaAsing' => $kemampuanBahasaAsing,
+    //             'metodePembayaran' => $metodePembayaran,
+    //             'statusPendaftaran' => $statusPendaftaran,
+    //             'golonganDarah' => $golonganDarah
+
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         Yii::error("Exception: " . $e->getMessage(), __METHOD__);
+    //         throw new InvalidParamException('Parameter tidak valid: ' . $e->getMessage());
+    //     }
+    // }
 
 
     public function actionDelete($calon_mahasiswa_id)

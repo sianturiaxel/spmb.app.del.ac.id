@@ -335,6 +335,11 @@ class CalonMahasiswa extends \yii\db\ActiveRecord
         return $this->hasOne(GolonganDarah::class, ['golongan_darah_id' => 'golongan_darah_id']);
     }
 
+    public function getPaymentDetail()
+    {
+        return $this->hasMany(PaymentDetail::class, ['calon_mahasiswa_id' => 'calon_mahasiswa_id']);
+    }
+
     public static function generateVa($pendaftar_id)
     {
         $pendaftar = Pendaftar::find()->where(['pendaftar_id' => $pendaftar_id])->one();

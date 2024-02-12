@@ -1,7 +1,12 @@
 <?php
 
+// var_dump($paymentDetail);
+// die();
+
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\helpers\Url;
+
 
 /** @var yii\web\View $this */
 /** @var backend\models\CalonMahasiswa $model */
@@ -345,6 +350,36 @@ $this->registerJs($js);
                             </div>
                         <?php endif; ?>
                     </div>
+                </div>
+            </div>
+
+            <div class="card-header" onclick="toggleSection('data-payment-detail')">
+                <h5>Data Payment Detail <i id="icon-data-payment-detail" class="fas fa-plus"></i></h5>
+            </div>
+            <div class="card-body" id="data-payment-detail" style="display: none;">
+                <div class="row">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Fee Name</th>
+                                <th>Total Amount</th>
+                                <th>Action</th> <!-- Kolom untuk tautan atau formulir edit -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($paymentDetail as $paymentDetail) : ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($paymentDetail->fee_name) ?></td>
+                                    <td><?= "Rp " . number_format($paymentDetail->total_amount, 0, ',', '.') ?></td>
+
+                                    <td>
+                                        <!-- Tautan edit untuk setiap Payment Detail -->
+                                        <a href="<?= Url::to(['calon-mahasiswa/payment-edit', 'payment_detail_id' => $paymentDetail->payment_detail_id]) ?>">Edit</a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 

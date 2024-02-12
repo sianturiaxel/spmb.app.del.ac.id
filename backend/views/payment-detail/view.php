@@ -2,38 +2,45 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
 /** @var backend\models\PaymentDetail $model */
 
-$this->title = $model->payment_detail_id;
+$this->title = 'Payment Detail';
 $this->params['breadcrumbs'][] = ['label' => 'Payment Details', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="payment-detail-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+<div class="payment-detail-view container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="kode-ujian-view">
+                    <?= DetailView::widget([
+                        'model' => $model,
+                        'attributes' => [
+                            //'payment_detail_id',
+                            [
+                                'attribute' => 'calon_mahasiswa',
+                                'value' => function ($model) {
+                                    return $model->calonMahasiswa ? $model->calonMahasiswa->nama : 'Tidak Ada';
+                                },
+                            ],
+                            'total_amount',
+                            'fee_name',
+                        ],
+                    ]) ?>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <?= Html::a('Kembali', Url::to(['index']), ['class' => 'btn btn-warning']) ?>
+                </div>
+            </div>
 
-    <p>
-        <?= Html::a('Update', ['update', 'payment_detail_id' => $model->payment_detail_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'payment_detail_id' => $model->payment_detail_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+        </div>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'payment_detail_id',
-            'calon_mahasiswa_id',
-            'total_amount',
-            'fee_name',
-        ],
-    ]) ?>
-
+    </div>
 </div>
