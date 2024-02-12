@@ -88,6 +88,7 @@ $this->registerJs($js);
         width: 200px;
     }
 
+
     #datatables td:nth-child(4) {
         /* Sesuaikan indeks sesuai dengan kolom 'Berkas' */
         max-width: 200px;
