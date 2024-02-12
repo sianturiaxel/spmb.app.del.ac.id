@@ -83,3 +83,13 @@ $this->registerJs($js);
         </table>
     </div>
 </div>
+
+<style>
+    #datatables td:nth-child(7) {
+        /* Sesuaikan indeks sesuai dengan kolom 'Berkas' */
+        max-width: 200px;
+        /* Atau lebar maksimum yang diinginkan */
+        min-width: 150px;
+        /* Atau lebar minimum yang diinginkan */
+    }
+</style>
