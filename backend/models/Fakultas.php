@@ -29,7 +29,6 @@ class Fakultas extends \yii\db\ActiveRecord
         return [
             [['afis_programstudi_id'], 'integer'],
             [['nama'], 'string', 'max' => 45],
-            [['alias'], 'string', 'max' => 3],
         ];
     }
 
@@ -40,7 +39,7 @@ class Fakultas extends \yii\db\ActiveRecord
     {
         return [
             'fakultas_id' => 'Fakultas ID',
-            'nama' => 'Nama',
+            'nama' => 'Nama Fakultas',
             'afis_programstudi_id' => 'Afis Programstudi ID',
         ];
     }

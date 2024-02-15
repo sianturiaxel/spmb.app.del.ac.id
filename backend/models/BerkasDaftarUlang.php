@@ -49,7 +49,7 @@ class BerkasDaftarUlang extends \yii\db\ActiveRecord
             'desc' => 'Desc',
             'berkas' => 'Berkas',
             'link' => 'Link',
-            'is_active' => 'Is Active',
+            'is_active' => 'Status',
             'deleted' => 'Deleted',
         ];
     }

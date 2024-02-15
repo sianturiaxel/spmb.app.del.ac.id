@@ -37,7 +37,7 @@ class MetodePembayaran extends \yii\db\ActiveRecord
     {
         return [
             'metode_pembayaran_id' => 'Metode Pembayaran ID',
-            'desc' => 'Desc',
+            'desc' => 'Metode Pembayaran',
         ];
     }
 }

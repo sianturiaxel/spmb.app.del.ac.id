@@ -37,7 +37,7 @@ class GolonganDarah extends \yii\db\ActiveRecord
     {
         return [
             'golongan_darah_id' => 'Golongan Darah ID',
-            'desc' => 'Desc',
+            'desc' => 'Golongan Darah',
         ];
     }
 }

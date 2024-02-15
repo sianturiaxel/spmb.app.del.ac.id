@@ -2,6 +2,9 @@
 
 namespace backend\controllers;
 
+use backend\models\JenisTest;
+use backend\models\GelombangPendaftaran;
+use yii\data\ActiveDataProvider;
 use backend\models\LokasiUjian;
 use backend\models\LokasiUjianSearch;
 use yii\web\Controller;
@@ -50,12 +53,21 @@ class LokasiUjianController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new LokasiUjianSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider = new ActiveDataProvider([
+            'query' => LokasiUjian::find(),
+        ]);
+        $gelombangPendaftaran = GelombangPendaftaran::find()
+            ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
+
+        $jenisTest = JenisTest::find()
+            ->orderBy(['jenis_test_id' => SORT_DESC])
+            ->all();
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'jenisTest' => $jenisTest,
         ]);
     }
 
@@ -67,8 +79,19 @@ class LokasiUjianController extends Controller
      */
     public function actionView($lokasi_ujian_id)
     {
+        $gelombangPendaftaran = GelombangPendaftaran::find()
+            ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
+
+        $jenisTest = JenisTest::find()
+            ->orderBy(['jenis_test_id' => SORT_DESC])
+            ->all();
+
+
         return $this->render('view', [
             'model' => $this->findModel($lokasi_ujian_id),
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'jenisTest' => $jenisTest,
         ]);
     }
 
@@ -81,6 +104,15 @@ class LokasiUjianController extends Controller
     {
         $model = new LokasiUjian();
 
+        $gelombangPendaftaran = GelombangPendaftaran::find()
+            ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
+
+        $jenisTest = JenisTest::find()
+            ->orderBy(['jenis_test_id' => SORT_DESC])
+            ->all();
+
+
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['view', 'lokasi_ujian_id' => $model->lokasi_ujian_id]);
@@ -91,6 +123,8 @@ class LokasiUjianController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'jenisTest' => $jenisTest,
         ]);
     }
 
@@ -104,6 +138,14 @@ class LokasiUjianController extends Controller
     public function actionUpdate($lokasi_ujian_id)
     {
         $model = $this->findModel($lokasi_ujian_id);
+        $gelombangPendaftaran = GelombangPendaftaran::find()
+            ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
+
+        $jenisTest = JenisTest::find()
+            ->orderBy(['jenis_test_id' => SORT_DESC])
+            ->all();
+
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'lokasi_ujian_id' => $model->lokasi_ujian_id]);
@@ -111,6 +153,8 @@ class LokasiUjianController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'gelombangPendaftaran' => $gelombangPendaftaran,
+            'jenisTest' => $jenisTest,
         ]);
     }
 

@@ -8,7 +8,7 @@ use yii\widgets\ActiveForm;
 /** @var yii\widgets\ActiveForm $form */
 ?>
 
-<div class="kode-ujian-form container mt-5">
+<div class="agama-form container mt-5">
     <?php $form = ActiveForm::begin(); ?>
 
     <div class="card">
