@@ -37,7 +37,7 @@ class StatusPendaftaran extends \yii\db\ActiveRecord
     {
         return [
             'status_pendaftaran_id' => 'Status Pendaftaran ID',
-            'desc' => 'Desc',
+            'desc' => 'Nama Status',
         ];
     }
 }

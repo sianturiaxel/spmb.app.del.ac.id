@@ -2,6 +2,9 @@
 
 namespace backend\models;
 
+use yii\behaviors\TimestampBehavior;
+use yii\behaviors\BlameableBehavior;
+use yii\db\Expression;
 use Yii;
 
 /**
@@ -32,6 +35,23 @@ class LokasiUjian extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return 't_r_lokasi_ujian';
+    }
+
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className() => [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
+                'value' => new Expression('NOW()'),
+            ],
+            BlameableBehavior::className() => [
+                'class' => BlameableBehavior::className(),
+                'createdByAttribute' => 'created_by',
+                'updatedByAttribute' => 'updated_by',
+            ],
+        ];
     }
 
     /**
@@ -71,5 +91,22 @@ class LokasiUjian extends \yii\db\ActiveRecord
             'deleted_at' => 'Deleted At',
             'deleted_by' => 'Deleted By',
         ];
+    }
+
+    public function getJenisTest()
+    {
+        return $this->hasOne(JenisTest::className(), ['jenis_test_id' => 'jenis_test_id']);
+    }
+    public function getGelombangPendaftaran()
+    {
+        return $this->hasOne(GelombangPendaftaran::className(), ['gelombang_pendaftaran_id' => 'gelombang_pendaftaran_id']);
+    }
+    public function getCreator()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'created_by']);
+    }
+    public function getUpdater()
+    {
+        return $this->hasOne(Users::className(), ['id' => 'updated_by']);
     }
 }

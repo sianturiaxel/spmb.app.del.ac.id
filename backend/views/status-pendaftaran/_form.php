@@ -7,17 +7,26 @@ use yii\widgets\ActiveForm;
 /** @var backend\models\StatusPendaftaran $model */
 /** @var yii\widgets\ActiveForm $form */
 ?>
-
-<div class="status-pendaftaran-form">
-
+<div class="status-pendaftaran-form container mt-5">
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'desc')->textInput(['maxlength' => true]) ?>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <?= $form->field($model, 'desc')->textInput(['maxlength' => true]) ?>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="form-group">
+                <?= Html::button('Kembali', ['class' => 'btn btn-warning', 'onclick' => 'history.go(-1)']) ?>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+                <?= Html::submitButton('Simpan', ['class' => 'btn btn-primary']) ?>
+            </div>
+
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>
-
 </div>

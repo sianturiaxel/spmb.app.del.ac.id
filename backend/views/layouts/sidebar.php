@@ -137,7 +137,7 @@ $isAdmin = Yii::$app->user->identity->roles[0]->name;
                 <?php endif; ?>
 
                 <?php if (RbacHelper::isUserAdmin(Yii::$app->user->id) || RbacHelper::isUserPanitia(Yii::$app->user->id)) : ?>
-                    <li class="nav-item">
+                    <li class="nav-item <?= in_array(Yii::$app->controller->id, ['kecamatan', 'kabupaten', 'provinsi', 'jenjang-pendidikan', 'pekerjaan', 'golongan-darah', 'voucher', 'jenis-ujian', 'status-pendaftaran', 'metode-pembayaran', 'jurusan-sekolah', 'fakultas', 'agama', 'jurusan']) ? 'menu-open' : '' ?>">
                         <a href="#" class="nav-link <?= in_array(Yii::$app->controller->id, ['kecamatan', 'kabupaten', 'provinsi']) ? 'active menu-open' : '' ?>">
                             <i class="nav-icon fa fa-folder-open"></i>
                             <p>
@@ -146,12 +146,6 @@ $isAdmin = Yii::$app->user->identity->roles[0]->name;
                             </p>
                         </a>
                         <ul class="nav nav-treeview" style="margin-left: 20px;">
-                            <!-- <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-newspaper nav-icon"></i>
-                                    <p>Informasi Del</p>
-                                </a>
-                            </li> -->
                             <li class="nav-item">
                                 <?= \yii\helpers\Html::a(
                                     '<i class="fas fa-map-marker-alt nav-icon"></i><p>Kecamatan</p>',
@@ -180,28 +174,27 @@ $isAdmin = Yii::$app->user->identity->roles[0]->name;
                                 </a>
                             </li> -->
                             <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-book nav-icon"></i>
-                                    <p>Pendidikan</p>
-                                </a>
+                                <?= \yii\helpers\Html::a(
+                                    '<i class="fas fa-book nav-icon"></i><p>Pendidikan</p>',
+                                    ['jenjang-pendidikan/index'],
+                                    ['class' => Yii::$app->controller->id == 'jenjang-pendidikan' ? 'nav-link active' : 'nav-link']
+                                ) ?>
+
                             </li>
                             <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-user-tie nav-icon"></i>
-                                    <p>Pekerjaan</p>
-                                </a>
+                                <?= \yii\helpers\Html::a(
+                                    '<i class="fas fa-user-tie nav-icon"></i><p>Pekerjaan</p>',
+                                    ['pekerjaan/index'],
+                                    ['class' => Yii::$app->controller->id == 'pekerjaan' ? 'nav-link active' : 'nav-link']
+                                ) ?>
+
                             </li>
                             <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fa fa-language nav-icon"></i>
-                                    <p>Kemampuan B.Inggris</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-book-reader nav-icon"></i>
-                                    <p>Jurusan Sekolah</p>
-                                </a>
+                                <?= \yii\helpers\Html::a(
+                                    '<i class="fas fa-book-reader nav-icon"></i><p>Jurusan Sekolah</p>',
+                                    ['jurusan-sekolah/index'],
+                                    ['class' => Yii::$app->controller->id == 'jurusan-sekolah' ? 'nav-link active' : 'nav-link']
+                                ) ?>
                             </li>
                             <li class="nav-item">
                                 <a href="pages/mailbox/mailbox.html" class="nav-link">
@@ -216,76 +209,53 @@ $isAdmin = Yii::$app->user->identity->roles[0]->name;
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-clipboard-check nav-icon"></i>
-                                    <p>Status Gelombang Pendaftaran</p>
-                                </a>
+                                <?= \yii\helpers\Html::a(
+                                    '<i class="	fas fa-search-location nav-icon"></i><p>Lokasi Ujian</p>',
+                                    ['lokasi-ujian/index'],
+                                    ['class' => Yii::$app->controller->id == 'lokasi-ujian' ? 'nav-link active' : 'nav-link']
+                                ) ?>
                             </li>
                             <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-chart-pie nav-icon"></i>
-                                    <p>Kategori Bidang UTBK</p>
-                                </a>
+                                <?= \yii\helpers\Html::a(
+                                    '<i class="fas fa-pen-nib nav-icon"></i><p>Jenis Ujian</p>',
+                                    ['jenis-ujian/index'],
+                                    ['class' => Yii::$app->controller->id == 'jenis-ujian' ? 'nav-link active' : 'nav-link']
+                                ) ?>
                             </li>
                             <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-paste nav-icon"></i>
-                                    <p>Predikat Kelulusan</p>
-                                </a>
+                                <?= \yii\helpers\Html::a(
+                                    '<i class="fas fa-percent nav-icon"></i><p>Vocher</p>',
+                                    ['voucher/index'],
+                                    ['class' => Yii::$app->controller->id == 'voucher' ? 'nav-link active' : 'nav-link']
+                                ) ?>
                             </li>
                             <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-chart-line nav-icon"></i>
-                                    <p>Tingkat Prestasi</p>
-                                </a>
+                                <?= \yii\helpers\Html::a(
+                                    '<i class="fas fa-tint nav-icon"></i><p>Golongan Darah</p>',
+                                    ['golongan-darah/index'],
+                                    ['class' => Yii::$app->controller->id == 'golongan-darah' ? 'nav-link active' : 'nav-link']
+                                ) ?>
                             </li>
                             <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-pen-nib nav-icon"></i>
-                                    <p>Jenis Ujian</p>
-                                </a>
+                                <?= \yii\helpers\Html::a(
+                                    '<i class="fas fa-tags nav-icon"></i><p>Metode Pembayaran</p>',
+                                    ['metode-pembayaran/index'],
+                                    ['class' => Yii::$app->controller->id == 'metode-pembayaran' ? 'nav-link active' : 'nav-link']
+                                ) ?>
                             </li>
                             <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-percent nav-icon"></i>
-                                    <p>Voucer</p>
-                                </a>
+                                <?= \yii\helpers\Html::a(
+                                    '<i class="fas fa-clipboard-check nav-icon"></i><p>Status Pendaftaran</p>',
+                                    ['status-pendaftaran/index'],
+                                    ['class' => Yii::$app->controller->id == 'status-pendaftaran' ? 'nav-link active' : 'nav-link']
+                                ) ?>
                             </li>
                             <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-venus-mars nav-icon"></i>
-                                    <p>Jenis Kelamin</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-tint nav-icon"></i>
-                                    <p>Golongan Darah</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-tags nav-icon"></i>
-                                    <p>Metode Pembayaran</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-clipboard-check nav-icon"></i>
-                                    <p>Status Pendaftaran</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-clipboard-check nav-icon"></i>
-                                    <p>Status Testing(adm,aka,psi)</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="pages/mailbox/mailbox.html" class="nav-link">
-                                    <i class="fas fa-university nav-icon"></i>
-                                    <p>Fakultas</p>
-                                </a>
+                                <?= \yii\helpers\Html::a(
+                                    '<i class="fas fa-university nav-icon"></i><p>Fakultas</p>',
+                                    ['fakultas/index'],
+                                    ['class' => Yii::$app->controller->id == 'fakultas' ? 'nav-link active' : 'nav-link']
+                                ) ?>
                             </li>
                             <li class="nav-item">
                                 <?= \yii\helpers\Html::a(

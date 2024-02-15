@@ -2,36 +2,37 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
 /** @var backend\models\Pekerjaan $model */
 
-$this->title = $model->pekerjaan_id;
-$this->params['breadcrumbs'][] = ['label' => 'Pekerjaans', 'url' => ['index']];
+$this->title = 'Pekerjaan Detail';
+$this->params['breadcrumbs'][] = ['label' => 'Pekerjaan', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="pekerjaan-view">
+<div class="pekerjaan-view container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="kode-ujian-view">
+                    <?= DetailView::widget([
+                        'model' => $model,
+                        'attributes' => [
+                            //'pekerjaan_id',                   
+                            'nama',
+                        ],
+                    ]) ?>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <?= Html::a('Kembali', Url::to(['index']), ['class' => 'btn btn-warning']) ?>
+                </div>
+            </div>
 
-    <h1><?= Html::encode($this->title) ?></h1>
+        </div>
 
-    <p>
-        <?= Html::a('Update', ['update', 'pekerjaan_id' => $model->pekerjaan_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'pekerjaan_id' => $model->pekerjaan_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'pekerjaan_id',
-            'nama',
-        ],
-    ]) ?>
-
+    </div>
 </div>

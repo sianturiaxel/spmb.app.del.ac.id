@@ -2,50 +2,69 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
 /** @var backend\models\LokasiUjian $model */
 
-$this->title = $model->lokasi_ujian_id;
+$this->title = 'Lokasi Ujian Detail';
 $this->params['breadcrumbs'][] = ['label' => 'Lokasi Ujians', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="lokasi-ujian-view">
+<div class="voucher-view container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="voucher-view">
+                    <?= DetailView::widget([
+                        'model' => $model,
+                        'attributes' => [
+                            //'lokasi_ujian_id',                   
+                            [
+                                'attribute' => 'gelombang_pendaftaran',
+                                'value' => function ($model) {
+                                    return $model->gelombangPendaftaran ? $model->gelombangPendaftaran->desc : 'Tidak Ada';
+                                },
+                            ],
+                            [
+                                'attribute' => 'jenis_tes',
+                                'value' => function ($model) {
+                                    return $model->jenisTest ? $model->jenisTest->nama : 'Tidak Ada';
+                                },
+                            ],
+                            'kode_lokasi',
+                            'gedung',
+                            'alamat',
+                            'tanggal_mulai',
+                            'tanggal_selesai',
+                            'desc',
+                            'created_at:datetime',
+                            [
+                                'attribute' => 'created_by',
+                                'value' => function ($model) {
+                                    return $model->creator ? $model->creator->username : '-';
+                                },
+                            ],
+                            'updated_at:datetime',
+                            [
+                                'attribute' => 'updated_by',
+                                'value' => function ($model) {
+                                    return $model->updater ? $model->updater->username : '-';
+                                },
+                            ],
 
-    <h1><?= Html::encode($this->title) ?></h1>
+                        ],
+                    ]) ?>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <?= Html::a('Kembali', Url::to(['index']), ['class' => 'btn btn-warning']) ?>
+                </div>
+            </div>
 
-    <p>
-        <?= Html::a('Update', ['update', 'lokasi_ujian_id' => $model->lokasi_ujian_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'lokasi_ujian_id' => $model->lokasi_ujian_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+        </div>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'lokasi_ujian_id',
-            'gelombang_pendaftaran_id',
-            'jenis_test_id',
-            'kode_lokasi',
-            'gedung',
-            'alamat',
-            'tanggal_mulai',
-            'tanggal_selesai',
-            'desc',
-            'is_active',
-            'created_at',
-            'created_by',
-            'updated_at',
-            'updated_by',
-            'deleted_at',
-            'deleted_by',
-        ],
-    ]) ?>
-
+    </div>
 </div>
