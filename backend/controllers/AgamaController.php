@@ -3,7 +3,6 @@
 namespace backend\controllers;
 
 use backend\models\Agama;
-use backend\models\AgamaSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,11 +37,13 @@ class AgamaController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new AgamaSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+
+        $dataProvider = new \yii\data\ActiveDataProvider([
+            'query' => Agama::find(),
+        ]);
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
+
             'dataProvider' => $dataProvider,
         ]);
     }

@@ -2,18 +2,17 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\helpers\Url;
 
 /** @var yii\web\View $this */
 /** @var backend\models\Agama $model */
 
-$this->title = $model->agama_id;
+$this->title = 'Agama Detail';
 $this->params['breadcrumbs'][] = ['label' => 'Agamas', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="agama-view">
-
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Update', ['update', 'agama_id' => $model->agama_id], ['class' => 'btn btn-primary']) ?>
@@ -34,4 +33,30 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]) ?>
 
+</div>
+
+
+<div class="agama-view container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="kode-ujian-view">
+                    <?= DetailView::widget([
+                        'model' => $model,
+                        'attributes' => [
+                            //'agama_id',                   
+                            'desc',
+                        ],
+                    ]) ?>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="form-group">
+                    <?= Html::a('Kembali', Url::to(['index']), ['class' => 'btn btn-warning']) ?>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
 </div>

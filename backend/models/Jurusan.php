@@ -50,7 +50,7 @@ class Jurusan extends \yii\db\ActiveRecord
         return [
             'jurusan_id' => 'Jurusan ID',
             'fakultas_id' => 'Fakultas ID',
-            'nama' => 'Nama',
+            'nama' => 'Nama Jurusan',
             'prefix_nim' => 'Prefix Nim',
             'counter_nim' => 'Counter Nim',
             'status_active' => 'Status Active',

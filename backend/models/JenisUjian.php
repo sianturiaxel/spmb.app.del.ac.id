@@ -40,8 +40,8 @@ class JenisUjian extends \yii\db\ActiveRecord
     {
         return [
             'jenis_ujian_id' => 'Jenis Ujian ID',
-            'name' => 'Name',
-            'desc' => 'Desc',
+            'name' => 'Nama Jenis Ujian',
+            'desc' => 'Deskripsi Ujian',
         ];
     }
 }

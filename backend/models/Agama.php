@@ -37,7 +37,7 @@ class Agama extends \yii\db\ActiveRecord
     {
         return [
             'agama_id' => 'Agama ID',
-            'desc' => 'Desc',
+            'desc' => 'Agama',
         ];
     }
 }
