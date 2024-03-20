@@ -176,17 +176,18 @@ class UserFinance extends \yii\db\ActiveRecord
         return $this->hasMany(SysxUserHasGroup::class, ['user_id' => 'user_id']);
     }
 
-    public static function createUser($pendaftar_id, $va){
+    public static function createUser($pendaftar_id, $va)
+    {
         $pendaftar = Pendaftar::find()->where(['pendaftar_id' => $pendaftar_id])->one();
         $jurusanLulus = PilihanJurusan::find()->where(['pendaftar_id' => $pendaftar_id, 'lulus' => 1])->one();
 
-        $user = new UserFinance();        
+        $user = new UserFinance();
         $user->name = $pendaftar->nama;
         $user->virtual_account_number = $va;
-        
-    	if (!$user->save()) {
-    		return false;
-    	}
+
+        if (!$user->save()) {
+            return false;
+        }
 
         $userRegistrationNumber = new UserRegistrationNumber();
         $userRegistrationNumber->registration_number = $pendaftar->getKodePendaftaran();
@@ -197,8 +198,8 @@ class UserFinance extends \yii\db\ActiveRecord
         $userRegistrationNumber->n = $pendaftar->n;
 
         if (!$userRegistrationNumber->save()) {
-    		return false;
-    	}
+            return false;
+        }
 
         return $user->user_id;
     }

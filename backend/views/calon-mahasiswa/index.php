@@ -55,11 +55,11 @@ $(document).ready(function() {
         
         'drawCallback': function(settings) {
             $('#datatables tbody tr').each(function() {
-                var statusPembayaran = $(this).find('td:eq(5)').text().trim(); // Angka 5 di sini mungkin perlu disesuaikan sesuai posisi kolom 'Status Pembayaran'
+                var statusPembayaran = $(this).find('td:eq(5)').text().trim(); 
                 if (statusPembayaran === 'Sudah Membayar') {
-                    $(this).children('td').css('background-color', '#d4edda'); // Terapkan ke setiap <td> di dalam <tr>
+                    $(this).children('td').css('background-color', '#d4edda');
                 } else if (statusPembayaran === 'Belum Membayar') {
-                    $(this).children('td').css('background-color', '#f8d7da'); // Terapkan ke setiap <td> di dalam <tr>
+                    $(this).children('td').css('background-color', '#f8d7da');
                 }
             });
         }

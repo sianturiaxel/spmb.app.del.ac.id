@@ -22,6 +22,7 @@ use backend\models\Pekerjaan;
 use backend\models\StatusPendaftaran;
 use backend\models\finance\UserFinance;
 use backend\models\finance\UserRegistrationNumber;
+use backend\models\LokasiUjian;
 use backend\models\PaymentDetail;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
@@ -142,6 +143,12 @@ class PendaftarController extends Controller
             if (!empty($_GET['gelombang_pendaftaran_id'])) {
                 $query->andWhere(['gelombang_pendaftaran_id' => $_GET['gelombang_pendaftaran_id']]);
             }
+            if (!empty($_GET['lokasi_ujian_id'])) {
+                $query->andWhere(['lokasi_ujian_id' => $_GET['lokasi_ujian_id']]);
+            }
+            if (!empty($_GET['status_pendaftaran_id'])) {
+                $query->andWhere(['status_pendaftaran_id' => $_GET['status_pendaftaran_id']]);
+            }
             if ($search && !empty($search['value'])) {
                 $query->andFilterWhere(['like', 'nama', $search['value']]);
             }
@@ -203,6 +210,7 @@ class PendaftarController extends Controller
                 'nama_sekolah' => $pendaftar->sekolahDapodik ? $pendaftar->sekolahDapodik->sekolah : 'Tidak ditemukan',
                 'lokasi_ujian' => $pendaftar->lokasi ? $pendaftar->lokasi->alamat : 'Tidak ditemukan',
                 'kode_ujian' => $pendaftar->kode ? $pendaftar->kode->kode_ujian : 'Tidak ditemukan',
+                'status_pendaftaran' => $pendaftar->status_pendaftaran_id,
                 'action' => $actionButtons,
                 'checkbox' => $pendaftar->status_kelulusan === '0'
                     ? '<input type="checkbox" name="selected[]" value="' . $pendaftar->pendaftar_id . '">'
@@ -616,6 +624,132 @@ class PendaftarController extends Controller
         ];
     }
 
+    // public function actionDataCalonMahasiswa($pendaftar_id)
+    // {
+    //     $pendaftar = Pendaftar::findOne($pendaftar_id);
+
+    //     if (!$pendaftar) {
+    //         Yii::error("Pendaftar dengan ID $pendaftar_id tidak ditemukan.");
+    //         return false;
+    //     }
+    //     $pilihanJurusanLulus = PilihanJurusan::find()
+    //         ->where(['pendaftar_id' => $pendaftar_id, 'lulus' => 1])
+    //         ->one();
+    //     if (!$pilihanJurusanLulus) {
+    //         Yii::error("Tidak ada jurusan yang lulus untuk pendaftar ID $pendaftar_id.");
+    //         return false;
+    //     }
+
+    //     //Virtual Account
+    //     $va = NULL;
+    //     $userFinance = NULL;
+
+    //     if (!is_null($pendaftar->virtual_account) && !empty($pendaftar->virtual_account)) {
+    //         $va = $pendaftar->virtual_account;
+    //         $userFinance = UserRegistrationNumber::updateDataProdi($pilihanJurusanLulus->jurusan_id, $va);
+    //     } else {
+    //         $va = CalonMahasiswa::generateVa($pendaftar_id);
+    //         $userFinance = UserFinance::createUser($pendaftar_id, $va);
+    //     }
+
+    //     $calonMahasiswa = new CalonMahasiswa();
+    //     $calonMahasiswa->pendaftar_id = $pendaftar->pendaftar_id;
+    //     $calonMahasiswa->jalur_pendaftaran_id = $pendaftar->jalur_pendaftaran_id;
+    //     $calonMahasiswa->user_id = $pendaftar->user_id;
+    //     $calonMahasiswa->nama = $pendaftar->nama;
+    //     $calonMahasiswa->nik = $pendaftar->nik;
+    //     $calonMahasiswa->nisn = $pendaftar->nisn;
+    //     $calonMahasiswa->no_kps = $pendaftar->no_kps;
+    //     $calonMahasiswa->jenis_kelamin_id = $pendaftar->jenis_kelamin_id;
+    //     $calonMahasiswa->tempat_lahir = $pendaftar->tempat_lahir;
+    //     $calonMahasiswa->no_telepon_rumah = $pendaftar->no_telepon_rumah;
+    //     //$calonMahasiswa->golongan_darah_id = $pendaftar->golongan_darah_id;
+    //     $calonMahasiswa->jurusan_id = $pilihanJurusanLulus->jurusan_id;
+
+    //     $calonMahasiswa->tanggal_lahir = $pendaftar->tanggal_lahir;
+    //     $calonMahasiswa->agama_id = $pendaftar->agama_id;
+    //     $calonMahasiswa->alamat = $pendaftar->alamat;
+    //     $calonMahasiswa->alamat_kec = $pendaftar->alamat_kec;
+    //     $calonMahasiswa->alamat_kab = $pendaftar->alamat_kab;
+    //     $calonMahasiswa->alamat_prov = $pendaftar->alamat_prov;
+    //     $calonMahasiswa->kode_pos = $pendaftar->kode_pos;
+    //     $calonMahasiswa->kelurahan = $pendaftar->kelurahan;
+    //     $calonMahasiswa->alamat_kec = $pendaftar->alamat_kec;
+    //     $calonMahasiswa->no_telepon_mobile = $pendaftar->no_telepon_mobile;
+    //     $calonMahasiswa->email = $pendaftar->email;
+    //     $calonMahasiswa->tanggal_lahir_ayah = $pendaftar->tanggal_lahir_ayah;
+    //     $calonMahasiswa->tanggal_lahir_ibu = $pendaftar->tanggal_lahir_ibu;
+    //     $calonMahasiswa->nama_ibu_kandung = $pendaftar->nama_ibu_kandung;
+    //     $calonMahasiswa->nama_ayah_kandung = $pendaftar->nama_ayah_kandung;
+    //     $calonMahasiswa->nik_ayah = $pendaftar->nik_ayah;
+    //     $calonMahasiswa->nik_ibu = $pendaftar->nik_ibu;
+    //     $calonMahasiswa->pendidikan_ayah_id = $pendaftar->pendidikan_ayah_id;
+    //     $calonMahasiswa->pendidikan_ibu_id = $pendaftar->pendidikan_ibu_id;
+    //     $calonMahasiswa->alamat_orang_tua = $pendaftar->alamat_orang_tua;
+    //     $calonMahasiswa->alamat_kec_orangtua = $pendaftar->alamat_kec_orangtua;
+    //     $calonMahasiswa->alamat_kab_orangtua = $pendaftar->alamat_kab_orangtua;
+    //     $calonMahasiswa->alamat_prov_orangtua = $pendaftar->alamat_prov_orangtua;
+    //     $calonMahasiswa->kode_pos_orang_tua = $pendaftar->kode_pos_orang_tua;
+    //     $calonMahasiswa->pekerjaan_ayah_id = $pendaftar->pekerjaan_ayah_id;
+    //     $calonMahasiswa->pekerjaan_ibu_id = $pendaftar->pekerjaan_ibu_id;
+    //     $calonMahasiswa->penghasilan_ayah = $pendaftar->penghasilan_ayah;
+    //     $calonMahasiswa->penghasilan_ibu = $pendaftar->penghasilan_ibu;
+    //     $calonMahasiswa->penghasilan_total = $pendaftar->penghasilan_total;
+    //     $calonMahasiswa->no_hp_orangtua = $pendaftar->no_hp_orangtua;
+    //     // $calonMahasiswa->no_telepon_mobile_ayah = $pendaftar->no_telepon_mobile_ayah;
+    //     // $calonMahasiswa->no_telepon_mobile_ibu = $pendaftar->no_telepon_mobile_ibu;
+    //     $calonMahasiswa->sekolah_id = $pendaftar->sekolah_id;
+    //     $calonMahasiswa->sekolah_dapodik_id = $pendaftar->sekolah_dapodik_id;
+    //     $calonMahasiswa->jurusan_sekolah = $pendaftar->jurusan_sekolah;
+    //     $calonMahasiswa->jurusan_sekolah_id = $pendaftar->jurusan_sekolah_id;
+    //     $calonMahasiswa->pas_foto = $pendaftar->pas_foto;
+    //     $calonMahasiswa->virtual_account_number = $pendaftar->virtual_account;
+
+    //     // var_dump($calonMahasiswa);
+    //     // die();
+
+    //     $calonMahasiswa->virtual_account_number = $va;
+    //     $calonMahasiswa->bank_name = 'Bank Mandiri';
+    //     $calonMahasiswa->n = $pendaftar->n;
+
+
+    //     if ($calonMahasiswa->save()) {
+    //         $updateCalonMahasiswa = $calonMahasiswa;
+    //         //Tagihan Daftar Ulang
+    //         if ($userFinance != NULL) {
+    //             $cekTagihan = \Yii::$app->runAction('payment/cek-tagihan-penulang', ['calon_mahasiswa_id' => $calonMahasiswa->calon_mahasiswa_id]);
+    //             $result = json_decode($cekTagihan);
+    //             if (isset($result->status) && strtolower($result->status) === 'success' && isset($result->user_id)) {
+    //                 // disini populate from spmb
+    //                 $payment = \Yii::$app->runAction('payment/generate-tagihan-penulang', ['userId' => $result->user_id, 'calonMahasiswaId' => $calonMahasiswa->calon_mahasiswa_id]);
+    //                 //IF SUCCESS GENERATE TAGIHAN
+    //                 if ($payment) {
+    //                     $updateCalonMahasiswa->total_pembayaran = $payment->total_amount_paid;
+    //                     if ($updateCalonMahasiswa->save()) {
+    //                         foreach ($payment->paymentDetails as $pd) {
+    //                             $paymentDetailSpmb = new PaymentDetail();
+    //                             $paymentDetailSpmb->calon_mahasiswa_id = $calonMahasiswa->calon_mahasiswa_id;
+    //                             $paymentDetailSpmb->total_amount = $pd->total_amount_paid;
+    //                             $paymentDetailSpmb->fee_name = $pd->fee->name;
+    //                             $paymentDetailSpmb->save();
+    //                         }
+    //                         Yii::info("Data pendaftar ID $pendaftar_id berhasil disalin ke calon mahasiswa.");
+    //                         return true;
+    //                     }
+    //                 } else {
+    //                     return false;
+    //                 }
+    //             } else {
+    //                 return false;
+    //             }
+    //         } else {
+    //             return false;
+    //         }
+    //     } else {
+    //         Yii::error("Gagal menyimpan calon mahasiswa: " . json_encode($calonMahasiswa->getErrors()));
+    //         return false;
+    //     }
+    // }
     public function actionDataCalonMahasiswa($pendaftar_id)
     {
         $pendaftar = Pendaftar::findOne($pendaftar_id);
@@ -624,19 +758,21 @@ class PendaftarController extends Controller
             Yii::error("Pendaftar dengan ID $pendaftar_id tidak ditemukan.");
             return false;
         }
+
         $pilihanJurusanLulus = PilihanJurusan::find()
             ->where(['pendaftar_id' => $pendaftar_id, 'lulus' => 1])
             ->one();
+
         if (!$pilihanJurusanLulus) {
             Yii::error("Tidak ada jurusan yang lulus untuk pendaftar ID $pendaftar_id.");
             return false;
         }
 
-        //Virtual Account
-        $va = NULL;
-        $userFinance = NULL;
+        // Virtual Account
+        $va = null;
+        $userFinance = null;
 
-        if (!is_null($pendaftar->virtual_account) && !empty($pendaftar->virtual_account)) {
+        if (!empty($pendaftar->virtual_account)) {
             $va = $pendaftar->virtual_account;
             $userFinance = UserRegistrationNumber::updateDataProdi($pilihanJurusanLulus->jurusan_id, $va);
         } else {
@@ -704,7 +840,6 @@ class PendaftarController extends Controller
         $calonMahasiswa->bank_name = 'Bank Mandiri';
         $calonMahasiswa->n = $pendaftar->n;
 
-
         if ($calonMahasiswa->save()) {
             $updateCalonMahasiswa = $calonMahasiswa;
             //Tagihan Daftar Ulang
@@ -743,11 +878,19 @@ class PendaftarController extends Controller
         }
     }
 
+
     public function actionIndex()
     {
         $jalurPendaftaran = JalurPendaftaran::find()->all();
         $gelombangPendaftaran = GelombangPendaftaran::find()
             ->orderBy(['gelombang_pendaftaran_id' => SORT_DESC])
+            ->all();
+        $lokasi = LokasiUjian::find()
+            ->orderBy(['lokasi_ujian_id' => SORT_DESC])
+            ->all();
+
+        $statusPendaftaran = StatusPendaftaran::find()
+            ->orderBy(['status_pendaftaran_id' => SORT_DESC])
             ->all();
         $dataProvider = new ActiveDataProvider([
             'query' => Pendaftar::find(),
@@ -757,6 +900,8 @@ class PendaftarController extends Controller
             'dataProvider' => $dataProvider,
             'jalurPendaftaran' => $jalurPendaftaran,
             'gelombangPendaftaran' => $gelombangPendaftaran,
+            'lokasi' => $lokasi,
+            'statusPendaftaran' => $statusPendaftaran,
         ]);
     }
 

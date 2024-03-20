@@ -1,5 +1,6 @@
 <?php
 
+
 use backend\models\Pendaftar;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -42,6 +43,14 @@ $(document).ready(function() {
                 if (gelombangPendaftaranFilter) { 
                     d.gelombang_pendaftaran_id = gelombangPendaftaranFilter;
                 }
+                var lokasiUjianFilter = $('#lokasi-ujian-select').val();
+                if (lokasiUjianFilter) { 
+                    d.lokasi_ujian_id = lokasiUjianFilter;
+                }
+                var statusPembayaranFilter = $('#status-pembayaran-select').val();
+                if (statusPembayaranFilter) { 
+                    d.status_pendaftaran_id = statusPembayaranFilter;
+                }
             },
         },
         
@@ -52,16 +61,25 @@ $(document).ready(function() {
             { 'data': 'nama_sekolah' },
             { 'data': 'lokasi_ujian' },
             { 'data': 'kode_ujian' },
+            { 'data': 'status_pendaftaran' },
             { 'data': 'action'},
             { 'data': null, 'defaultContent': '' }
             
         ],
         'columnDefs': [
             {
-                'targets': 7, 
+                'targets': 6,
+                'visible': false,
+                'orderable': false,
+                'searchable': false
+            },
+
+            {
+                'targets': 8, 
                 'render': function (data, type, row) {
                     return '<input type="checkbox" class="pendaftar-checkbox" value="' + row.pendaftar_id + '">';
                 },
+                
 
                 'orderable': false,
                 'searchable': false  
@@ -79,8 +97,31 @@ $(document).ready(function() {
         'pageLength': 10,
         'dom': "<'row'<'col-sm-12 col-md-4 toolbar'><'col-sm-12 col-md-8'f>>" +
                "<'row'<'col-sm-12'tr>>" +
-               "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
-    });    
+               "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        'drawCallback': function(settings) {
+            console.log('Draw callback executed.');
+
+            $('#datatables tbody tr').each(function(index, element) {
+                var rowData = table.row(element).data(); // Mengambil data dari baris
+                console.log('Row ' + index + ': Row Data - ', rowData);
+
+                if (rowData) {
+                    var statusPendaftaran = rowData.status_pendaftaran;
+                    console.log('Row ' + index + ': Status Pendaftaran ID for row: ' + statusPendaftaran);
+
+                    // Sesuaikan bagian warna background di sini
+                    if (statusPendaftaran === '5') {
+                        console.log('Setting background color to green for row ' + index);
+                        $(element).css('background-color', '#d4edda'); // Warna hijau
+                    } else if (statusPendaftaran === '1') {
+                        console.log('Setting background color to red for row ' + index);
+                        $(element).css('background-color', '#f8d7da'); // Warna merah
+                    }
+                }
+            });
+        }
+    });   
+    
 
 
     var showCheckbox = false;
@@ -439,6 +480,14 @@ $(document).ready(function() {
         table.ajax.reload();
         
     });
+    $('#lokasi-ujian-select').on('change', function() {
+        var lokasiUjianFilter = $(this).val();
+        table.ajax.reload();
+    });
+    $('#status-pembayaran-select').on('change', function() {
+        var statusPembayaranFilter = $(this).val();
+        table.ajax.reload();
+    });
     $(document).on('click', '.luluskan-button', function(e) {
         e.preventDefault();
         var pendaftarId = $(this).data('pendaftar-id');
@@ -509,15 +558,18 @@ $(document).ready(function() {
                     $('#detailJurusan').modal('hide');
                     location.reload();
                 } else {
-                    alert('Gagal menyimpan data.');
+                    console.log('Gagal menyimpan data. Pesan Kesalahan:', response.error);
+                    alert('Gagal menyimpan data. Pesan Kesalahan: ' + response.error);
                 }
             },
             error: function(xhr, status, error) {
                 console.error("Error: ", xhr.responseText);
-                alert('Terjadi kesalahan saat menyimpan data.');
+                console.log("Error: ", xhr.responseText);
+                alert('Terjadi kesalahan saat menyimpan data. Lihat konsol untuk detail.');
             }
         });
     });
+
     $(document).on('click', '.lulus-pada-jurusan', function(e) {
         e.preventDefault();
         var pendaftarId = $(this).data('pendaftar-id');
@@ -555,6 +607,8 @@ $(document).ready(function() {
             },
         });
     }); 
+
+
     $(".select2").select2();
         $(".select2bs4").select2({
           theme: "bootstrap4",
@@ -615,9 +669,9 @@ $this->registerJs($js, \yii\web\View::POS_READY);
 <div class="card">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-2">
+            <div class="col-md-2 mt-2">
                 <select class="form-control select2" id="gelombang-pendaftaran-select">
-                    <option value="">Semua Gelombang Pendaftaran</option>
+                    <option value="">Gelombang Pendaftaran</option>
                     <?php foreach ($gelombangPendaftaran as $gelombang) : ?>
                         <option value="<?= htmlspecialchars($gelombang['gelombang_pendaftaran_id']); ?>">
                             <?= htmlspecialchars($gelombang['desc']); ?>
@@ -625,27 +679,41 @@ $this->registerJs($js, \yii\web\View::POS_READY);
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-3 custom-button-spacing">
+            <div class="col-md-2 mt-2">
+                <select class="form-control select2" id="lokasi-ujian-select">
+                    <option value="">Lokasi Ujian</option>
+                    <?php foreach ($lokasi as $lokasi) : ?>
+                        <option value="<?= htmlspecialchars($lokasi['lokasi_ujian_id']); ?>">
+                            <?= htmlspecialchars($lokasi['desc']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="col-md-2 mt-2">
+                <select class="form-control select2" id="status-pembayaran-select">
+                    <option value="">All Status Pembayaran</option>
+                    <option value="5">Sudah Membayar</option>
+                    <option value="1">Belum Membayar</option>
+                </select>
+            </div>
+
+            <div class="col-md-3 mt-2 custom-button-spacing">
                 <button id="kodeWawancara" class="btn btn-warning">
                     <i class="fa fa-microphone"></i>
                     Kode Ujian Wawancara
                 </button>
             </div>
-            <div class="col-md-3 custom-button-spacing">
+            <div class="col-md-3 mt-2 ml-5 custom-button-spacing">
                 <button id="kodePsikotes" class="btn btn-warning">
                     <i class="fa fa-brain"></i>
                     Kode Ujian Psikotes
                 </button>
             </div>
-            <div class="col-md-3">
-                <?= Html::a('Download Lulus Adminstrasi', ['export-excel'], [
-                    'class' => 'btn btn-success',
-                    'data' => [
-                        'confirm' => 'Apakah Anda Ingin Mendownload Pendaftar Yang Lulus Adminstrasi?',
-                        'method' => 'post',
-                    ],
-                ]) ?>
-            </div>
+        </div>
+
+
+        <div class="row">
+
         </div>
 
         <div class="flex-item">
@@ -667,6 +735,7 @@ $this->registerJs($js, \yii\web\View::POS_READY);
                     <th>Nama Sekolah</th>
                     <th>Lokasi Ujian</th>
                     <th>Kode Ujian</th>
+                    <th>Status Pembayaran</th>
                     <th>Action</th>
                     <th>Pilih</th>
                 </tr>
@@ -848,6 +917,15 @@ $this->registerJs($js, \yii\web\View::POS_READY);
         margin-right: -110px;
         /* Sesuaikan jarak */
     }
+
+    .statusClass5 {
+        background-color: #d4edda;
+    }
+
+    .statusClass1 {
+        background-color: #f8d7da;
+    }
+
 
     /* .pendaftar-checkbox {
         display: none;
